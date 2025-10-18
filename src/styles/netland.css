@@ -541,91 +541,106 @@ h2::after {
     line-height: 1.4;
 }
 
+/* === ABOUT US PAGE FULL-WIDTH STYLING === */
+.about-page-wrapper {
+  width: 100vw;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
+
+.container {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  border-radius: 0;
+  box-shadow: none;
+  padding: 4rem 5%;
+  background: #ffffff;
+}
+
 .about-content {
-    width: 154%;
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  padding: 0;
 }
 
 .about-section {
-    margin-bottom: 3rem;
-    width: 154%;
+  width: 100%;
+  padding: 3rem 8%;
+  margin-bottom: 3rem;
+  background: #ffffff;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.about-section:nth-child(even) {
+  background: var(--light-gray);
 }
 
 .about-section h3 {
-    color: var(--primary-color);
-    margin-bottom: 1.5rem;
-    font-size: 1.5rem;
-    width: 154%;
+  font-size: 2rem;
+  color: var(--primary-color);
+  margin-bottom: 1.5rem;
+  text-align: left;
 }
 
 .about-section p {
-    line-height: 1.6;
-    margin-bottom: 1rem;
-    width: 154%;
+  max-width: 1200px;
+  color: var(--text-secondary);
+  line-height: 1.8;
+  font-size: 1.1rem;
 }
 
-.services-grid, .commitment-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 2rem;
-    margin-top: 1.5rem;
-    width: 154%;
+/* Grids and cards adjusted to full width */
+.services-grid,
+.commitment-grid {
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 2.5rem;
+  width: 100%;
+  margin: 2rem auto;
+  padding: 0 2%;
 }
 
-.service-card, .commitment-item {
-    background: var(--light-gray);
-    padding: 2rem;
-    border-radius: 16px;
-    border: 1px solid var(--border-color);
-    width: 154%;
-}
-
-.service-card h4, .commitment-item h4 {
-    color: var(--primary-color);
-    margin-bottom: 1rem;
-    width: 154%;
-}
-
-.service-card ul {
-    list-style: none;
-    padding: 0;
-    width: 154%;
-}
-
-.service-card li {
-    padding: 0.5rem 0;
-    border-bottom: 1px solid var(--border-color);
-    width: 154%;
-}
-
-.service-card li:last-child {
-    border-bottom: none;
+.service-card,
+.commitment-item {
+  background: white;
+  border-radius: 16px;
+  border: 1px solid var(--border-color);
+  padding: 2rem;
+  transition: all 0.3s ease;
 }
 
 .benefits-list {
-    margin-top: 1.5rem;
-    width: 154%;
+  width: 100%;
+  padding: 0 2%;
 }
 
 .benefit-item {
-    background: white;
-    padding: 1.5rem;
-    margin-bottom: 1rem;
-    border-radius: 12px;
-    border-left: 4px solid var(--primary-color);
-    box-shadow: var(--shadow-sm);
-    width: 154%;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
-.benefit-item strong {
-    color: var(--primary-color);
-}
-
+/* Ensure footer also spans full width */
 .footer {
-    background: linear-gradient(135deg, var(--dark-color), #374151);
-    color: white;
-    margin-top: 4rem;
-    padding: 3rem 0 1rem 0;
-    width: 154.5%;
+  width: 100vw;
+  margin: 0;
+  border-top: 3px solid var(--primary-color);
+}
+
+/* Responsive adjustments */
+@media (max-width: 1024px) {
+  .about-section {
+    padding: 2rem 4%;
+  }
+
+  .about-section h3 {
+    font-size: 1.75rem;
+  }
+
+  .about-section p {
+    font-size: 1rem;
+  }
 }
 
 .footer-content {
