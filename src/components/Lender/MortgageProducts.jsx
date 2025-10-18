@@ -1,11 +1,38 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import api from '../../services/api';
 
-const MortgageProducts = () => {
+const MortgageProducts = ({ lenderId }) => {
   const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const addProduct = () => {
-    // Add product logic here
-    console.log('Add new product');
+  useEffect(() => {
+    loadProducts();
+  }, [lenderId]);
+
+  const loadProducts = async () => {
+    try {
+      const response = await api.getLenderProducts(lenderId);
+      setProducts(response.products || []);
+    } catch (error) {
+      console.error('Failed to load products:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const addProduct = async () => {
+    // This would open a form modal in a real implementation
+    const productData = {
+      name: 'New Product',
+      rate: 6.5,
+      term: 30
+    };
+    try {
+      await api.createProduct(lenderId, productData);
+      loadProducts();
+    } catch (error) {
+      console.error('Failed to create product:', error);
+    }
   };
 
   return (
@@ -13,7 +40,9 @@ const MortgageProducts = () => {
       <h2>Mortgage Products</h2>
       <button className="btn" onClick={addProduct}>Add New Product</button>
       <div id="productsList">
-        {products.length === 0 ? (
+        {loading ? (
+          <p>Loading products...</p>
+        ) : products.length === 0 ? (
           <p>No products available. Add your first mortgage product.</p>
         ) : (
           products.map((product, index) => (

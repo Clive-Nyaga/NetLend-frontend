@@ -3,7 +3,7 @@ import MortgageProducts from './MortgageProducts';
 import LenderApplications from './LenderApplications';
 import Refinancing from './Refinancing';
 
-const LenderDashboard = () => {
+const LenderDashboard = ({ user }) => {
   const [activeSection, setActiveSection] = useState('products');
 
   const showSection = (section) => {
@@ -22,8 +22,8 @@ const LenderDashboard = () => {
       </div>
       
       <div className="main-content">
-        {activeSection === 'products' && <MortgageProducts />}
-        {activeSection === 'applications' && <LenderApplications />}
+        {activeSection === 'products' && <MortgageProducts lenderId={user?.id} />}
+        {activeSection === 'applications' && <LenderApplications lenderId={user?.id} />}
         {activeSection === 'refinancing' && <Refinancing />}
       </div>
     </div>

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import api from '../../services/api';
 
 const LoginModal = ({ isOpen, onClose, onLogin }) => {
   const [formData, setFormData] = useState({
@@ -6,11 +7,22 @@ const LoginModal = ({ isOpen, onClose, onLogin }) => {
     password: '',
     userType: 'lender'
   });
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    onLogin(formData);
-    onClose();
+    setLoading(true);
+    try {
+      const response = await api.login(formData);
+      if (response.success) {
+        onLogin(response.user);
+        onClose();
+      }
+    } catch (error) {
+      console.error('Login failed:', error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleChange = (e) => {
@@ -60,7 +72,9 @@ const LoginModal = ({ isOpen, onClose, onLogin }) => {
               <option value="admin">Administrator</option>
             </select>
           </div>
-          <button type="submit" className="btn">Login</button>
+          <button type="submit" className="btn" disabled={loading}>
+            {loading ? 'Logging in...' : 'Login'}
+          </button>
         </form>
       </div>
     </div>

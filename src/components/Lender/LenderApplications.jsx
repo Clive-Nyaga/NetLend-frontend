@@ -1,18 +1,41 @@
 import { useState, useEffect } from 'react';
+import api from '../../services/api';
 
-const LenderApplications = () => {
+const LenderApplications = ({ lenderId }) => {
   const [applications, setApplications] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Fetch applications from API
-    // setApplications(fetchedApplications);
-  }, []);
+    loadApplications();
+  }, [lenderId]);
+
+  const loadApplications = async () => {
+    try {
+      const response = await api.getLenderApplications(lenderId);
+      setApplications(response.applications || []);
+    } catch (error) {
+      console.error('Failed to load applications:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const updateStatus = async (applicationId, status) => {
+    try {
+      await api.updateApplicationStatus(applicationId, status);
+      loadApplications();
+    } catch (error) {
+      console.error('Failed to update status:', error);
+    }
+  };
 
   return (
     <div id="lenderApplications" className="section">
       <h2>Mortgage Applications</h2>
       <div id="lenderAppsList">
-        {applications.length === 0 ? (
+        {loading ? (
+          <p>Loading applications...</p>
+        ) : applications.length === 0 ? (
           <p>No applications received yet.</p>
         ) : (
           applications.map((app, index) => (
@@ -22,8 +45,18 @@ const LenderApplications = () => {
               <p>Amount: ${app.amount?.toLocaleString()}</p>
               <p>Status: <span className={`status ${app.status}`}>{app.status}</span></p>
               <div>
-                <button className="btn success">Approve</button>
-                <button className="btn danger">Reject</button>
+                <button 
+                  className="btn success" 
+                  onClick={() => updateStatus(app.id, 'approved')}
+                >
+                  Approve
+                </button>
+                <button 
+                  className="btn danger" 
+                  onClick={() => updateStatus(app.id, 'rejected')}
+                >
+                  Reject
+                </button>
               </div>
             </div>
           ))

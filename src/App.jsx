@@ -10,7 +10,7 @@ function App() {
   const [showLoginModal, setShowLoginModal] = useState(false);
 
   const handleLogin = (userData) => {
-    setUser({ name: userData.email, type: userData.userType });
+    setUser(userData);
     setCurrentSection('dashboard');
   };
 
@@ -33,7 +33,7 @@ function App() {
       />
       
       {user && user.type === 'lender' && currentSection === 'dashboard' && (
-        <LenderDashboard />
+        <LenderDashboard user={user} />
       )}
       
       <LoginModal 
