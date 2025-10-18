@@ -542,12 +542,13 @@ h2::after {
 }
 
 .about-content {
-    width: 100%;
-    margin: 0;
+    width: 155%;
+    /* margin: 0; */
 }
 
 .about-section {
     margin-bottom: 3rem;
+    width: 155%;
 }
 
 .about-section h3 {
@@ -566,6 +567,7 @@ h2::after {
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 2rem;
     margin-top: 1.5rem;
+    width: 155%;
 }
 
 .service-card, .commitment-item {
@@ -609,6 +611,92 @@ h2::after {
 
 .benefit-item strong {
     color: var(--primary-color);
+}
+
+.footer {
+    background: linear-gradient(135deg, var(--dark-color), #374151);
+    color: white;
+    margin-top: 4rem;
+    padding: 3rem 0 1rem 0;
+    width: 154.5%;
+}
+
+.footer-content {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+}
+
+.footer-section h3, .footer-section h4 {
+    color: white;
+    margin-bottom: 1rem;
+}
+
+.footer-brand {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.footer-brand .logo-placeholder {
+    width: 32px;
+    height: 32px;
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    border-radius: 6px;
+}
+
+.footer-section ul {
+    list-style: none;
+    padding: 0;
+}
+
+.footer-section li {
+    margin-bottom: 0.5rem;
+}
+
+.footer-section a {
+    color: rgba(255, 255, 255, 0.8);
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.footer-section a:hover {
+    color: white;
+}
+
+.contact-info p {
+    margin-bottom: 0.5rem;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.footer-bottom {
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    margin-top: 2rem;
+    padding: 1.5rem 2rem 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.footer-legal p, .footer-compliance p {
+    margin: 0;
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+@media (max-width: 768px) {
+    .footer-bottom {
+        flex-direction: column;
+        gap: 1rem;
+        text-align: center;
+    }
 }
 
 .btn.success {

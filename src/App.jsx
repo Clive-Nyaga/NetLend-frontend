@@ -5,6 +5,7 @@ import LoginModal from './components/Modals/LoginModal';
 import RegisterModal from './components/Modals/RegisterModal';
 import Properties from './components/Home/Properties';
 import AboutUs from './components/Home/AboutUs';
+import Footer from './components/Layout/Footer';
 import MortgageCalculator from './components/Calculator/MortgageCalculator';
 import AffordabilityCalculator from './components/Calculator/AffordabilityCalculator';
 import LoanComparison from './components/Calculator/LoanComparison';
@@ -67,6 +68,8 @@ function App() {
         onClose={() => setShowRegisterModal(false)}
         onRegister={handleLogin}
       />
+      
+      <Footer />
     </div>
   );
 }
