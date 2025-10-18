@@ -11,7 +11,12 @@ const api = {
       },
       body: JSON.stringify(credentials)
     });
-    return response.json();
+    const result = await response.json();
+    if (!response.ok) {
+      console.error('Login error:', result);
+      throw new Error(result.message || 'Login failed');
+    }
+    return result;
   },
 
   // Properties endpoints
@@ -37,6 +42,11 @@ const api = {
 
   getLenderApplications: async (lenderId) => {
     const response = await fetch(`${API_BASE_URL}/lender/${lenderId}/applications`);
+    return response.json();
+  },
+
+  getLenderListings: async (lenderId) => {
+    const response = await fetch(`${API_BASE_URL}/lender/${lenderId}/listings`);
     return response.json();
   },
 

@@ -19,7 +19,11 @@ function App() {
 
   const handleLogin = (userData) => {
     setUser(userData);
-    setCurrentSection('dashboard');
+    if (userData.user_type === 'lender') {
+      setCurrentSection('dashboard');
+    } else {
+      setCurrentSection('home');
+    }
   };
 
   const handleLogout = () => {
@@ -49,7 +53,7 @@ function App() {
         </>
       )}
       
-      {user && user.type === 'lender' && currentSection === 'dashboard' && (
+      {user && user.user_type === 'lender' && currentSection === 'dashboard' && (
         <LenderDashboard user={user} />
       )}
       

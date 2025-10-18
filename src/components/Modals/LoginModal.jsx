@@ -13,12 +13,22 @@ const LoginModal = ({ isOpen, onClose, onLogin, onSwitchToRegister }) => {
     setLoading(true);
     try {
       const response = await api.login(formData);
-      if (response.success) {
-        onLogin(response.user);
+      console.log('Login response:', response);
+      if (response.lender && response.access_token) {
+        // Add user_type to lender object for routing
+        const userData = {
+          ...response.lender,
+          user_type: 'lender',
+          access_token: response.access_token
+        };
+        onLogin(userData);
         onClose();
+      } else {
+        alert('Login failed: Invalid response');
       }
     } catch (error) {
       console.error('Login failed:', error);
+      alert(error.message || 'Login failed');
     } finally {
       setLoading(false);
     }
