@@ -626,6 +626,10 @@ h2::after {
   width: 100vw;
   margin: 0;
   border-top: 3px solid var(--primary-color);
+  background-color: #003366; /* Main blue tone used across NetLend’s theme */
+  color: #ffffff;
+  padding: 50px 0 20px 0;
+  font-family: 'Poppins', sans-serif;
 }
 
 /* Responsive adjustments */
