@@ -542,24 +542,25 @@ h2::after {
 }
 
 .about-content {
-    width: 155%;
-    /* margin: 0; */
+    width: 154%;
 }
 
 .about-section {
     margin-bottom: 3rem;
-    width: 155%;
+    width: 154%;
 }
 
 .about-section h3 {
     color: var(--primary-color);
     margin-bottom: 1.5rem;
     font-size: 1.5rem;
+    width: 154%;
 }
 
 .about-section p {
     line-height: 1.6;
     margin-bottom: 1rem;
+    width: 154%;
 }
 
 .services-grid, .commitment-grid {
@@ -567,7 +568,7 @@ h2::after {
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 2rem;
     margin-top: 1.5rem;
-    width: 155%;
+    width: 154%;
 }
 
 .service-card, .commitment-item {
@@ -575,21 +576,25 @@ h2::after {
     padding: 2rem;
     border-radius: 16px;
     border: 1px solid var(--border-color);
+    width: 154%;
 }
 
 .service-card h4, .commitment-item h4 {
     color: var(--primary-color);
     margin-bottom: 1rem;
+    width: 154%;
 }
 
 .service-card ul {
     list-style: none;
     padding: 0;
+    width: 154%;
 }
 
 .service-card li {
     padding: 0.5rem 0;
     border-bottom: 1px solid var(--border-color);
+    width: 154%;
 }
 
 .service-card li:last-child {
@@ -598,6 +603,7 @@ h2::after {
 
 .benefits-list {
     margin-top: 1.5rem;
+    width: 154%;
 }
 
 .benefit-item {
@@ -607,6 +613,7 @@ h2::after {
     border-radius: 12px;
     border-left: 4px solid var(--primary-color);
     box-shadow: var(--shadow-sm);
+    width: 154%;
 }
 
 .benefit-item strong {

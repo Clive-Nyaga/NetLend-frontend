@@ -1,11 +1,14 @@
-const API_BASE_URL = 'http://127.0.0.1:5000';
+const API_BASE_URL = 'http://127.0.0.1:5000/api';
 
 const api = {
   // Auth endpoints
   login: async (credentials) => {
     const response = await fetch(`${API_BASE_URL}/auth/login`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
       body: JSON.stringify(credentials)
     });
     return response.json();
@@ -13,7 +16,7 @@ const api = {
 
   // Properties endpoints
   getProperties: async () => {
-    const response = await fetch(`${API_BASE_URL}/properties`);
+    const response = await fetch(`${API_BASE_URL}/mortgages/`);
     return response.json();
   },
 
@@ -47,12 +50,26 @@ const api = {
   },
 
   register: async (userData) => {
+    const requestData = {
+      email: userData.email,
+      password: userData.password,
+      full_name: userData.name,
+      user_type: userData.userType
+    };
     const response = await fetch(`${API_BASE_URL}/auth/register`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(userData)
+      headers: { 
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify(requestData)
     });
-    return response.json();
+    const result = await response.json();
+    if (!response.ok) {
+      console.error('Registration error:', result);
+      throw new Error(result.message || 'Registration failed');
+    }
+    return result;
   }
 };
 

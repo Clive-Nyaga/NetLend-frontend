@@ -28,6 +28,7 @@ const RegisterModal = ({ isOpen, onClose, onRegister }) => {
       }
     } catch (error) {
       console.error('Registration failed:', error);
+      alert(error.message || 'Registration failed');
     } finally {
       setLoading(false);
     }
