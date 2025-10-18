@@ -46,8 +46,20 @@ const api = {
   },
 
   getLenderListings: async (lenderId) => {
-    const response = await fetch(`${API_BASE_URL}/lender/${lenderId}/listings`);
+    const response = await fetch(`${API_BASE_URL}/mortgages/`);
     return response.json();
+  },
+
+  createMortgageListing: async (formData) => {
+    const response = await fetch(`${API_BASE_URL}/mortgages/`, {
+      method: 'POST',
+      body: formData // FormData for file uploads
+    });
+    const result = await response.json();
+    if (!response.ok) {
+      throw new Error(result.message || 'Failed to create listing');
+    }
+    return result;
   },
 
   updateApplicationStatus: async (applicationId, status) => {

@@ -15,10 +15,10 @@ const Analytics = ({ lenderId }) => {
     setAnalytics({
       totalLoans: 45,
       activeLoans: 32,
-      monthlyRevenue: 125000,
+      monthlyRevenue: 1250000,
       defaultRate: 2.3,
       avgInterestRate: 12.8,
-      totalDisbursed: 2500000
+      totalDisbursed: 25000000
     });
   }, [lenderId]);
 
@@ -39,7 +39,7 @@ const Analytics = ({ lenderId }) => {
         
         <div className="stat-card">
           <h3>Monthly Revenue</h3>
-          <div className="stat-number">${analytics.monthlyRevenue?.toLocaleString()}</div>
+          <div className="stat-number">KSH {analytics.monthlyRevenue?.toLocaleString()}</div>
         </div>
         
         <div className="stat-card">
@@ -54,7 +54,7 @@ const Analytics = ({ lenderId }) => {
         
         <div className="stat-card">
           <h3>Total Disbursed</h3>
-          <div className="stat-number">${analytics.totalDisbursed?.toLocaleString()}</div>
+          <div className="stat-number">KSH {analytics.totalDisbursed?.toLocaleString()}</div>
         </div>
       </div>
       

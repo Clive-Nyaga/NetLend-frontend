@@ -38,8 +38,9 @@ const MyListings = ({ lenderId }) => {
             <div key={index} className="listing-card">
               <h3>{listing.title}</h3>
               <p><strong>Type:</strong> {listing.property_type}</p>
-              <p><strong>Location:</strong> {listing.location}</p>
-              <p><strong>Price Range:</strong> ${listing.price_range}</p>
+              <p><strong>Address:</strong> {listing.address}</p>
+              <p><strong>County:</strong> {listing.county}</p>
+              <p><strong>Price Range:</strong> KSH {listing.price_range?.toLocaleString()}</p>
               <p><strong>Interest Rate:</strong> {listing.interest_rate}%</p>
               <p><strong>Repayment Period:</strong> {listing.repayment_period} years</p>
               <div className="listing-actions">
@@ -72,15 +73,74 @@ const MyListings = ({ lenderId }) => {
                   </select>
                 </div>
               </div>
+              <div className="form-group">
+                <label>Property Address (Required)</label>
+                <input type="text" placeholder="123 Main Street, Westlands" required />
+              </div>
               <div className="form-row">
                 <div className="form-group">
-                  <label>Location</label>
-                  <input type="text" placeholder="Nairobi, Kenya" />
+                  <label>County (Required)</label>
+                  <select required>
+                    <option value="">Select County</option>
+                    <option value="Nairobi">Nairobi</option>
+                    <option value="Mombasa">Mombasa</option>
+                    <option value="Kiambu">Kiambu</option>
+                    <option value="Nakuru">Nakuru</option>
+                    <option value="Kisumu">Kisumu</option>
+                    <option value="Machakos">Machakos</option>
+                    <option value="Kajiado">Kajiado</option>
+                    <option value="Murang'a">Murang'a</option>
+                    <option value="Nyeri">Nyeri</option>
+                    <option value="Kirinyaga">Kirinyaga</option>
+                    <option value="Nyandarua">Nyandarua</option>
+                    <option value="Laikipia">Laikipia</option>
+                    <option value="Meru">Meru</option>
+                    <option value="Tharaka Nithi">Tharaka Nithi</option>
+                    <option value="Embu">Embu</option>
+                    <option value="Kitui">Kitui</option>
+                    <option value="Makueni">Makueni</option>
+                    <option value="Uasin Gishu">Uasin Gishu</option>
+                    <option value="Trans Nzoia">Trans Nzoia</option>
+                    <option value="Nandi">Nandi</option>
+                    <option value="Baringo">Baringo</option>
+                    <option value="Kericho">Kericho</option>
+                    <option value="Bomet">Bomet</option>
+                    <option value="Kakamega">Kakamega</option>
+                    <option value="Vihiga">Vihiga</option>
+                    <option value="Bungoma">Bungoma</option>
+                    <option value="Busia">Busia</option>
+                    <option value="Siaya">Siaya</option>
+                    <option value="Kisii">Kisii</option>
+                    <option value="Nyamira">Nyamira</option>
+                    <option value="Migori">Migori</option>
+                    <option value="Homa Bay">Homa Bay</option>
+                    <option value="Turkana">Turkana</option>
+                    <option value="West Pokot">West Pokot</option>
+                    <option value="Samburu">Samburu</option>
+                    <option value="Trans Mara">Trans Mara</option>
+                    <option value="Kwale">Kwale</option>
+                    <option value="Kilifi">Kilifi</option>
+                    <option value="Tana River">Tana River</option>
+                    <option value="Lamu">Lamu</option>
+                    <option value="Taita Taveta">Taita Taveta</option>
+                    <option value="Garissa">Garissa</option>
+                    <option value="Wajir">Wajir</option>
+                    <option value="Mandera">Mandera</option>
+                    <option value="Marsabit">Marsabit</option>
+                    <option value="Isiolo">Isiolo</option>
+                    <option value="Mwingi">Mwingi</option>
+                    <option value="Elgeyo Marakwet">Elgeyo Marakwet</option>
+                  </select>
                 </div>
                 <div className="form-group">
-                  <label>Price Range ($)</label>
-                  <input type="number" placeholder="500000" />
+                  <label>Price Range (KSH)</label>
+                  <input type="number" placeholder="5000000" />
                 </div>
+              </div>
+              <div className="form-group">
+                <label>Property Images (Exactly 5 Required)</label>
+                <input type="file" multiple accept="image/*" required />
+                <small style={{color: 'var(--text-secondary)', fontSize: '0.875rem'}}>Upload exactly 5 property images</small>
               </div>
               <div className="form-row">
                 <div className="form-group">
@@ -99,8 +159,8 @@ const MyListings = ({ lenderId }) => {
               </div>
               <div className="form-row">
                 <div className="form-group">
-                  <label>Minimum Income ($)</label>
-                  <input type="number" placeholder="50000" />
+                  <label>Minimum Income (KSH)</label>
+                  <input type="number" placeholder="500000" />
                 </div>
                 <div className="form-group">
                   <label>Down Payment (%)</label>

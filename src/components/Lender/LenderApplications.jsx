@@ -42,7 +42,7 @@ const LenderApplications = ({ lenderId }) => {
             <div key={index} className="app-card">
               <h3>Application #{app.id}</h3>
               <p>Applicant: {app.applicantName}</p>
-              <p>Amount: ${app.amount?.toLocaleString()}</p>
+              <p>Amount: KSH {app.amount?.toLocaleString()}</p>
               <p>Status: <span className={`status ${app.status}`}>{app.status}</span></p>
               <div>
                 <button 
