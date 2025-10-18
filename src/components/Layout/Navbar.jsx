@@ -3,7 +3,10 @@ import { useState } from 'react';
 const Navbar = ({ user, onLogin, onLogout, onShowSection }) => {
   return (
     <nav className="navbar">
-      <h1>Netland</h1>
+      <div className="navbar-brand">
+        <div className="logo-placeholder"></div>
+        <h1>NetLend</h1>
+      </div>
       {!user ? (
         <div className="nav-links">
           <a onClick={() => onShowSection('properties')}>Properties</a>

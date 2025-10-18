@@ -11,6 +11,12 @@ const api = {
     return response.json();
   },
 
+  // Properties endpoints
+  getProperties: async () => {
+    const response = await fetch(`${API_BASE_URL}/properties`);
+    return response.json();
+  },
+
   // Lender endpoints
   getLenderProducts: async (lenderId) => {
     const response = await fetch(`${API_BASE_URL}/lender/${lenderId}/products`);
