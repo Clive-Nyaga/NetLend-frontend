@@ -433,6 +433,95 @@ h2::after {
     border: 1px solid var(--border-color);
 }
 
+.terms-section {
+    margin: 1.5rem 0;
+}
+
+.terms-scroll {
+    max-height: 200px;
+    overflow-y: auto;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 1rem;
+    background: var(--light-gray);
+    margin-bottom: 1rem;
+}
+
+.terms-content h4, .terms-content h5 {
+    color: var(--primary-color);
+    margin: 1rem 0 0.5rem 0;
+}
+
+.terms-content h4 {
+    font-size: 1.1rem;
+    text-align: center;
+}
+
+.terms-content h5 {
+    font-size: 0.9rem;
+}
+
+.terms-content p {
+    font-size: 0.8rem;
+    line-height: 1.4;
+    margin-bottom: 0.8rem;
+    color: var(--text-secondary);
+}
+
+.checkbox-group {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.checkbox-group input[type="checkbox"] {
+    width: auto;
+    margin: 0;
+}
+
+.checkbox-group label {
+    font-size: 0.9rem;
+    margin: 0;
+    cursor: pointer;
+}
+
+.terms-modal {
+    max-width: 800px;
+    max-height: 90vh;
+}
+
+.terms-full-content {
+    max-height: 70vh;
+    overflow-y: auto;
+    padding-right: 1rem;
+}
+
+.terms-full-content h3 {
+    color: var(--primary-color);
+    margin: 1.5rem 0 1rem 0;
+    font-size: 1.2rem;
+}
+
+.terms-full-content h4 {
+    color: var(--text-primary);
+    margin: 1rem 0 0.5rem 0;
+    font-size: 1rem;
+}
+
+.terms-full-content p {
+    margin-bottom: 0.8rem;
+    line-height: 1.5;
+}
+
+.terms-full-content ul {
+    margin: 0.5rem 0 1rem 1.5rem;
+}
+
+.terms-full-content li {
+    margin-bottom: 0.3rem;
+    line-height: 1.4;
+}
+
 .btn.success {
     background: linear-gradient(135deg, var(--success-color), #059669);
 }

@@ -1,17 +1,24 @@
 import { useState } from 'react';
 import api from '../../services/api';
+import TermsModal from './TermsModal';
 
 const RegisterModal = ({ isOpen, onClose, onRegister }) => {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     password: '',
-    userType: 'homebuyer'
+    userType: 'homebuyer',
+    agreeToTerms: false
   });
   const [loading, setLoading] = useState(false);
+  const [showTermsModal, setShowTermsModal] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!formData.agreeToTerms) {
+      alert('You must agree to the Terms and Conditions to proceed.');
+      return;
+    }
     setLoading(true);
     try {
       const response = await api.register(formData);
@@ -82,11 +89,31 @@ const RegisterModal = ({ isOpen, onClose, onRegister }) => {
               <option value="lender">Lender</option>
             </select>
           </div>
-          <button type="submit" className="btn" disabled={loading}>
+          <div className="terms-section">
+            <div className="checkbox-group">
+              <input 
+                type="checkbox" 
+                id="agreeToTerms"
+                name="agreeToTerms"
+                checked={formData.agreeToTerms}
+                onChange={handleChange}
+                required
+              />
+              <label htmlFor="agreeToTerms">
+                I agree to the <a onClick={() => setShowTermsModal(true)} style={{color: 'var(--primary-color)', cursor: 'pointer', textDecoration: 'underline'}}>Terms and Conditions</a>
+              </label>
+            </div>
+          </div>
+          <button type="submit" className="btn" disabled={loading || !formData.agreeToTerms}>
             {loading ? 'Creating Account...' : 'Sign Up'}
           </button>
         </form>
       </div>
+      
+      <TermsModal 
+        isOpen={showTermsModal}
+        onClose={() => setShowTermsModal(false)}
+      />
     </div>
   );
 };

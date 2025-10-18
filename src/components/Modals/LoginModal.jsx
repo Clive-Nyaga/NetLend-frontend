@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import api from '../../services/api';
 
-const LoginModal = ({ isOpen, onClose, onLogin }) => {
+const LoginModal = ({ isOpen, onClose, onLogin, onSwitchToRegister }) => {
   const [formData, setFormData] = useState({
     email: '',
     password: ''
@@ -64,6 +64,9 @@ const LoginModal = ({ isOpen, onClose, onLogin }) => {
             {loading ? 'Logging in...' : 'Login'}
           </button>
         </form>
+        <p style={{textAlign: 'center', marginTop: '1rem'}}>
+          Don't have an account? <a onClick={onSwitchToRegister} style={{color: 'var(--primary-color)', cursor: 'pointer', textDecoration: 'underline'}}>Sign Up</a>
+        </p>
       </div>
     </div>
   );
