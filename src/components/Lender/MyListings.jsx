@@ -54,10 +54,11 @@ const MyListings = ({ lenderId }) => {
 
       {showAddForm && (
         <div className="modal show">
-          <div className="modal-content" style={{maxWidth: '600px'}}>
+          <div className="modal-content" style={{maxWidth: '600px', maxHeight: '90vh', overflow: 'hidden'}}>
             <span className="close" onClick={() => setShowAddForm(false)}>&times;</span>
             <h2>Add Mortgage Offer</h2>
-            <form>
+            <div style={{maxHeight: '75vh', overflowY: 'auto', paddingRight: '1rem'}}>
+              <form>
               <div className="form-row">
                 <div className="form-group">
                   <label>Property Title</label>
@@ -167,8 +168,9 @@ const MyListings = ({ lenderId }) => {
                   <input type="number" placeholder="20" />
                 </div>
               </div>
-              <button type="submit" className="btn">Create Listing</button>
-            </form>
+                <button type="submit" className="btn">Create Listing</button>
+              </form>
+            </div>
           </div>
         </div>
       )}
