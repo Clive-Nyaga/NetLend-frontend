@@ -2,6 +2,7 @@ import { useState } from 'react';
 import Navbar from './components/Layout/Navbar';
 import LenderDashboard from './components/Lender/LenderDashboard';
 import LoginModal from './components/Modals/LoginModal';
+import RegisterModal from './components/Modals/RegisterModal';
 import Properties from './components/Home/Properties';
 import MortgageCalculator from './components/Calculator/MortgageCalculator';
 import AffordabilityCalculator from './components/Calculator/AffordabilityCalculator';
@@ -10,8 +11,9 @@ import './styles/netland.css';
 
 function App() {
   const [user, setUser] = useState(null);
-  const [currentSection, setCurrentSection] = useState('properties');
+  const [currentSection, setCurrentSection] = useState('home');
   const [showLoginModal, setShowLoginModal] = useState(false);
+  const [showRegisterModal, setShowRegisterModal] = useState(false);
 
   const handleLogin = (userData) => {
     setUser(userData);
@@ -34,14 +36,14 @@ function App() {
         onLogin={() => setShowLoginModal(true)}
         onLogout={handleLogout}
         onShowSection={showSection}
+        onRegister={() => setShowRegisterModal(true)}
       />
       
       {!user && (
         <>
-          {currentSection === 'properties' && <Properties />}
-          {currentSection === 'calculator' && <MortgageCalculator />}
-          {currentSection === 'affordability' && <AffordabilityCalculator />}
-          {currentSection === 'comparison' && <LoanComparison />}
+          {currentSection === 'home' && <Properties />}
+          {currentSection === 'about' && <div className="container"><h2>About Us</h2><p>Coming soon...</p></div>}
+          {currentSection === 'contact' && <div className="container"><h2>Contact Us</h2><p>Coming soon...</p></div>}
         </>
       )}
       
@@ -53,6 +55,12 @@ function App() {
         isOpen={showLoginModal}
         onClose={() => setShowLoginModal(false)}
         onLogin={handleLogin}
+      />
+      
+      <RegisterModal 
+        isOpen={showRegisterModal}
+        onClose={() => setShowRegisterModal(false)}
+        onRegister={handleLogin}
       />
     </div>
   );

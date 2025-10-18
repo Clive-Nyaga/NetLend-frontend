@@ -1,10 +1,12 @@
 import { useState } from 'react';
 import api from '../../services/api';
 
-const LoginModal = ({ isOpen, onClose, onLogin }) => {
+const RegisterModal = ({ isOpen, onClose, onRegister }) => {
   const [formData, setFormData] = useState({
+    name: '',
     email: '',
-    password: ''
+    password: '',
+    userType: 'homebuyer'
   });
   const [loading, setLoading] = useState(false);
 
@@ -12,13 +14,13 @@ const LoginModal = ({ isOpen, onClose, onLogin }) => {
     e.preventDefault();
     setLoading(true);
     try {
-      const response = await api.login(formData);
+      const response = await api.register(formData);
       if (response.success) {
-        onLogin(response.user);
+        onRegister(response.user);
         onClose();
       }
     } catch (error) {
-      console.error('Login failed:', error);
+      console.error('Registration failed:', error);
     } finally {
       setLoading(false);
     }
@@ -37,8 +39,18 @@ const LoginModal = ({ isOpen, onClose, onLogin }) => {
     <div className={`modal ${isOpen ? 'show' : ''}`}>
       <div className="modal-content">
         <span className="close" onClick={onClose}>&times;</span>
-        <h2>Login</h2>
+        <h2>Sign Up</h2>
         <form onSubmit={handleSubmit}>
+          <div className="form-group">
+            <label>Full Name</label>
+            <input 
+              type="text" 
+              name="name"
+              value={formData.name}
+              onChange={handleChange}
+              required 
+            />
+          </div>
           <div className="form-group">
             <label>Email</label>
             <input 
@@ -59,9 +71,19 @@ const LoginModal = ({ isOpen, onClose, onLogin }) => {
               required 
             />
           </div>
-
+          <div className="form-group">
+            <label>User Type</label>
+            <select 
+              name="userType"
+              value={formData.userType}
+              onChange={handleChange}
+            >
+              <option value="homebuyer">Homebuyer</option>
+              <option value="lender">Lender</option>
+            </select>
+          </div>
           <button type="submit" className="btn" disabled={loading}>
-            {loading ? 'Logging in...' : 'Login'}
+            {loading ? 'Creating Account...' : 'Sign Up'}
           </button>
         </form>
       </div>
@@ -69,4 +91,4 @@ const LoginModal = ({ isOpen, onClose, onLogin }) => {
   );
 };
 
-export default LoginModal;
+export default RegisterModal;

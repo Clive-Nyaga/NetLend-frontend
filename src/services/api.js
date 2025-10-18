@@ -44,6 +44,15 @@ const api = {
       body: JSON.stringify({ status })
     });
     return response.json();
+  },
+
+  register: async (userData) => {
+    const response = await fetch(`${API_BASE_URL}/auth/register`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(userData)
+    });
+    return response.json();
   }
 };
 

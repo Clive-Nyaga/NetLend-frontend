@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-const Navbar = ({ user, onLogin, onLogout, onShowSection }) => {
+const Navbar = ({ user, onLogin, onLogout, onShowSection, onRegister }) => {
   return (
     <nav className="navbar">
       <div className="navbar-brand">
@@ -9,11 +9,11 @@ const Navbar = ({ user, onLogin, onLogout, onShowSection }) => {
       </div>
       {!user ? (
         <div className="nav-links">
-          <a onClick={() => onShowSection('properties')}>Properties</a>
-          <a onClick={() => onShowSection('calculator')}>Calculator</a>
-          <a onClick={() => onShowSection('affordability')}>Affordability</a>
-          <a onClick={() => onShowSection('comparison')}>Compare</a>
-          <a onClick={onLogin}>Login</a>
+          <a onClick={() => onShowSection('home')}>Home</a>
+          <a onClick={() => onShowSection('about')}>About Us</a>
+          <a onClick={() => onShowSection('contact')}>Contact Us</a>
+          <a onClick={onLogin}>Sign In</a>
+          <a onClick={onRegister}>Sign Up</a>
         </div>
       ) : (
         <div className="nav-links">
