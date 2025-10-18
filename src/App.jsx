@@ -4,6 +4,7 @@ import LenderDashboard from './components/Lender/LenderDashboard';
 import LoginModal from './components/Modals/LoginModal';
 import RegisterModal from './components/Modals/RegisterModal';
 import Properties from './components/Home/Properties';
+import AboutUs from './components/Home/AboutUs';
 import MortgageCalculator from './components/Calculator/MortgageCalculator';
 import AffordabilityCalculator from './components/Calculator/AffordabilityCalculator';
 import LoanComparison from './components/Calculator/LoanComparison';
@@ -42,7 +43,7 @@ function App() {
       {!user && (
         <>
           {currentSection === 'home' && <Properties />}
-          {currentSection === 'about' && <div className="container"><h2>About Us</h2><p>Coming soon...</p></div>}
+          {currentSection === 'about' && <AboutUs />}
           {currentSection === 'contact' && <div className="container"><h2>Contact Us</h2><p>Coming soon...</p></div>}
         </>
       )}

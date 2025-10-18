@@ -486,14 +486,33 @@ h2::after {
 }
 
 .terms-modal {
-    max-width: 800px;
-    max-height: 90vh;
+    max-width: none;
+    width: 95vw;
+    height: 95vh;
 }
 
 .terms-full-content {
-    max-height: 70vh;
+    height: 80vh;
     overflow-y: auto;
     padding-right: 1rem;
+}
+
+.terms-full-content::-webkit-scrollbar {
+    width: 12px;
+}
+
+.terms-full-content::-webkit-scrollbar-track {
+    background: var(--light-gray);
+    border-radius: 6px;
+}
+
+.terms-full-content::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    border-radius: 6px;
+}
+
+.terms-full-content::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(135deg, var(--primary-dark), var(--warning-color));
 }
 
 .terms-full-content h3 {
@@ -520,6 +539,76 @@ h2::after {
 .terms-full-content li {
     margin-bottom: 0.3rem;
     line-height: 1.4;
+}
+
+.about-content {
+    width: 100%;
+    margin: 0;
+}
+
+.about-section {
+    margin-bottom: 3rem;
+}
+
+.about-section h3 {
+    color: var(--primary-color);
+    margin-bottom: 1.5rem;
+    font-size: 1.5rem;
+}
+
+.about-section p {
+    line-height: 1.6;
+    margin-bottom: 1rem;
+}
+
+.services-grid, .commitment-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    margin-top: 1.5rem;
+}
+
+.service-card, .commitment-item {
+    background: var(--light-gray);
+    padding: 2rem;
+    border-radius: 16px;
+    border: 1px solid var(--border-color);
+}
+
+.service-card h4, .commitment-item h4 {
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+}
+
+.service-card ul {
+    list-style: none;
+    padding: 0;
+}
+
+.service-card li {
+    padding: 0.5rem 0;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.service-card li:last-child {
+    border-bottom: none;
+}
+
+.benefits-list {
+    margin-top: 1.5rem;
+}
+
+.benefit-item {
+    background: white;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    border-radius: 12px;
+    border-left: 4px solid var(--primary-color);
+    box-shadow: var(--shadow-sm);
+}
+
+.benefit-item strong {
+    color: var(--primary-color);
 }
 
 .btn.success {
@@ -654,6 +743,7 @@ input, select {
     transition: all 0.3s ease;
     background: white;
     font-family: inherit;
+    color: var(--text-primary);
 }
 
 input:focus, select:focus {
@@ -661,6 +751,12 @@ input:focus, select:focus {
     border-color: var(--primary-color);
     box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
     transform: translateY(-2px);
+}
+
+select option {
+    color: var(--text-primary);
+    background: white;
+    padding: 0.5rem;
 }
 
 @media (max-width: 1024px) {
