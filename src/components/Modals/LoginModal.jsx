@@ -15,6 +15,8 @@ const LoginModal = ({ isOpen, onClose, onLogin, onSwitchToRegister }) => {
       const response = await api.login(formData);
       console.log('Login response:', response);
       if (response.lender && response.access_token) {
+        // Store token in localStorage
+        localStorage.setItem('access_token', response.access_token);
         // Add user_type to lender object for routing
         const userData = {
           ...response.lender,

@@ -5,6 +5,19 @@ const MyListings = ({ lenderId }) => {
   const [listings, setListings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showAddForm, setShowAddForm] = useState(false);
+  const [formData, setFormData] = useState({
+    title: '',
+    property_type: 'apartment',
+    address: '',
+    county: '',
+    price_range: '',
+    interest_rate: '',
+    repayment_period: '30',
+    minimum_income: '',
+    down_payment: '',
+    images: []
+  });
+  const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
     loadListings();
@@ -13,11 +26,89 @@ const MyListings = ({ lenderId }) => {
   const loadListings = async () => {
     try {
       const response = await api.getLenderListings(lenderId);
-      setListings(response.listings || []);
+      console.log('Received response in component:', response);
+      // Handle both array format and object format
+      if (Array.isArray(response)) {
+        setListings(response);
+      } else {
+        setListings(response.listings || []);
+      }
     } catch (error) {
       console.error('Failed to load listings:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const handleFileChange = (e) => {
+    const files = Array.from(e.target.files);
+    if (files.length !== 5) {
+      alert('Please select exactly 5 images');
+      e.target.value = '';
+      return;
+    }
+    setFormData(prev => ({
+      ...prev,
+      images: files
+    }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    // Temporarily skip image validation
+    // if (formData.images.length !== 5) {
+    //   alert('Please upload exactly 5 images');
+    //   return;
+    // }
+    if (!formData.title || formData.title.trim() === '') {
+      alert('Please enter a property title');
+      return;
+    }
+    
+    setSubmitting(true);
+    try {
+      // Try minimal payload first
+      const submitData = {
+        lender_id: parseInt(lenderId),
+        subject: String(formData.title).trim(),
+        property_type: String(formData.property_type),
+        address: String(formData.address),
+        county: String(formData.county)
+      };
+      
+      console.log('Submitting minimal data:', submitData);
+      console.log('Subject type:', typeof submitData.subject);
+      console.log('Subject value:', JSON.stringify(submitData.subject));
+      
+      await api.createMortgageListing(submitData);
+      alert('Listing created successfully!');
+      setShowAddForm(false);
+      setFormData({
+        title: '',
+        property_type: 'apartment',
+        address: '',
+        county: '',
+        price_range: '',
+        interest_rate: '',
+        repayment_period: '30',
+        minimum_income: '',
+        down_payment: '',
+        images: []
+      });
+      loadListings();
+    } catch (error) {
+      console.error('Failed to create listing:', error);
+      alert('Failed to create listing: ' + error.message);
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -58,15 +149,27 @@ const MyListings = ({ lenderId }) => {
             <span className="close" onClick={() => setShowAddForm(false)}>&times;</span>
             <h2>Add Mortgage Offer</h2>
             <div style={{maxHeight: '75vh', overflowY: 'auto', paddingRight: '1rem'}}>
-              <form>
+              <form onSubmit={handleSubmit}>
               <div className="form-row">
                 <div className="form-group">
                   <label>Property Title</label>
-                  <input type="text" placeholder="Modern 3BR Apartment" />
+                  <input 
+                    type="text" 
+                    name="title"
+                    value={formData.title}
+                    onChange={handleInputChange}
+                    placeholder="Modern 3BR Apartment" 
+                    required 
+                  />
                 </div>
                 <div className="form-group">
                   <label>Property Type</label>
-                  <select>
+                  <select 
+                    name="property_type"
+                    value={formData.property_type}
+                    onChange={handleInputChange}
+                    required
+                  >
                     <option value="apartment">Apartment</option>
                     <option value="bungalow">Bungalow</option>
                     <option value="villa">Villa</option>
@@ -76,12 +179,24 @@ const MyListings = ({ lenderId }) => {
               </div>
               <div className="form-group">
                 <label>Property Address (Required)</label>
-                <input type="text" placeholder="123 Main Street, Westlands" required />
+                <input 
+                  type="text" 
+                  name="address"
+                  value={formData.address}
+                  onChange={handleInputChange}
+                  placeholder="123 Main Street, Westlands" 
+                  required 
+                />
               </div>
               <div className="form-row">
                 <div className="form-group">
                   <label>County (Required)</label>
-                  <select required>
+                  <select 
+                    name="county"
+                    value={formData.county}
+                    onChange={handleInputChange}
+                    required
+                  >
                     <option value="">Select County</option>
                     <option value="Nairobi">Nairobi</option>
                     <option value="Mombasa">Mombasa</option>
@@ -135,22 +250,49 @@ const MyListings = ({ lenderId }) => {
                 </div>
                 <div className="form-group">
                   <label>Price Range (KSH)</label>
-                  <input type="number" placeholder="5000000" />
+                  <input 
+                    type="number" 
+                    name="price_range"
+                    value={formData.price_range}
+                    onChange={handleInputChange}
+                    placeholder="5000000" 
+                    required 
+                  />
                 </div>
               </div>
               <div className="form-group">
                 <label>Property Images (Exactly 5 Required)</label>
-                <input type="file" multiple accept="image/*" required />
+                <input 
+                  type="file" 
+                  name="images"
+                  multiple 
+                  accept="image/*" 
+                  onChange={handleFileChange}
+                  required 
+                />
                 <small style={{color: 'var(--text-secondary)', fontSize: '0.875rem'}}>Upload exactly 5 property images</small>
               </div>
               <div className="form-row">
                 <div className="form-group">
                   <label>Interest Rate (%)</label>
-                  <input type="number" step="0.1" placeholder="12.5" />
+                  <input 
+                    type="number" 
+                    step="0.1" 
+                    name="interest_rate"
+                    value={formData.interest_rate}
+                    onChange={handleInputChange}
+                    placeholder="12.5" 
+                    required
+                  />
                 </div>
                 <div className="form-group">
                   <label>Repayment Period (years)</label>
-                  <select>
+                  <select 
+                    name="repayment_period"
+                    value={formData.repayment_period}
+                    onChange={handleInputChange}
+                    required
+                  >
                     <option value="15">15 years</option>
                     <option value="20">20 years</option>
                     <option value="25">25 years</option>
@@ -161,14 +303,30 @@ const MyListings = ({ lenderId }) => {
               <div className="form-row">
                 <div className="form-group">
                   <label>Minimum Income (KSH)</label>
-                  <input type="number" placeholder="500000" />
+                  <input 
+                    type="number" 
+                    name="minimum_income"
+                    value={formData.minimum_income}
+                    onChange={handleInputChange}
+                    placeholder="500000" 
+                    required
+                  />
                 </div>
                 <div className="form-group">
                   <label>Down Payment (%)</label>
-                  <input type="number" placeholder="20" />
+                  <input 
+                    type="number" 
+                    name="down_payment"
+                    value={formData.down_payment}
+                    onChange={handleInputChange}
+                    placeholder="20" 
+                    required
+                  />
                 </div>
               </div>
-                <button type="submit" className="btn">Create Listing</button>
+                <button type="submit" className="btn" disabled={submitting}>
+                  {submitting ? 'Creating...' : 'Create Listing'}
+                </button>
               </form>
             </div>
           </div>

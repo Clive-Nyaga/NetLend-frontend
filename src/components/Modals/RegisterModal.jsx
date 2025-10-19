@@ -22,9 +22,40 @@ const RegisterModal = ({ isOpen, onClose, onRegister }) => {
     setLoading(true);
     try {
       const response = await api.register(formData);
-      if (response.success) {
-        onRegister(response.user);
-        onClose();
+      console.log('Registration response:', response);
+      console.log('User type:', formData.userType);
+      console.log('Response keys:', Object.keys(response));
+      if (response.message === 'Registration successful') {
+        // Registration successful, now auto-login the user
+        try {
+          const loginResponse = await api.login({
+            email: formData.email,
+            password: formData.password
+          });
+          console.log('Auto-login response:', loginResponse);
+          
+          if (formData.userType === 'lender' && loginResponse.lender) {
+            // Store token for lenders
+            if (loginResponse.access_token) {
+              localStorage.setItem('access_token', loginResponse.access_token);
+            }
+            const userData = {
+              ...loginResponse.lender,
+              user_type: 'lender',
+              access_token: loginResponse.access_token
+            };
+            onRegister(userData);
+          } else {
+            // Handle homebuyer login
+            const userData = loginResponse.user || loginResponse;
+            onRegister(userData);
+          }
+          onClose();
+        } catch (loginError) {
+          console.error('Auto-login failed:', loginError);
+          alert('Registration successful! Please log in manually.');
+          onClose();
+        }
       }
     } catch (error) {
       console.error('Registration failed:', error);
