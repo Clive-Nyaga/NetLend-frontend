@@ -2,7 +2,7 @@ import { useState } from 'react';
 import api from '../../services/api';
 import TermsModal from './TermsModal';
 
-const RegisterModal = ({ isOpen, onClose, onRegister }) => {
+const RegisterModal = ({ isOpen, onClose, onRegister, onSwitchToLogin }) => {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -140,6 +140,9 @@ const RegisterModal = ({ isOpen, onClose, onRegister }) => {
             {loading ? 'Creating Account...' : 'Sign Up'}
           </button>
         </form>
+        <p style={{textAlign: 'center', marginTop: '1rem'}}>
+          Already have an account? <a onClick={onSwitchToLogin} style={{color: 'var(--primary-color)', cursor: 'pointer', textDecoration: 'underline'}}>Log In</a>
+        </p>
       </div>
       
       <TermsModal 
