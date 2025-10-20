@@ -77,7 +77,7 @@ const LoginModal = ({ isOpen, onClose, onLogin, onSwitchToRegister }) => {
           </button>
         </form>
         <p style={{textAlign: 'center', marginTop: '1rem'}}>
-          Don't have an account? <a onClick={onSwitchToRegister} style={{color: 'var(--primary-color)', cursor: 'pointer', textDecoration: 'underline'}}>Sign Up</a>
+          Don't have an account? <a onClick={onSwitchToRegister} style={{color: 'var(--primary-color)', cursor: 'pointer', textDecoration: 'underline'}}>Register</a>
         </p>
       </div>
     </div>

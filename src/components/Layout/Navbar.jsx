@@ -12,8 +12,8 @@ const Navbar = ({ user, onLogin, onLogout, onShowSection, onRegister }) => {
           <a onClick={() => onShowSection('home')}>Home</a>
           <a onClick={() => onShowSection('about')}>About Us</a>
           <a onClick={() => onShowSection('contact')}>Contact Us</a>
-          <a onClick={onLogin}>Sign In</a>
-          <a onClick={onRegister}>Sign Up</a>
+          <a onClick={onLogin}>Login</a>
+          <a onClick={onRegister}>Register</a>
         </div>
       ) : (
         <div className="nav-links">

@@ -388,6 +388,13 @@ h2::after {
 .affordability-amount {
     font-size: 4rem;
     font-weight: 800;
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+}
+
+.page-title {
+    font-size: 3rem;
+    font-weight: 700;
     background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -1004,7 +1011,10 @@ input:focus, select:focus {
     gap: 1rem;
     margin-top: 2rem;
     justify-content: center;
-}: translateY(-2px);
+}
+
+.analytics-actions button:hover {
+    transform: translateY(-2px);
 }
 
 select option {
