@@ -5,6 +5,7 @@ import LoginModal from './components/Modals/LoginModal';
 import RegisterModal from './components/Modals/RegisterModal';
 import Properties from './components/Home/Properties';
 import AboutUs from './components/Home/AboutUs';
+import ContactUs from './components/Home/ContactUs';
 import Footer from './components/Layout/Footer';
 import MortgageCalculator from './components/Calculator/MortgageCalculator';
 import AffordabilityCalculator from './components/Calculator/AffordabilityCalculator';
@@ -49,7 +50,7 @@ function App() {
         <>
           {currentSection === 'home' && <Properties />}
           {currentSection === 'about' && <AboutUs />}
-          {currentSection === 'contact' && <div className="container"><h2>Contact Us</h2><p>Coming soon...</p></div>}
+          {currentSection === 'contact' && <ContactUs />}
         </>
       )}
       

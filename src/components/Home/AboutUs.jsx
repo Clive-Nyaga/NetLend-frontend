@@ -22,21 +22,27 @@ const AboutUs = () => {
             <h3>What We Do</h3>
             <div className="services-grid">
               <div className="service-card">
-                <h4>For Borrowers</h4>
+                <div className="service-icon">
+                  <img src="https://images.unsplash.com/photo-1560472354-b33ff0c44a43?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="For Borrowers" />
+                </div>
+                <h4>🏠 For Borrowers</h4>
                 <ul>
-                  <li>Compare mortgage offers from multiple lenders</li>
-                  <li>Calculate loan eligibility and repayment plans</li>
-                  <li>Apply for loans directly through our platform</li>
-                  <li>Manage active mortgages and track repayments</li>
+                  <li>✓ Compare mortgage offers from multiple lenders</li>
+                  <li>✓ Calculate loan eligibility and repayment plans</li>
+                  <li>✓ Apply for loans directly through our platform</li>
+                  <li>✓ Manage active mortgages and track repayments</li>
                 </ul>
               </div>
               <div className="service-card">
-                <h4>For Lenders</h4>
+                <div className="service-icon">
+                  <img src="https://images.unsplash.com/photo-1554224155-6726b3ff858f?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="For Lenders" />
+                </div>
+                <h4>🏦 For Lenders</h4>
                 <ul>
-                  <li>List and manage mortgage products</li>
-                  <li>Access qualified borrower applications</li>
-                  <li>Track loan performance and generate insights</li>
-                  <li>Expand market reach through our platform</li>
+                  <li>✓ List and manage mortgage products</li>
+                  <li>✓ Access qualified borrower applications</li>
+                  <li>✓ Track loan performance and generate insights</li>
+                  <li>✓ Expand market reach through our platform</li>
                 </ul>
               </div>
             </div>
@@ -83,10 +89,66 @@ const AboutUs = () => {
           </div>
 
           <div className="about-section">
+            <h3>Our Impact</h3>
+            <div className="impact-stats">
+              <div className="impact-item">
+                <h4>KSH 2.5 Billion+</h4>
+                <p>Total mortgage value facilitated</p>
+              </div>
+              <div className="impact-item">
+                <h4>500+ Families</h4>
+                <p>Helped achieve homeownership</p>
+              </div>
+              <div className="impact-item">
+                <h4>50+ Partners</h4>
+                <p>Verified lending institutions</p>
+              </div>
+              <div className="impact-item">
+                <h4>47 Counties</h4>
+                <p>Nationwide coverage across Kenya</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="about-section">
+            <h3>Leadership Team</h3>
+            <div className="team-grid">
+              <div className="team-member">
+                <div className="team-photo">
+                  <img src="https://images.unsplash.com/photo-1494790108755-2616b612b786?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Sarah Wanjiku" />
+                </div>
+                <h4>Sarah Wanjiku</h4>
+                <p><strong>CEO & Founder</strong></p>
+                <p>15+ years in Kenyan banking sector, former CBK regulatory specialist</p>
+              </div>
+              <div className="team-member">
+                <div className="team-photo">
+                  <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="David Kimani" />
+                </div>
+                <h4>David Kimani</h4>
+                <p><strong>CTO</strong></p>
+                <p>Fintech expert with experience in secure payment systems and data protection</p>
+              </div>
+              <div className="team-member">
+                <div className="team-photo">
+                  <img src="https://images.unsplash.com/photo-1580489944761-15a19d654956?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Grace Achieng" />
+                </div>
+                <h4>Grace Achieng</h4>
+                <p><strong>Head of Partnerships</strong></p>
+                <p>Former SACCO executive with deep knowledge of Kenya's lending landscape</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="about-section">
             <h3>Get Started Today</h3>
             <p>
               Whether you're a first-time homebuyer or a financial institution looking to expand your reach, NetLend provides the tools and connections you need. Join thousands of Kenyans who trust NetLend for their mortgage needs.
             </p>
+            <div className="cta-buttons">
+              <button className="btn btn-primary">Start Your Application</button>
+              <button className="btn btn-secondary">Partner With Us</button>
+            </div>
           </div>
         </div>
       </div>
