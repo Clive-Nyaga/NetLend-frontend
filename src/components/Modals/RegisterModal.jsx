@@ -7,7 +7,7 @@ const RegisterModal = ({ isOpen, onClose, onRegister, onSwitchToLogin }) => {
     name: '',
     email: '',
     password: '',
-    userType: 'homebuyer',
+    userType: 'buyer',
     agreeToTerms: false
   });
   const [loading, setLoading] = useState(false);
@@ -66,9 +66,10 @@ const RegisterModal = ({ isOpen, onClose, onRegister, onSwitchToLogin }) => {
   };
 
   const handleChange = (e) => {
+    const { name, value, type, checked } = e.target;
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value
+      [name]: type === 'checkbox' ? checked : value
     });
   };
 
@@ -78,7 +79,7 @@ const RegisterModal = ({ isOpen, onClose, onRegister, onSwitchToLogin }) => {
     <div className={`modal ${isOpen ? 'show' : ''}`}>
       <div className="modal-content">
         <span className="close" onClick={onClose}>&times;</span>
-        <h2>Sign Up</h2>
+        <h2>Register</h2>
         <form onSubmit={handleSubmit}>
           <div className="form-group">
             <label>Full Name</label>
@@ -117,7 +118,7 @@ const RegisterModal = ({ isOpen, onClose, onRegister, onSwitchToLogin }) => {
               value={formData.userType}
               onChange={handleChange}
             >
-              <option value="homebuyer">Homebuyer</option>
+              <option value="buyer">Buyer</option>
               <option value="lender">Lender</option>
             </select>
           </div>

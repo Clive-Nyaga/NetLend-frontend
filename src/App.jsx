@@ -9,7 +9,7 @@ import Footer from './components/Layout/Footer';
 import MortgageCalculator from './components/Calculator/MortgageCalculator';
 import AffordabilityCalculator from './components/Calculator/AffordabilityCalculator';
 import LoanComparison from './components/Calculator/LoanComparison';
-import './styles/netland.css';
+import './styles/netlend.css';
 
 function App() {
   const [user, setUser] = useState(null);
