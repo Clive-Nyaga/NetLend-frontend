@@ -121,7 +121,7 @@ function AdminDashboard({ user, onLogout }) {
         </div>
         <div className="stat-card">
           <h3>Total Volume</h3>
-          <div className="stat-number">${((analytics.totalVolume || 0) / 1000000).toFixed(1)}M</div>
+          <div className="stat-number">KSh {((analytics.totalVolume || 0) / 1000000).toFixed(1)}M</div>
         </div>
         <div className="stat-card">
           <h3>Approval Rate</h3>
@@ -129,7 +129,7 @@ function AdminDashboard({ user, onLogout }) {
         </div>
         <div className="stat-card">
           <h3>Total Repayments</h3>
-          <div className="stat-number">${((analytics.totalRepayments || 0) / 1000).toFixed(0)}K</div>
+          <div className="stat-number">KSh {((analytics.totalRepayments || 0) / 1000).toFixed(0)}K</div>
         </div>
       </div>
       
@@ -334,7 +334,7 @@ function AdminDashboard({ user, onLogout }) {
                 <span>Rate: {product.rate}%</span>
                 <span>Term: {product.term} years</span>
                 <span>Type: {product.type}</span>
-                <span>Range: ${product.minAmount.toLocaleString()} - ${product.maxAmount.toLocaleString()}</span>
+                <span>Range: KSh {product.minAmount.toLocaleString()} - KSh {product.maxAmount.toLocaleString()}</span>
               </div>
             </div>
           ))}
@@ -350,7 +350,7 @@ function AdminDashboard({ user, onLogout }) {
                 <h4>Application #{app.id}</h4>
                 <p>Lender: {app.lender}</p>
                 <p>Applicant: {app.applicant}</p>
-                <p>Amount: ${app.amount.toLocaleString()}</p>
+                <p>Amount: KSh {app.amount.toLocaleString()}</p>
                 <p>Date: {app.date}</p>
               </div>
               <span className={`status ${app.status}`}>{app.status.toUpperCase()}</span>
