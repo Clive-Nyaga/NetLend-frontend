@@ -13,29 +13,41 @@ function App() {
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    console.log('Login attempt:', loginData);
     try {
       const response = await axios.post(`${API_BASE}/login`, loginData);
+      console.log('Login response:', response.data);
       if (response.data.success) {
         setUser(response.data.user);
         localStorage.setItem('token', response.data.token);
-        axios.defaults.headers.common['Authorization'] = response.data.token;
+        axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`;
+        console.log('Login successful, user set:', response.data.user);
+      } else {
+        alert('Login failed: ' + (response.data.error || 'Unknown error'));
       }
     } catch (error) {
-      alert('Login failed');
+      console.error('Login error:', error);
+      alert('Login failed: ' + (error.response?.data?.error || error.message));
     }
   };
 
   const handleRegister = async (e) => {
     e.preventDefault();
+    console.log('Register attempt:', registerData);
     try {
       const response = await axios.post(`${API_BASE}/register`, registerData);
+      console.log('Register response:', response.data);
       if (response.data.success) {
         setUser(response.data.user);
         localStorage.setItem('token', response.data.token);
-        axios.defaults.headers.common['Authorization'] = response.data.token;
+        axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`;
+        console.log('Registration successful, user set:', response.data.user);
+      } else {
+        alert('Registration failed: ' + (response.data.error || 'Unknown error'));
       }
     } catch (error) {
-      alert('Registration failed');
+      console.error('Registration error:', error);
+      alert('Registration failed: ' + (error.response?.data?.error || error.message));
     }
   };
 
@@ -48,7 +60,7 @@ function App() {
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (token) {
-      axios.defaults.headers.common['Authorization'] = token;
+      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
     }
   }, []);
 
