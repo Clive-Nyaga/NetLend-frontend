@@ -504,6 +504,18 @@ input:focus, select:focus {
     margin-top: 3rem;
 }
 
+@media (max-width: 1200px) {
+    .charts-section {
+        grid-template-columns: 1fr;
+    }
+}
+
+.charts-section .chart-card:last-child {
+    grid-column: 1 / -1;
+    max-width: 500px;
+    margin: 0 auto;
+}
+
 .chart-card {
     background: white;
     padding: 2rem;

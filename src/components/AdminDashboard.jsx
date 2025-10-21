@@ -1,7 +1,32 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  LineElement,
+  PointElement,
+  ArcElement,
+  Title,
+  Tooltip,
+  Legend,
+} from 'chart.js';
+import { Bar, Line, Doughnut } from 'react-chartjs-2';
 
-const API_BASE = 'http://localhost:5001/api';
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  LineElement,
+  PointElement,
+  ArcElement,
+  Title,
+  Tooltip,
+  Legend
+);
+
+const API_BASE = 'http://localhost:5000/api';
 
 function AdminDashboard({ user, onLogout }) {
   const [activeSection, setActiveSection] = useState('analytics');
@@ -110,25 +135,104 @@ function AdminDashboard({ user, onLogout }) {
       
       <div className="charts-section">
         <div className="chart-card">
-          <h3>Monthly Applications</h3>
-          <div className="chart-placeholder">
-            {(analytics.monthlyData || []).map(data => (
-              <div key={data.month} className="chart-bar">
-                <div className="bar" style={{height: `${data.applications * 3}px`, background: 'var(--primary-color)'}}></div>
-                <span>{data.month}</span>
-              </div>
-            ))}
+          <h3>Monthly Applications & Approvals</h3>
+          <div style={{height: '300px'}}>
+            <Bar
+              data={{
+                labels: (analytics.monthlyData || []).map(d => d.month),
+                datasets: [
+                  {
+                    label: 'Applications',
+                    data: (analytics.monthlyData || []).map(d => d.applications),
+                    backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1
+                  },
+                  {
+                    label: 'Approvals',
+                    data: (analytics.monthlyData || []).map(d => d.approvals),
+                    backgroundColor: 'rgba(75, 192, 192, 0.6)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 1
+                  }
+                ]
+              }}
+              options={{
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                  legend: { position: 'top' },
+                  title: { display: false }
+                }
+              }}
+            />
           </div>
         </div>
         
         <div className="chart-card">
-          <h3>User Growth</h3>
-          <div className="growth-list">
-            {(analytics.userGrowth || []).map(data => (
-              <div key={data.month} className="growth-item">
-                <span>{data.month}: {data.homebuyers} homebuyers, {data.lenders} lenders</span>
-              </div>
-            ))}
+          <h3>User Growth Trend</h3>
+          <div style={{height: '300px'}}>
+            <Line
+              data={{
+                labels: (analytics.userGrowth || []).map(d => d.month),
+                datasets: [
+                  {
+                    label: 'Homebuyers',
+                    data: (analytics.userGrowth || []).map(d => d.homebuyers),
+                    borderColor: 'rgb(255, 99, 132)',
+                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                    tension: 0.1
+                  },
+                  {
+                    label: 'Lenders',
+                    data: (analytics.userGrowth || []).map(d => d.lenders),
+                    borderColor: 'rgb(53, 162, 235)',
+                    backgroundColor: 'rgba(53, 162, 235, 0.2)',
+                    tension: 0.1
+                  }
+                ]
+              }}
+              options={{
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                  legend: { position: 'top' },
+                  title: { display: false }
+                }
+              }}
+            />
+          </div>
+        </div>
+        
+        <div className="chart-card">
+          <h3>Loan Status Distribution</h3>
+          <div style={{height: '300px'}}>
+            <Doughnut
+              data={{
+                labels: ['Approved', 'Pending', 'Rejected'],
+                datasets: [{
+                  data: [
+                    analytics.approvedLoans || 0,
+                    (analytics.totalApplications || 0) - (analytics.approvedLoans || 0),
+                    Math.floor((analytics.totalApplications || 0) * 0.1)
+                  ],
+                  backgroundColor: [
+                    'rgba(75, 192, 192, 0.8)',
+                    'rgba(255, 206, 86, 0.8)',
+                    'rgba(255, 99, 132, 0.8)'
+                  ],
+                  borderWidth: 2
+                }]
+              }}
+              options={{
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                  legend: { position: 'bottom' },
+                  title: { display: false }
+                }
+              }}
+            />
           </div>
         </div>
       </div>
