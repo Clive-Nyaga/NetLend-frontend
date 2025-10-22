@@ -77,10 +77,11 @@ const RegisterModal = ({ isOpen, onClose, onRegister, onSwitchToLogin }) => {
 
   return (
     <div className={`modal ${isOpen ? 'show' : ''}`}>
-      <div className="modal-content">
+      <div className="modal-content" style={{maxHeight: '90vh', overflow: 'hidden'}}>
         <span className="close" onClick={onClose}>&times;</span>
         <h2>Register</h2>
-        <form onSubmit={handleSubmit}>
+        <div style={{maxHeight: '75vh', overflowY: 'auto', paddingRight: '1rem'}}>
+          <form onSubmit={handleSubmit}>
           <div className="form-group">
             <label>Full Name</label>
             <input 
@@ -137,13 +138,14 @@ const RegisterModal = ({ isOpen, onClose, onRegister, onSwitchToLogin }) => {
               </label>
             </div>
           </div>
-          <button type="submit" className="btn" disabled={loading || !formData.agreeToTerms}>
-            {loading ? 'Creating Account...' : 'Sign Up'}
-          </button>
-        </form>
-        <p style={{textAlign: 'center', marginTop: '1rem'}}>
-          Already have an account? <a onClick={onSwitchToLogin} style={{color: 'var(--primary-color)', cursor: 'pointer', textDecoration: 'underline'}}>Login</a>
-        </p>
+            <button type="submit" className="btn" disabled={loading || !formData.agreeToTerms}>
+              {loading ? 'Creating Account...' : 'Sign Up'}
+            </button>
+          </form>
+          <p style={{textAlign: 'center', marginTop: '1rem'}}>
+            Already have an account? <a onClick={onSwitchToLogin} style={{color: 'var(--primary-color)', cursor: 'pointer', textDecoration: 'underline'}}>Login</a>
+          </p>
+        </div>
       </div>
       
       <TermsModal 

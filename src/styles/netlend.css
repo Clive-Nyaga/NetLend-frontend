@@ -522,6 +522,50 @@ h2::after {
     background: linear-gradient(135deg, var(--primary-dark), var(--warning-color));
 }
 
+/* Scrollable Modal Content */
+.modal-scroll-container {
+    max-height: 75vh;
+    overflow-y: auto;
+    padding-right: 1rem;
+    scrollbar-width: thin;
+    scrollbar-color: var(--primary-color) var(--light-gray);
+}
+
+.modal-scroll-container::-webkit-scrollbar {
+    width: 8px;
+}
+
+.modal-scroll-container::-webkit-scrollbar-track {
+    background: var(--light-gray);
+    border-radius: 4px;
+}
+
+.modal-scroll-container::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    border-radius: 4px;
+}
+
+.modal-scroll-container::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(135deg, var(--primary-dark), var(--warning-color));
+}
+
+/* Ensure modal content doesn't overflow */
+.modal-content {
+    max-height: 90vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.modal-content h2 {
+    flex-shrink: 0;
+    margin-bottom: 1rem;
+}
+
+.modal-content .close {
+    flex-shrink: 0;
+}
+
 .terms-full-content h3 {
     color: var(--primary-color);
     margin: 1.5rem 0 1rem 0;
@@ -1048,6 +1092,16 @@ select option {
         padding: 2rem;
         margin: 1rem;
         width: calc(100% - 2rem);
+    }
+    
+    .modal-content {
+        max-height: 95vh;
+        padding: 2rem;
+    }
+    
+    .modal-scroll-container {
+        max-height: 80vh;
+        padding-right: 0.5rem;
     }
     
     .form-row {

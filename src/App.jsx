@@ -29,7 +29,7 @@ function App() {
 
   const handleLogout = () => {
     setUser(null);
-    setCurrentSection('properties');
+    setCurrentSection('home');
   };
 
   const showSection = (section) => {
