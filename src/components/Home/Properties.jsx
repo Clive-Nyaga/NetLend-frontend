@@ -131,6 +131,96 @@ const Properties = () => {
         </div>
       </div>
 
+      {/* Lender Partnership Section */}
+      <div className="lender-section">
+        <div className="container">
+          <div className="lender-content">
+            <div className="lender-info">
+              <h2>Partner With NetLend</h2>
+              <p className="lender-subtitle">
+                Join Kenya's leading mortgage platform and expand your reach to qualified borrowers across all 47 counties.
+              </p>
+              
+              <div className="lender-benefits">
+                <div className="lender-benefit">
+                  <div className="lender-benefit-icon">📈</div>
+                  <div>
+                    <h4>Increase Loan Volume</h4>
+                    <p>Access a steady stream of pre-qualified mortgage applications</p>
+                  </div>
+                </div>
+                <div className="lender-benefit">
+                  <div className="lender-benefit-icon">🎯</div>
+                  <div>
+                    <h4>Targeted Marketing</h4>
+                    <p>Reach borrowers actively seeking mortgage products in your target segments</p>
+                  </div>
+                </div>
+                <div className="lender-benefit">
+                  <div className="lender-benefit-icon">⚡</div>
+                  <div>
+                    <h4>Faster Processing</h4>
+                    <p>Streamlined application process reduces time-to-approval by 40%</p>
+                  </div>
+                </div>
+                <div className="lender-benefit">
+                  <div className="lender-benefit-icon">📊</div>
+                  <div>
+                    <h4>Analytics & Insights</h4>
+                    <p>Comprehensive reporting and market intelligence to optimize your offerings</p>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="lender-cta">
+                <button className="btn btn-primary lender-btn">Become a Partner</button>
+                <button className="btn btn-secondary lender-btn">Download Partnership Guide</button>
+              </div>
+            </div>
+            
+            <div className="lender-image">
+              <img src="https://images.unsplash.com/photo-1560472354-b33ff0c44a43?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Lender Partnership" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Lender Success Stories */}
+      <div className="success-stories">
+        <div className="container">
+          <h2>Success Stories from Our Partners</h2>
+          <div className="stories-grid">
+            <div className="story-card">
+              <div className="story-image">
+                <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Bank Partner" />
+              </div>
+              <div className="story-content">
+                <h3>Kenya Commercial Bank</h3>
+                <p>"NetLend helped us increase our mortgage portfolio by 65% in just 12 months. The quality of applications and streamlined process has been exceptional."</p>
+                <div className="story-stats">
+                  <span className="stat">+65% Portfolio Growth</span>
+                  <span className="stat">500+ New Customers</span>
+                </div>
+              </div>
+            </div>
+            
+            <div className="story-card">
+              <div className="story-image">
+                <img src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="SACCO Partner" />
+              </div>
+              <div className="story-content">
+                <h3>Mwalimu National SACCO</h3>
+                <p>"The platform's analytics helped us optimize our interest rates and improve our approval rates by 30%. Highly recommended for any serious lender."</p>
+                <div className="story-stats">
+                  <span className="stat">+30% Approval Rate</span>
+                  <span className="stat">200+ Active Loans</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Benefits Section */}
       <div className="benefits-section">
         <div className="container">

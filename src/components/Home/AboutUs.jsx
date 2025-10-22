@@ -1,21 +1,57 @@
 const AboutUs = () => {
   return (
     <div className="about-page-wrapper">
-      <div className="container">
-        <h2>About NetLend</h2>
-        <div className="about-content">
-          <div className="about-section">
-            <h3>Who We Are</h3>
-            <p>
-              NetLend is Kenya's premier web-based mortgage facilitation platform that bridges the gap between borrowers seeking mortgage loans and licensed financial institutions offering mortgage products. We connect homebuyers with banks, SACCOs, and approved private lending institutions to make homeownership accessible and transparent.
-            </p>
+      {/* About Hero Section */}
+      <div className="about-hero">
+        <div className="about-hero-background">
+          <img src="https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80" alt="NetLend About" className="about-hero-image" />
+          <div className="about-hero-overlay"></div>
+        </div>
+        <div className="container">
+          <div className="about-hero-content">
+            <h1>Transforming Mortgage Access in Kenya</h1>
+            <p>We're building the future of homeownership by connecting dreams with opportunities, one mortgage at a time.</p>
+            <div className="hero-badges">
+              <div className="hero-badge">
+                <span className="badge-icon">🏆</span>
+                <span>CBK Compliant</span>
+              </div>
+              <div className="hero-badge">
+                <span className="badge-icon">🔒</span>
+                <span>Bank-Level Security</span>
+              </div>
+              <div className="hero-badge">
+                <span className="badge-icon">🇰🇪</span>
+                <span>Made in Kenya</span>
+              </div>
+            </div>
           </div>
+        </div>
+      </div>
 
-          <div className="about-section">
-            <h3>Our Mission</h3>
-            <p>
-              To democratize access to mortgage financing in Kenya by providing a transparent, secure, and efficient platform that connects borrowers with the best lending options available in the market.
-            </p>
+      <div className="container">
+        <div className="about-content">
+          {/* Vision & Mission Cards */}
+          <div className="vision-mission">
+            <div className="vm-card">
+              <div className="vm-icon">
+                <img src="https://images.unsplash.com/photo-1560472354-b33ff0c44a43?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Who We Are" />
+              </div>
+              <h3>🏠 Who We Are</h3>
+              <p>
+                NetLend is Kenya's premier web-based mortgage facilitation platform that bridges the gap between borrowers seeking mortgage loans and licensed financial institutions offering mortgage products. We connect homebuyers with banks, SACCOs, and approved private lending institutions to make homeownership accessible and transparent.
+              </p>
+            </div>
+
+            <div className="vm-card">
+              <div className="vm-icon">
+                <img src="https://images.unsplash.com/photo-1551836022-deb4988cc6c0?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Our Mission" />
+              </div>
+              <h3>🎯 Our Mission</h3>
+              <p>
+                To democratize access to mortgage financing in Kenya by providing a transparent, secure, and efficient platform that connects borrowers with the best lending options available in the market.
+              </p>
+            </div>
           </div>
 
           <div className="about-section">
@@ -52,19 +88,31 @@ const AboutUs = () => {
             <h3>Our Commitment</h3>
             <div className="commitment-grid">
               <div className="commitment-item">
-                <h4>Regulatory Compliance</h4>
+                <div className="commitment-icon">
+                  <img src="https://images.unsplash.com/photo-1589829545856-d10d557cf95f?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Compliance" />
+                </div>
+                <h4>⚖️ Regulatory Compliance</h4>
                 <p>We operate in full compliance with Kenya's Data Protection Act (2019), Central Bank of Kenya (CBK) guidelines, and Consumer Protection laws.</p>
               </div>
               <div className="commitment-item">
-                <h4>Data Security</h4>
+                <div className="commitment-icon">
+                  <img src="https://images.unsplash.com/photo-1563013544-824ae1b704d3?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Security" />
+                </div>
+                <h4>🔒 Data Security</h4>
                 <p>Your personal and financial information is protected with bank-level security measures and never shared with unauthorized parties.</p>
               </div>
               <div className="commitment-item">
-                <h4>Transparency</h4>
+                <div className="commitment-icon">
+                  <img src="https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Transparency" />
+                </div>
+                <h4>📊 Transparency</h4>
                 <p>We ensure all mortgage terms, interest rates, and fees are clearly disclosed upfront with no hidden charges.</p>
               </div>
               <div className="commitment-item">
-                <h4>Fair Lending</h4>
+                <div className="commitment-icon">
+                  <img src="https://images.unsplash.com/photo-1450101499163-c8848c66ca85?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Fair Lending" />
+                </div>
+                <h4>🤝 Fair Lending</h4>
                 <p>We promote ethical lending practices and work only with licensed, verified financial institutions.</p>
               </div>
             </div>
@@ -72,18 +120,34 @@ const AboutUs = () => {
 
           <div className="about-section">
             <h3>Why Choose NetLend?</h3>
-            <div className="benefits-list">
-              <div className="benefit-item">
-                <strong>Verified Lenders:</strong> All our partner lenders are licensed and comply with CBK and SACCO regulatory frameworks.
+            <div className="why-choose-grid">
+              <div className="why-choose-item">
+                <div className="why-choose-icon">
+                  <img src="https://images.unsplash.com/photo-1554224155-6726b3ff858f?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Verified Lenders" />
+                </div>
+                <h4>✅ Verified Lenders</h4>
+                <p>All our partner lenders are licensed and comply with CBK and SACCO regulatory frameworks.</p>
               </div>
-              <div className="benefit-item">
-                <strong>Secure Platform:</strong> Advanced security measures protect your data and transactions.
+              <div className="why-choose-item">
+                <div className="why-choose-icon">
+                  <img src="https://images.unsplash.com/photo-1563013544-824ae1b704d3?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Secure Platform" />
+                </div>
+                <h4>🔐 Secure Platform</h4>
+                <p>Advanced security measures protect your data and transactions.</p>
               </div>
-              <div className="benefit-item">
-                <strong>No Direct Lending:</strong> We facilitate connections; we don't lend money, ensuring neutrality and transparency.
+              <div className="why-choose-item">
+                <div className="why-choose-icon">
+                  <img src="https://images.unsplash.com/photo-1551836022-deb4988cc6c0?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="No Direct Lending" />
+                </div>
+                <h4>🎯 No Direct Lending</h4>
+                <p>We facilitate connections; we don't lend money, ensuring neutrality and transparency.</p>
               </div>
-              <div className="benefit-item">
-                <strong>Comprehensive Support:</strong> From application to repayment, we provide ongoing support throughout your mortgage journey.
+              <div className="why-choose-item">
+                <div className="why-choose-icon">
+                  <img src="https://images.unsplash.com/photo-1600880292203-757bb62b4baf?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Comprehensive Support" />
+                </div>
+                <h4>📞 Comprehensive Support</h4>
+                <p>From application to repayment, we provide ongoing support throughout your mortgage journey.</p>
               </div>
             </div>
           </div>
