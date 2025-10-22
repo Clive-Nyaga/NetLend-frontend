@@ -46,17 +46,13 @@ function App() {
         onRegister={() => setShowRegisterModal(true)}
       />
       
-      {!user && (
-        <>
-          {currentSection === 'home' && <Properties />}
-          {currentSection === 'about' && <AboutUs />}
-          {currentSection === 'contact' && <ContactUs />}
-        </>
-      )}
-      
-      {user && user.user_type === 'lender' && currentSection === 'dashboard' && (
+      {currentSection === 'dashboard' && user && user.user_type === 'lender' && (
         <LenderDashboard user={user} />
       )}
+      
+      {currentSection === 'home' && <Properties />}
+      {currentSection === 'about' && <AboutUs />}
+      {currentSection === 'contact' && <ContactUs />}
       
       <LoginModal 
         isOpen={showLoginModal}
