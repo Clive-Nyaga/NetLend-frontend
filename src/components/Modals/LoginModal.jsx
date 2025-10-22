@@ -7,9 +7,11 @@ const LoginModal = ({ isOpen, onClose, onLogin, onSwitchToRegister }) => {
     password: ''
   });
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError('');
     setLoading(true);
     try {
       const response = await api.login(formData);
@@ -26,11 +28,11 @@ const LoginModal = ({ isOpen, onClose, onLogin, onSwitchToRegister }) => {
         onLogin(userData);
         onClose();
       } else {
-        alert('Login failed: Invalid response');
+        setError('Login failed: Invalid response');
       }
     } catch (error) {
       console.error('Login failed:', error);
-      alert(error.message || 'Login failed');
+      setError(error.message || 'Login failed');
     } finally {
       setLoading(false);
     }
@@ -50,6 +52,11 @@ const LoginModal = ({ isOpen, onClose, onLogin, onSwitchToRegister }) => {
       <div className="modal-content">
         <span className="close" onClick={onClose}>&times;</span>
         <h2>Login</h2>
+        {error && (
+          <div style={{background: '#fee2e2', color: '#991b1b', padding: '0.75rem', borderRadius: '8px', marginBottom: '1rem', fontSize: '0.9rem'}}>
+            {error}
+          </div>
+        )}
         <form onSubmit={handleSubmit}>
           <div className="form-group">
             <label>Email</label>

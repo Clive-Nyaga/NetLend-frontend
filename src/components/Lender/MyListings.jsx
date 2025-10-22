@@ -18,6 +18,8 @@ const MyListings = ({ lenderId }) => {
     images: []
   });
   const [submitting, setSubmitting] = useState(false);
+  const [formError, setFormError] = useState('');
+  const [formMessage, setFormMessage] = useState('');
 
   useEffect(() => {
     loadListings();
@@ -51,10 +53,11 @@ const MyListings = ({ lenderId }) => {
   const handleFileChange = (e) => {
     const files = Array.from(e.target.files);
     if (files.length !== 5) {
-      alert('Please select exactly 5 images');
+      setFormError('Please select exactly 5 images');
       e.target.value = '';
       return;
     }
+    setFormError('');
     setFormData(prev => ({
       ...prev,
       images: files
@@ -63,13 +66,15 @@ const MyListings = ({ lenderId }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setFormError('');
+    setFormMessage('');
     // Temporarily skip image validation
     // if (formData.images.length !== 5) {
-    //   alert('Please upload exactly 5 images');
+    //   setFormError('Please upload exactly 5 images');
     //   return;
     // }
     if (!formData.title || formData.title.trim() === '') {
-      alert('Please enter a property title');
+      setFormError('Please enter a property title');
       return;
     }
     
@@ -89,8 +94,11 @@ const MyListings = ({ lenderId }) => {
       console.log('Subject value:', JSON.stringify(submitData.subject));
       
       await api.createMortgageListing(submitData);
-      alert('Listing created successfully!');
-      setShowAddForm(false);
+      setFormMessage('Listing created successfully!');
+      setTimeout(() => {
+        setShowAddForm(false);
+        setFormMessage('');
+      }, 2000);
       setFormData({
         title: '',
         property_type: 'apartment',
@@ -106,7 +114,7 @@ const MyListings = ({ lenderId }) => {
       loadListings();
     } catch (error) {
       console.error('Failed to create listing:', error);
-      alert('Failed to create listing: ' + error.message);
+      setFormError('Failed to create listing: ' + error.message);
     } finally {
       setSubmitting(false);
     }
@@ -149,6 +157,16 @@ const MyListings = ({ lenderId }) => {
             <span className="close" onClick={() => setShowAddForm(false)}>&times;</span>
             <h2>Add Mortgage Offer</h2>
             <div style={{maxHeight: '75vh', overflowY: 'auto', paddingRight: '1rem'}}>
+              {formError && (
+                <div style={{background: '#fee2e2', color: '#991b1b', padding: '0.75rem', borderRadius: '8px', marginBottom: '1rem', fontSize: '0.9rem'}}>
+                  {formError}
+                </div>
+              )}
+              {formMessage && (
+                <div style={{background: '#d1fae5', color: '#065f46', padding: '0.75rem', borderRadius: '8px', marginBottom: '1rem', fontSize: '0.9rem'}}>
+                  {formMessage}
+                </div>
+              )}
               <form onSubmit={handleSubmit}>
               <div className="form-row">
                 <div className="form-group">

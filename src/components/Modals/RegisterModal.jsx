@@ -12,11 +12,15 @@ const RegisterModal = ({ isOpen, onClose, onRegister, onSwitchToLogin }) => {
   });
   const [loading, setLoading] = useState(false);
   const [showTermsModal, setShowTermsModal] = useState(false);
+  const [error, setError] = useState('');
+  const [message, setMessage] = useState('');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError('');
+    setMessage('');
     if (!formData.agreeToTerms) {
-      alert('You must agree to the Terms and Conditions to proceed.');
+      setError('You must agree to the Terms and Conditions to proceed.');
       return;
     }
     setLoading(true);
@@ -53,13 +57,13 @@ const RegisterModal = ({ isOpen, onClose, onRegister, onSwitchToLogin }) => {
           onClose();
         } catch (loginError) {
           console.error('Auto-login failed:', loginError);
-          alert('Registration successful! Please log in manually.');
-          onClose();
+          setMessage('Registration successful! Please log in manually.');
+          setTimeout(() => onClose(), 2000);
         }
       }
     } catch (error) {
       console.error('Registration failed:', error);
-      alert(error.message || 'Registration failed');
+      setError(error.message || 'Registration failed');
     } finally {
       setLoading(false);
     }
@@ -81,6 +85,16 @@ const RegisterModal = ({ isOpen, onClose, onRegister, onSwitchToLogin }) => {
         <span className="close" onClick={onClose}>&times;</span>
         <h2>Register</h2>
         <div style={{maxHeight: '75vh', overflowY: 'auto', paddingRight: '1rem'}}>
+          {error && (
+            <div style={{background: '#fee2e2', color: '#991b1b', padding: '0.75rem', borderRadius: '8px', marginBottom: '1rem', fontSize: '0.9rem'}}>
+              {error}
+            </div>
+          )}
+          {message && (
+            <div style={{background: '#d1fae5', color: '#065f46', padding: '0.75rem', borderRadius: '8px', marginBottom: '1rem', fontSize: '0.9rem'}}>
+              {message}
+            </div>
+          )}
           <form onSubmit={handleSubmit}>
           <div className="form-group">
             <label>Full Name</label>
