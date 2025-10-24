@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import axios from 'axios';
 import AdminDashboard from './components/AdminDashboard.jsx';
 import './index.css';
@@ -64,22 +65,7 @@ function App() {
     }
   }, []);
 
-  if (user) {
-    if (user.userType === 'admin') {
-      return <AdminDashboard user={user} onLogout={handleLogout} />;
-    } else {
-      return (
-        <div className="container">
-          <h2>Welcome, {user.name}</h2>
-          <p>User Type: {user.userType}</p>
-          <p>This demo focuses on admin functionality.</p>
-          <button className="btn danger" onClick={handleLogout}>Logout</button>
-        </div>
-      );
-    }
-  }
-
-  return (
+  const LoginPage = () => (
     <div className="container">
       <h2>Netland - {isLogin ? 'Login' : 'Register'}</h2>
       
@@ -163,6 +149,22 @@ function App() {
         <p>API Documentation: <a href="http://localhost:5000/docs" target="_blank" rel="noopener noreferrer">View Docs</a></p>
       </div>
     </div>
+  );
+
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={user ? <Navigate to="/admin" /> : <LoginPage />} />
+        <Route 
+          path="/admin" 
+          element={
+            user && user.userType === 'admin' 
+              ? <AdminDashboard user={user} onLogout={handleLogout} /> 
+              : <Navigate to="/" />
+          } 
+        />
+      </Routes>
+    </BrowserRouter>
   );
 }
 
