@@ -35,8 +35,16 @@ function AdminDashboard({ user, onLogout }) {
   const [feedback, setFeedback] = useState([]);
   const [mortgageProducts, setMortgageProducts] = useState([]);
   const [applications, setApplications] = useState([]);
+  const [properties, setProperties] = useState([]);
   const [newUser, setNewUser] = useState({ name: '', email: '', userType: 'homebuyer', verified: false });
   const [showUserForm, setShowUserForm] = useState(false);
+  const [filters, setFilters] = useState({
+    userType: 'all',
+    appStatus: 'all',
+    propLocation: 'all',
+    propPriceMax: '',
+    propBedroomsMin: ''
+  });
 
   useEffect(() => {
     loadData();
@@ -44,18 +52,20 @@ function AdminDashboard({ user, onLogout }) {
 
   const loadData = async () => {
     try {
-      const [usersRes, analyticsRes, feedbackRes, productsRes, appsRes] = await Promise.all([
+      const [usersRes, analyticsRes, feedbackRes, productsRes, appsRes, propsRes] = await Promise.all([
         axios.get(`${API_BASE}/admin/users`),
         axios.get(`${API_BASE}/admin/analytics`),
         axios.get(`${API_BASE}/admin/feedback`),
         axios.get(`${API_BASE}/admin/mortgage-products`),
-        axios.get(`${API_BASE}/admin/applications`)
+        axios.get(`${API_BASE}/admin/applications`),
+        axios.get(`${API_BASE}/admin/properties`)
       ]);
       setUsers(usersRes.data || []);
       setAnalytics(analyticsRes.data || {});
       setFeedback(feedbackRes.data || []);
       setMortgageProducts(productsRes.data || []);
       setApplications(appsRes.data || []);
+      setProperties(propsRes.data || []);
     } catch (error) {
       console.error('Error loading data:', error);
       alert('Failed to load admin data. Please check if backend is running.');
@@ -103,7 +113,12 @@ function AdminDashboard({ user, onLogout }) {
     }
   };
 
-  const renderAnalytics = () => (
+  const renderAnalytics = () => {
+    const propData = analytics.properties || {};
+    const locationData = propData.byLocation || {};
+    const locations = Object.keys(locationData);
+    
+    return (
     <div className="section">
       <h2>Platform Analytics</h2>
       <div className="analytics-grid">
@@ -130,6 +145,34 @@ function AdminDashboard({ user, onLogout }) {
         <div className="stat-card">
           <h3>Total Repayments</h3>
           <div className="stat-number">KSh {((analytics.totalRepayments || 0) / 1000).toFixed(0)}K</div>
+        </div>
+      </div>
+      
+      <h3 style={{marginTop: '2rem'}}>Property Analytics</h3>
+      <div className="analytics-grid">
+        <div className="stat-card">
+          <h3>Total Properties</h3>
+          <div className="stat-number">{propData.total || 0}</div>
+        </div>
+        <div className="stat-card">
+          <h3>Available</h3>
+          <div className="stat-number">{propData.available || 0}</div>
+        </div>
+        <div className="stat-card">
+          <h3>Sold</h3>
+          <div className="stat-number">{propData.sold || 0}</div>
+        </div>
+        <div className="stat-card">
+          <h3>Total Value</h3>
+          <div className="stat-number">KSh {((propData.totalValue || 0) / 1000000).toFixed(1)}M</div>
+        </div>
+        <div className="stat-card">
+          <h3>Avg Price</h3>
+          <div className="stat-number">KSh {((propData.avgPrice || 0) / 1000000).toFixed(1)}M</div>
+        </div>
+        <div className="stat-card">
+          <h3>Total Views</h3>
+          <div className="stat-number">{propData.totalViews || 0}</div>
         </div>
       </div>
       
@@ -235,17 +278,189 @@ function AdminDashboard({ user, onLogout }) {
             />
           </div>
         </div>
+        
+        <div className="chart-card">
+          <h3>Property Listings & Sales</h3>
+          <div style={{height: '300px'}}>
+            <Bar
+              data={{
+                labels: (propData.trends || []).map(d => d.month),
+                datasets: [
+                  {
+                    label: 'Listed',
+                    data: (propData.trends || []).map(d => d.listed),
+                    backgroundColor: 'rgba(153, 102, 255, 0.6)',
+                    borderColor: 'rgba(153, 102, 255, 1)',
+                    borderWidth: 1
+                  },
+                  {
+                    label: 'Sold',
+                    data: (propData.trends || []).map(d => d.sold),
+                    backgroundColor: 'rgba(75, 192, 192, 0.6)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 1
+                  }
+                ]
+              }}
+              options={{
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                  legend: { position: 'top' },
+                  title: { display: false }
+                }
+              }}
+            />
+          </div>
+        </div>
+        
+        <div className="chart-card">
+          <h3>Property Views Trend</h3>
+          <div style={{height: '300px'}}>
+            <Line
+              data={{
+                labels: (propData.trends || []).map(d => d.month),
+                datasets: [
+                  {
+                    label: 'Views',
+                    data: (propData.trends || []).map(d => d.views),
+                    borderColor: 'rgb(255, 159, 64)',
+                    backgroundColor: 'rgba(255, 159, 64, 0.2)',
+                    tension: 0.4
+                  }
+                ]
+              }}
+              options={{
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                  legend: { position: 'top' },
+                  title: { display: false }
+                }
+              }}
+            />
+          </div>
+        </div>
+        
+        <div className="chart-card">
+          <h3>Properties by Location</h3>
+          <div style={{height: '300px'}}>
+            <Doughnut
+              data={{
+                labels: locations,
+                datasets: [{
+                  data: locations.map(loc => locationData[loc].count),
+                  backgroundColor: [
+                    'rgba(255, 99, 132, 0.8)',
+                    'rgba(54, 162, 235, 0.8)',
+                    'rgba(255, 206, 86, 0.8)',
+                    'rgba(75, 192, 192, 0.8)',
+                    'rgba(153, 102, 255, 0.8)'
+                  ],
+                  borderWidth: 2
+                }]
+              }}
+              options={{
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                  legend: { position: 'bottom' },
+                  title: { display: false }
+                }
+              }}
+            />
+          </div>
+        </div>
+        
+        <div className="chart-card">
+          <h3>Avg Property Price by Location</h3>
+          <div style={{height: '300px'}}>
+            <Bar
+              data={{
+                labels: locations,
+                datasets: [
+                  {
+                    label: 'Avg Price (KSh M)',
+                    data: locations.map(loc => (locationData[loc].avgPrice / 1000000).toFixed(1)),
+                    backgroundColor: 'rgba(255, 159, 64, 0.6)',
+                    borderColor: 'rgba(255, 159, 64, 1)',
+                    borderWidth: 1
+                  }
+                ]
+              }}
+              options={{
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                  legend: { position: 'top' },
+                  title: { display: false }
+                }
+              }}
+            />
+          </div>
+        </div>
+        
+        <div className="chart-card">
+          <h3>Property Status</h3>
+          <div style={{height: '300px'}}>
+            <Doughnut
+              data={{
+                labels: ['Available', 'Sold', 'Pending'],
+                datasets: [{
+                  data: [
+                    propData.available || 0,
+                    propData.sold || 0,
+                    propData.pending || 0
+                  ],
+                  backgroundColor: [
+                    'rgba(75, 192, 192, 0.8)',
+                    'rgba(255, 99, 132, 0.8)',
+                    'rgba(255, 206, 86, 0.8)'
+                  ],
+                  borderWidth: 2
+                }]
+              }}
+              options={{
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                  legend: { position: 'bottom' },
+                  title: { display: false }
+                }
+              }}
+            />
+          </div>
+        </div>
       </div>
     </div>
-  );
+    );
+  };
 
-  const renderUsers = () => (
+  const renderUsers = () => {
+    const filteredUsers = users.filter(u => 
+      filters.userType === 'all' || u.userType === filters.userType
+    );
+    
+    return (
     <div className="section">
       <div className="section-header">
         <h2>User Management</h2>
         <button className="btn" onClick={() => setShowUserForm(!showUserForm)}>
           {showUserForm ? 'Cancel' : 'Add User'}
         </button>
+      </div>
+      
+      <div className="filter-bar" style={{marginBottom: '1rem'}}>
+        <label>
+          Filter by Type:
+          <select value={filters.userType} onChange={(e) => setFilters({...filters, userType: e.target.value})}>
+            <option value="all">All Users</option>
+            <option value="homebuyer">Homebuyers</option>
+            <option value="lender">Lenders</option>
+            <option value="admin">Admins</option>
+          </select>
+        </label>
+        <span style={{marginLeft: '1rem', color: 'var(--text-secondary)'}}>Showing {filteredUsers.length} of {users.length} users</span>
       </div>
       
       {showUserForm && (
@@ -289,7 +504,7 @@ function AdminDashboard({ user, onLogout }) {
       )}
       
       <div className="users-list">
-        {users.map(user => (
+        {filteredUsers.map(user => (
           <div key={user.id} className="user-card">
             <div className="user-info">
               <h3>{user.name}</h3>
@@ -318,9 +533,15 @@ function AdminDashboard({ user, onLogout }) {
         ))}
       </div>
     </div>
-  );
+    );
+  };
 
-  const renderMortgageOversight = () => (
+  const renderMortgageOversight = () => {
+    const filteredApps = applications.filter(a => 
+      filters.appStatus === 'all' || a.status === filters.appStatus
+    );
+    
+    return (
     <div className="section">
       <h2>Mortgage Oversight</h2>
       
@@ -343,8 +564,20 @@ function AdminDashboard({ user, onLogout }) {
       
       <div className="oversight-section">
         <h3>All Applications</h3>
+        <div className="filter-bar" style={{marginBottom: '1rem'}}>
+          <label>
+            Filter by Status:
+            <select value={filters.appStatus} onChange={(e) => setFilters({...filters, appStatus: e.target.value})}>
+              <option value="all">All Applications</option>
+              <option value="pending">Pending</option>
+              <option value="approved">Approved</option>
+              <option value="rejected">Rejected</option>
+            </select>
+          </label>
+          <span style={{marginLeft: '1rem', color: 'var(--text-secondary)'}}>Showing {filteredApps.length} of {applications.length} applications</span>
+        </div>
         <div className="applications-list">
-          {applications.map(app => (
+          {filteredApps.map(app => (
             <div key={app.id} className="app-card">
               <div className="app-info">
                 <h4>Application #{app.id}</h4>
@@ -359,7 +592,78 @@ function AdminDashboard({ user, onLogout }) {
         </div>
       </div>
     </div>
-  );
+    );
+  };
+
+  const renderProperties = () => {
+    const filteredProps = properties.filter(p => {
+      const locationMatch = filters.propLocation === 'all' || p.location === filters.propLocation;
+      const priceMatch = !filters.propPriceMax || p.price <= parseInt(filters.propPriceMax);
+      const bedroomsMatch = !filters.propBedroomsMin || p.bedrooms >= parseInt(filters.propBedroomsMin);
+      return locationMatch && priceMatch && bedroomsMatch;
+    });
+    
+    const locations = [...new Set(properties.map(p => p.location))];
+    
+    return (
+    <div className="section">
+      <h2>Property Management</h2>
+      <div className="filter-bar" style={{display: 'flex', gap: '1rem', flexWrap: 'wrap', marginBottom: '1rem'}}>
+        <label>
+          Location:
+          <select value={filters.propLocation} onChange={(e) => setFilters({...filters, propLocation: e.target.value})}>
+            <option value="all">All Locations</option>
+            {locations.map(loc => <option key={loc} value={loc}>{loc}</option>)}
+          </select>
+        </label>
+        <label>
+          Max Price (KSh):
+          <input 
+            type="number" 
+            placeholder="e.g. 50000000"
+            value={filters.propPriceMax}
+            onChange={(e) => setFilters({...filters, propPriceMax: e.target.value})}
+            style={{width: '150px'}}
+          />
+        </label>
+        <label>
+          Min Bedrooms:
+          <input 
+            type="number" 
+            placeholder="e.g. 3"
+            value={filters.propBedroomsMin}
+            onChange={(e) => setFilters({...filters, propBedroomsMin: e.target.value})}
+            style={{width: '80px'}}
+          />
+        </label>
+        <button 
+          className="btn" 
+          onClick={() => setFilters({...filters, propLocation: 'all', propPriceMax: '', propBedroomsMin: ''})}
+          style={{alignSelf: 'flex-end'}}
+        >
+          Clear Filters
+        </button>
+        <span style={{alignSelf: 'flex-end', color: 'var(--text-secondary)'}}>Showing {filteredProps.length} of {properties.length} properties</span>
+      </div>
+      <div className="properties-list">
+        {filteredProps.map(prop => (
+          <div key={prop.id} className="property-card">
+            <h3>{prop.title}</h3>
+            <div className="property-details">
+              <p><strong>Price:</strong> KSh {prop.price.toLocaleString()}</p>
+              <p><strong>Location:</strong> {prop.location}</p>
+              <p><strong>Bedrooms:</strong> {prop.bedrooms} | <strong>Bathrooms:</strong> {prop.bathrooms}</p>
+              <p><strong>Size:</strong> {prop.sqft} sqft</p>
+              <p><strong>Views:</strong> {prop.views}</p>
+              <p><strong>Listed:</strong> {prop.listedDate}</p>
+              <span className={`status ${prop.status}`}>{prop.status.toUpperCase()}</span>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+    );
+  };
 
   const renderFeedback = () => (
     <div className="section">
@@ -404,6 +708,7 @@ function AdminDashboard({ user, onLogout }) {
         <ul>
           <li><a onClick={() => setActiveSection('analytics')} className={activeSection === 'analytics' ? 'active' : ''}>Analytics</a></li>
           <li><a onClick={() => setActiveSection('users')} className={activeSection === 'users' ? 'active' : ''}>User Management</a></li>
+          <li><a onClick={() => setActiveSection('properties')} className={activeSection === 'properties' ? 'active' : ''}>Properties</a></li>
           <li><a onClick={() => setActiveSection('oversight')} className={activeSection === 'oversight' ? 'active' : ''}>Mortgage Oversight</a></li>
           <li><a onClick={() => setActiveSection('feedback')} className={activeSection === 'feedback' ? 'active' : ''}>Feedback</a></li>
           <li><a onClick={onLogout}>Logout</a></li>
@@ -412,6 +717,7 @@ function AdminDashboard({ user, onLogout }) {
       <div className="main-content">
         {activeSection === 'analytics' && renderAnalytics()}
         {activeSection === 'users' && renderUsers()}
+        {activeSection === 'properties' && renderProperties()}
         {activeSection === 'oversight' && renderMortgageOversight()}
         {activeSection === 'feedback' && renderFeedback()}
       </div>

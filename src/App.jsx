@@ -6,6 +6,92 @@ import './index.css';
 
 const API_BASE = 'http://localhost:5000/api';
 
+const LoginPage = React.memo(({ isLogin, setIsLogin, loginData, setLoginData, registerData, setRegisterData, handleLogin, handleRegister }) => (
+  <div className="container">
+    <h2>Netland - {isLogin ? 'Login' : 'Register'}</h2>
+    
+    <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
+      <button 
+        className={`btn ${isLogin ? '' : 'warning'}`} 
+        onClick={() => setIsLogin(true)}
+        style={{ marginRight: '1rem' }}
+      >
+        Login
+      </button>
+      <button 
+        className={`btn ${!isLogin ? '' : 'warning'}`} 
+        onClick={() => setIsLogin(false)}
+      >
+        Register
+      </button>
+    </div>
+
+    {isLogin ? (
+      <form onSubmit={handleLogin}>
+        <div className="form-group">
+          <label>Email</label>
+          <input
+            type="email"
+            value={loginData.email}
+            onChange={(e) => setLoginData(prev => ({...prev, email: e.target.value}))}
+            required
+          />
+        </div>
+        <div className="form-group">
+          <label>User Type</label>
+          <select
+            value={loginData.userType}
+            onChange={(e) => setLoginData(prev => ({...prev, userType: e.target.value}))}
+          >
+            <option value="admin">Administrator</option>
+            <option value="lender">Lender</option>
+            <option value="homebuyer">Homebuyer</option>
+          </select>
+        </div>
+        <button type="submit" className="btn">Login</button>
+      </form>
+    ) : (
+      <form onSubmit={handleRegister}>
+        <div className="form-group">
+          <label>Full Name</label>
+          <input
+            type="text"
+            value={registerData.name}
+            onChange={(e) => setRegisterData(prev => ({...prev, name: e.target.value}))}
+            required
+          />
+        </div>
+        <div className="form-group">
+          <label>Email</label>
+          <input
+            type="email"
+            value={registerData.email}
+            onChange={(e) => setRegisterData(prev => ({...prev, email: e.target.value}))}
+            required
+          />
+        </div>
+        <div className="form-group">
+          <label>User Type</label>
+          <select
+            value={registerData.userType}
+            onChange={(e) => setRegisterData(prev => ({...prev, userType: e.target.value}))}
+          >
+            <option value="admin">Administrator</option>
+            <option value="lender">Lender</option>
+            <option value="homebuyer">Homebuyer</option>
+          </select>
+        </div>
+        <button type="submit" className="btn success">Register</button>
+      </form>
+    )}
+    
+    <div style={{ marginTop: '2rem', textAlign: 'center', fontSize: '0.875rem', color: 'var(--text-secondary)' }}>
+      <p>Test Admin: admin@netland.com</p>
+      <p>API Documentation: <a href="http://localhost:5000/docs" target="_blank" rel="noopener noreferrer">View Docs</a></p>
+    </div>
+  </div>
+));
+
 function App() {
   const [user, setUser] = useState(null);
   const [isLogin, setIsLogin] = useState(true);
@@ -65,96 +151,10 @@ function App() {
     }
   }, []);
 
-  const LoginPage = () => (
-    <div className="container">
-      <h2>Netland - {isLogin ? 'Login' : 'Register'}</h2>
-      
-      <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-        <button 
-          className={`btn ${isLogin ? '' : 'warning'}`} 
-          onClick={() => setIsLogin(true)}
-          style={{ marginRight: '1rem' }}
-        >
-          Login
-        </button>
-        <button 
-          className={`btn ${!isLogin ? '' : 'warning'}`} 
-          onClick={() => setIsLogin(false)}
-        >
-          Register
-        </button>
-      </div>
-
-      {isLogin ? (
-        <form onSubmit={handleLogin}>
-          <div className="form-group">
-            <label>Email</label>
-            <input
-              type="email"
-              value={loginData.email}
-              onChange={(e) => setLoginData({...loginData, email: e.target.value})}
-              required
-            />
-          </div>
-          <div className="form-group">
-            <label>User Type</label>
-            <select
-              value={loginData.userType}
-              onChange={(e) => setLoginData({...loginData, userType: e.target.value})}
-            >
-              <option value="admin">Administrator</option>
-              <option value="lender">Lender</option>
-              <option value="homebuyer">Homebuyer</option>
-            </select>
-          </div>
-          <button type="submit" className="btn">Login</button>
-        </form>
-      ) : (
-        <form onSubmit={handleRegister}>
-          <div className="form-group">
-            <label>Full Name</label>
-            <input
-              type="text"
-              value={registerData.name}
-              onChange={(e) => setRegisterData({...registerData, name: e.target.value})}
-              required
-            />
-          </div>
-          <div className="form-group">
-            <label>Email</label>
-            <input
-              type="email"
-              value={registerData.email}
-              onChange={(e) => setRegisterData({...registerData, email: e.target.value})}
-              required
-            />
-          </div>
-          <div className="form-group">
-            <label>User Type</label>
-            <select
-              value={registerData.userType}
-              onChange={(e) => setRegisterData({...registerData, userType: e.target.value})}
-            >
-              <option value="admin">Administrator</option>
-              <option value="lender">Lender</option>
-              <option value="homebuyer">Homebuyer</option>
-            </select>
-          </div>
-          <button type="submit" className="btn success">Register</button>
-        </form>
-      )}
-      
-      <div style={{ marginTop: '2rem', textAlign: 'center', fontSize: '0.875rem', color: 'var(--text-secondary)' }}>
-        <p>Test Admin: admin@netland.com</p>
-        <p>API Documentation: <a href="http://localhost:5000/docs" target="_blank" rel="noopener noreferrer">View Docs</a></p>
-      </div>
-    </div>
-  );
-
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={user ? <Navigate to="/admin" /> : <LoginPage />} />
+        <Route path="/" element={user ? <Navigate to="/admin" /> : <LoginPage isLogin={isLogin} setIsLogin={setIsLogin} loginData={loginData} setLoginData={setLoginData} registerData={registerData} setRegisterData={setRegisterData} handleLogin={handleLogin} handleRegister={handleRegister} />} />
         <Route 
           path="/admin" 
           element={
