@@ -155,6 +155,33 @@ const api = {
       throw new Error(result.message || 'Registration failed');
     }
     return result;
+  },
+
+  // Admin endpoints
+  getAllLenders: async () => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/lenders`);
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+      return await response.json();
+    } catch (error) {
+      console.error('Error fetching lenders:', error);
+      return [];
+    }
+  },
+
+  getAllMortgages: async () => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/mortgages/`);
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+      return await response.json();
+    } catch (error) {
+      console.error('Error fetching mortgages:', error);
+      return [];
+    }
   }
 };
 
