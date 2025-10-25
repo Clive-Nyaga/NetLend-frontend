@@ -19,8 +19,9 @@ import './index.css';
 const API_BASE = 'http://localhost:5000/api';
 
 const LoginPage = React.memo(({ isLogin, setIsLogin, loginData, setLoginData, registerData, setRegisterData, handleLogin, handleRegister }) => (
-  <div className="container">
-    <h2>Netland - {isLogin ? 'Login' : 'Register'}</h2>
+  <div className="about-page-wrapper">
+    <div className="container">
+      <h2 className="page-title">NetLend Admin - {isLogin ? 'Login' : 'Register'}</h2>
     
     <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
       <button 
@@ -56,8 +57,6 @@ const LoginPage = React.memo(({ isLogin, setIsLogin, loginData, setLoginData, re
             onChange={(e) => setLoginData(prev => ({...prev, userType: e.target.value}))}
           >
             <option value="admin">Administrator</option>
-            <option value="lender">Lender</option>
-            <option value="homebuyer">Homebuyer</option>
           </select>
         </div>
         <button type="submit" className="btn">Login</button>
@@ -89,17 +88,16 @@ const LoginPage = React.memo(({ isLogin, setIsLogin, loginData, setLoginData, re
             onChange={(e) => setRegisterData(prev => ({...prev, userType: e.target.value}))}
           >
             <option value="admin">Administrator</option>
-            <option value="lender">Lender</option>
-            <option value="homebuyer">Homebuyer</option>
           </select>
         </div>
         <button type="submit" className="btn success">Register</button>
       </form>
     )}
     
-    <div style={{ marginTop: '2rem', textAlign: 'center', fontSize: '0.875rem', color: 'var(--text-secondary)' }}>
-      <p>Test Admin: admin@netland.com</p>
-      <p>API Documentation: <a href="http://localhost:5000/docs" target="_blank" rel="noopener noreferrer">View Docs</a></p>
+      <div style={{ marginTop: '2rem', textAlign: 'center', fontSize: '0.875rem', color: 'var(--text-secondary)' }}>
+        <p>Test Admin: admin@netland.com</p>
+        <p>API Documentation: <a href="http://localhost:5000/docs" target="_blank" rel="noopener noreferrer">View Docs</a></p>
+      </div>
     </div>
   </div>
 ));
@@ -225,13 +223,14 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={user ? <Navigate to={user.userType === 'admin' ? "/admin" : "/"} /> : <LoginPage isLogin={isLogin} setIsLogin={setIsLogin} loginData={loginData} setLoginData={setLoginData} registerData={registerData} setRegisterData={setRegisterData} handleLogin={handleLogin} handleRegister={handleRegister} />} />
+        <Route path="/" element={<MainApp />} />
+        <Route path="/admin-login" element={<LoginPage isLogin={isLogin} setIsLogin={setIsLogin} loginData={loginData} setLoginData={setLoginData} registerData={registerData} setRegisterData={setRegisterData} handleLogin={handleLogin} handleRegister={handleRegister} />} />
         <Route 
           path="/admin" 
           element={
             user && user.userType === 'admin' 
               ? <AdminDashboard user={user} onLogout={handleLogout} /> 
-              : <Navigate to="/" />
+              : <Navigate to="/admin-login" />
           } 
         />
         <Route 
