@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import Navbar from './components/Layout/Navbar';
 import LenderDashboard from './components/Lender/LenderDashboard';
@@ -18,7 +18,16 @@ import './index.css';
 
 const API_BASE = 'http://localhost:5000/api';
 
-const LoginPage = React.memo(({ isLogin, setIsLogin, loginData, setLoginData, registerData, setRegisterData, handleLogin, handleRegister }) => (
+const LoginPage = React.memo(({ isLogin, setIsLogin, loginData, setLoginData, registerData, setRegisterData, handleLogin, handleRegister, user }) => {
+  const navigate = useNavigate();
+  
+  useEffect(() => {
+    if (user && user.userType === 'admin') {
+      navigate('/admin');
+    }
+  }, [user, navigate]);
+  
+  return (
   <div className="about-page-wrapper">
     <div className="container">
       <h2 className="page-title">NetLend Admin - {isLogin ? 'Login' : 'Register'}</h2>
@@ -47,6 +56,15 @@ const LoginPage = React.memo(({ isLogin, setIsLogin, loginData, setLoginData, re
             type="email"
             value={loginData.email}
             onChange={(e) => setLoginData(prev => ({...prev, email: e.target.value}))}
+            required
+          />
+        </div>
+        <div className="form-group">
+          <label>Password</label>
+          <input
+            type="password"
+            value={loginData.password}
+            onChange={(e) => setLoginData(prev => ({...prev, password: e.target.value}))}
             required
           />
         </div>
@@ -82,6 +100,15 @@ const LoginPage = React.memo(({ isLogin, setIsLogin, loginData, setLoginData, re
           />
         </div>
         <div className="form-group">
+          <label>Password</label>
+          <input
+            type="password"
+            value={registerData.password}
+            onChange={(e) => setRegisterData(prev => ({...prev, password: e.target.value}))}
+            required
+          />
+        </div>
+        <div className="form-group">
           <label>User Type</label>
           <select
             value={registerData.userType}
@@ -100,13 +127,25 @@ const LoginPage = React.memo(({ isLogin, setIsLogin, loginData, setLoginData, re
       </div>
     </div>
   </div>
-));
+);
+});
+
+const AdminNavigationWrapper = ({ user, onLogout, setCurrentSection }) => {
+  const navigate = useNavigate();
+  
+  const handleShowSection = (section) => {
+    setCurrentSection(section);
+    navigate('/', { state: { section, preserveAdmin: true } });
+  };
+  
+  return <AdminDashboard user={user} onLogout={onLogout} onShowSection={handleShowSection} />;
+};
 
 function App() {
   const [user, setUser] = useState(null);
   const [isLogin, setIsLogin] = useState(true);
-  const [loginData, setLoginData] = useState({ email: '', userType: 'admin' });
-  const [registerData, setRegisterData] = useState({ name: '', email: '', userType: 'admin' });
+  const [loginData, setLoginData] = useState({ email: '', password: '', userType: 'admin' });
+  const [registerData, setRegisterData] = useState({ name: '', email: '', password: '', userType: 'admin' });
   const [currentSection, setCurrentSection] = useState('home');
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showRegisterModal, setShowRegisterModal] = useState(false);
@@ -178,7 +217,23 @@ function App() {
     }
   }, []);
 
-  const MainApp = () => (
+  const MainApp = () => {
+    const location = useLocation();
+    const navigate = useNavigate();
+    
+    useEffect(() => {
+      if (location.state?.section) {
+        setCurrentSection(location.state.section);
+      }
+    }, [location.state]);
+    
+    const handleShowDashboard = () => {
+      if (user?.userType === 'admin') {
+        navigate('/admin');
+      }
+    };
+    
+    return (
     <div className="App">
       <Navbar 
         user={user}
@@ -186,6 +241,7 @@ function App() {
         onLogout={handleLogout}
         onShowSection={showSection}
         onRegister={() => setShowRegisterModal(true)}
+        onShowDashboard={handleShowDashboard}
       />
       
       {currentSection === 'dashboard' && user && user.user_type === 'lender' && (
@@ -219,17 +275,18 @@ function App() {
       <Footer />
     </div>
   );
+  };
 
   return (
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<MainApp />} />
-        <Route path="/admin-login" element={<LoginPage isLogin={isLogin} setIsLogin={setIsLogin} loginData={loginData} setLoginData={setLoginData} registerData={registerData} setRegisterData={setRegisterData} handleLogin={handleLogin} handleRegister={handleRegister} />} />
+        <Route path="/admin-login" element={<LoginPage isLogin={isLogin} setIsLogin={setIsLogin} loginData={loginData} setLoginData={setLoginData} registerData={registerData} setRegisterData={setRegisterData} handleLogin={handleLogin} handleRegister={handleRegister} user={user} />} />
         <Route 
           path="/admin" 
           element={
             user && user.userType === 'admin' 
-              ? <AdminDashboard user={user} onLogout={handleLogout} /> 
+              ? <AdminNavigationWrapper user={user} onLogout={handleLogout} setCurrentSection={setCurrentSection} /> 
               : <Navigate to="/admin-login" />
           } 
         />

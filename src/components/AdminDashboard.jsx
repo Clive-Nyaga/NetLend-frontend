@@ -28,7 +28,7 @@ ChartJS.register(
 
 const API_BASE = 'http://localhost:5000/api';
 
-function AdminDashboard({ user, onLogout }) {
+function AdminDashboard({ user, onLogout, onShowSection }) {
   const [activeSection, setActiveSection] = useState('analytics');
   const [users, setUsers] = useState([]);
   const [analytics, setAnalytics] = useState({});
@@ -702,24 +702,39 @@ function AdminDashboard({ user, onLogout }) {
   );
 
   return (
-    <div className="dashboard">
-      <div className="sidebar">
-        <h3>Admin Portal</h3>
-        <ul>
-          <li><a onClick={() => setActiveSection('analytics')} className={activeSection === 'analytics' ? 'active' : ''}>Analytics</a></li>
-          <li><a onClick={() => setActiveSection('users')} className={activeSection === 'users' ? 'active' : ''}>User Management</a></li>
-          <li><a onClick={() => setActiveSection('properties')} className={activeSection === 'properties' ? 'active' : ''}>Properties</a></li>
-          <li><a onClick={() => setActiveSection('oversight')} className={activeSection === 'oversight' ? 'active' : ''}>Mortgage Oversight</a></li>
-          <li><a onClick={() => setActiveSection('feedback')} className={activeSection === 'feedback' ? 'active' : ''}>Feedback</a></li>
-          <li><a onClick={onLogout}>Logout</a></li>
-        </ul>
-      </div>
-      <div className="main-content">
-        {activeSection === 'analytics' && renderAnalytics()}
-        {activeSection === 'users' && renderUsers()}
-        {activeSection === 'properties' && renderProperties()}
-        {activeSection === 'oversight' && renderMortgageOversight()}
-        {activeSection === 'feedback' && renderFeedback()}
+    <div className="App">
+      <nav className="navbar">
+        <div className="navbar-brand">
+          <div className="logo-placeholder"></div>
+          <h1>NetLend Admin Portal</h1>
+        </div>
+        <div className="nav-links">
+          <span className="welcome-message">Welcome, {user?.name || 'Admin'}</span>
+          <a onClick={() => onShowSection && onShowSection('home')}>Home</a>
+          <a onClick={() => onShowSection && onShowSection('about')}>About</a>
+          <a onClick={() => onShowSection && onShowSection('contact')}>Contact</a>
+          <a onClick={onLogout}>Logout</a>
+        </div>
+      </nav>
+      
+      <div className="dashboard">
+        <div className="sidebar">
+          <h3>Admin Portal</h3>
+          <ul>
+            <li><a onClick={() => setActiveSection('analytics')} className={activeSection === 'analytics' ? 'active' : ''}>Analytics</a></li>
+            <li><a onClick={() => setActiveSection('users')} className={activeSection === 'users' ? 'active' : ''}>User Management</a></li>
+            <li><a onClick={() => setActiveSection('properties')} className={activeSection === 'properties' ? 'active' : ''}>Properties</a></li>
+            <li><a onClick={() => setActiveSection('oversight')} className={activeSection === 'oversight' ? 'active' : ''}>Mortgage Oversight</a></li>
+            <li><a onClick={() => setActiveSection('feedback')} className={activeSection === 'feedback' ? 'active' : ''}>Feedback</a></li>
+          </ul>
+        </div>
+        <div className="main-content">
+          {activeSection === 'analytics' && renderAnalytics()}
+          {activeSection === 'users' && renderUsers()}
+          {activeSection === 'properties' && renderProperties()}
+          {activeSection === 'oversight' && renderMortgageOversight()}
+          {activeSection === 'feedback' && renderFeedback()}
+        </div>
       </div>
     </div>
   );

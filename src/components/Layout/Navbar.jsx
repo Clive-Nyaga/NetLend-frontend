@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-const Navbar = ({ user, onLogin, onLogout, onShowSection, onRegister }) => {
+const Navbar = ({ user, onLogin, onLogout, onShowSection, onRegister, onShowDashboard }) => {
   return (
     <nav className="navbar">
       <div className="navbar-brand">
@@ -17,7 +17,7 @@ const Navbar = ({ user, onLogin, onLogout, onShowSection, onRegister }) => {
         </div>
       ) : (
         <>
-          {user.user_type === 'lender' && (
+          {(user.user_type === 'lender' || user.userType === 'admin') && (
             <div style={{position: 'absolute', left: '50%', transform: 'translateX(-50%)', color: 'var(--primary-color)', fontWeight: '600', fontSize: '1.1rem'}}>
               Welcome,&nbsp;{(user.contact_person || user.name || '').split(' ')[0]} 🎉
             </div>
@@ -27,7 +27,11 @@ const Navbar = ({ user, onLogin, onLogout, onShowSection, onRegister }) => {
             <a onClick={() => onShowSection('about')}>About Us</a>
             <a onClick={() => onShowSection('contact')}>Contact Us</a>
             {user.user_type === 'lender' && <a onClick={() => onShowSection('dashboard')}>Dashboard</a>}
-            <a onClick={onLogout}>Logout</a>
+            {user.userType === 'admin' ? (
+              <a onClick={onShowDashboard}>Dashboard</a>
+            ) : (
+              <a onClick={onLogout}>Logout</a>
+            )}
           </div>
         </>
       )}
