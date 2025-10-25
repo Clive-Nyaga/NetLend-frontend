@@ -4,7 +4,7 @@ const Navbar = ({ user, onLogin, onLogout, onShowSection, onRegister, onShowDash
   return (
     <nav className="navbar">
       <div className="navbar-brand">
-        <div className="logo-placeholder"></div>
+        <img src="/src/assets/logo.png" alt="NetLend Logo" className="logo" />
         <h1>NetLend</h1>
       </div>
       {!user ? (
