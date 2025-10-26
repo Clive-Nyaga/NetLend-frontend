@@ -16,15 +16,30 @@ const LoginModal = ({ isOpen, onClose, onLogin, onSwitchToRegister }) => {
     try {
       const response = await api.login(formData);
       console.log('Login response:', response);
-      if (response.lender && response.access_token) {
+      if (response.access_token) {
         // Store token in localStorage
         localStorage.setItem('access_token', response.access_token);
-        // Add user_type to lender object for routing
-        const userData = {
-          ...response.lender,
-          user_type: 'lender',
-          access_token: response.access_token
-        };
+        
+        let userData;
+        if (response.lender) {
+          // Lender login
+          userData = {
+            ...response.lender,
+            user_type: 'lender',
+            access_token: response.access_token
+          };
+        } else if (response.user) {
+          // Homebuyer login
+          userData = {
+            ...response.user,
+            user_type: 'homebuyer',
+            access_token: response.access_token
+          };
+        } else {
+          setError('Login failed: Invalid response');
+          return;
+        }
+        
         onLogin(userData);
         onClose();
       } else {

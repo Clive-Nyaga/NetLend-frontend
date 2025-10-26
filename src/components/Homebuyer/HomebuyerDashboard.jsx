@@ -13,6 +13,11 @@ function HomebuyerDashboard({ user, onLogout }) {
   const [eligibilityScore, setEligibilityScore] = useState(null);
 
   useEffect(() => {
+    // Set up axios headers with token
+    const token = localStorage.getItem('access_token');
+    if (token) {
+      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+    }
     loadUserData();
   }, []);
 

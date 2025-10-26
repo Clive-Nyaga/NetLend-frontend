@@ -29,7 +29,7 @@ const RegisterModal = ({ isOpen, onClose, onRegister, onSwitchToLogin }) => {
       console.log('Registration response:', response);
       console.log('User type:', formData.userType);
       console.log('Response keys:', Object.keys(response));
-      if (response.message === 'Registration successful') {
+      if (response.message && (response.message === 'Registration successful' || response.message === 'Buyer registration successful' || response.message === 'Lender registration successful')) {
         // Registration successful, now auto-login the user
         try {
           const loginResponse = await api.login({
@@ -51,9 +51,13 @@ const RegisterModal = ({ isOpen, onClose, onRegister, onSwitchToLogin }) => {
             onRegister(userData);
           } else {
             // Handle homebuyer login
+            if (loginResponse.access_token) {
+              localStorage.setItem('access_token', loginResponse.access_token);
+            }
             const userData = {
               ...(loginResponse.user || loginResponse),
-              user_type: 'homebuyer'
+              user_type: 'homebuyer',
+              access_token: loginResponse.access_token
             };
             onRegister(userData);
           }

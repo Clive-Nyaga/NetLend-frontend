@@ -56,17 +56,20 @@ function AdminDashboard({ user, onLogout, onShowSection }) {
 
   const loadData = async () => {
     try {
-      const [usersRes, analyticsRes, propsRes] = await Promise.all([
-        axios.get(`${API_BASE}/admin/users-bypass`),
-        axios.get(`${API_BASE}/admin/analytics-bypass`),
-        axios.get(`${API_BASE}/admin/properties-bypass`)
+      const [usersRes, analyticsRes, propsRes, feedbackRes, productsRes, appsRes] = await Promise.all([
+        axios.get(`${API_BASE}/admin/users`),
+        axios.get(`${API_BASE}/admin/analytics`),
+        axios.get(`${API_BASE}/admin/properties`),
+        axios.get(`${API_BASE}/admin/feedback`),
+        axios.get(`${API_BASE}/admin/mortgage-products`),
+        axios.get(`${API_BASE}/admin/applications`)
       ]);
       setUsers(usersRes.data || []);
       setAnalytics(analyticsRes.data || {});
       setProperties(propsRes.data || []);
-      setFeedback([]);
-      setMortgageProducts([]);
-      setApplications([]);
+      setFeedback(feedbackRes.data || []);
+      setMortgageProducts(productsRes.data || []);
+      setApplications(appsRes.data || []);
     } catch (error) {
       console.error('Error loading data:', error);
       alert('Failed to load admin data. Please check if backend is running.');
@@ -76,7 +79,12 @@ function AdminDashboard({ user, onLogout, onShowSection }) {
   const createUser = async (e) => {
     e.preventDefault();
     try {
-      await axios.post(`${API_BASE}/admin/users`, newUser);
+      await axios.post(`${API_BASE}/register`, {
+        name: newUser.name,
+        email: newUser.email,
+        password: 'temp123', // Temporary password
+        userType: newUser.userType
+      });
       setNewUser({ name: '', email: '', userType: 'homebuyer', verified: false });
       setShowUserForm(false);
       loadData();
