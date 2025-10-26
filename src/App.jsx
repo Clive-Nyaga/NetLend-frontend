@@ -193,7 +193,7 @@ function App() {
 
   const handleModalLogin = (userData) => {
     setUser(userData);
-    if (userData.user_type === 'lender' || userData.user_type === 'homebuyer') {
+    if (userData.user_type === 'lender' || userData.user_type === 'homebuyer' || userData.userType === 'admin') {
       setCurrentSection('dashboard');
     } else {
       setCurrentSection('home');
