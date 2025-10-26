@@ -52,20 +52,17 @@ function AdminDashboard({ user, onLogout, onShowSection }) {
 
   const loadData = async () => {
     try {
-      const [usersRes, analyticsRes, feedbackRes, productsRes, appsRes, propsRes] = await Promise.all([
-        axios.get(`${API_BASE}/admin/users`),
-        axios.get(`${API_BASE}/admin/analytics`),
-        axios.get(`${API_BASE}/admin/feedback`),
-        axios.get(`${API_BASE}/admin/mortgage-products`),
-        axios.get(`${API_BASE}/admin/applications`),
-        axios.get(`${API_BASE}/admin/properties`)
+      const [usersRes, analyticsRes, propsRes] = await Promise.all([
+        axios.get(`${API_BASE}/admin/users-bypass`),
+        axios.get(`${API_BASE}/admin/analytics-bypass`),
+        axios.get(`${API_BASE}/admin/properties-bypass`)
       ]);
       setUsers(usersRes.data || []);
       setAnalytics(analyticsRes.data || {});
-      setFeedback(feedbackRes.data || []);
-      setMortgageProducts(productsRes.data || []);
-      setApplications(appsRes.data || []);
       setProperties(propsRes.data || []);
+      setFeedback([]);
+      setMortgageProducts([]);
+      setApplications([]);
     } catch (error) {
       console.error('Error loading data:', error);
       alert('Failed to load admin data. Please check if backend is running.');
@@ -710,9 +707,9 @@ function AdminDashboard({ user, onLogout, onShowSection }) {
         </div>
         <div className="nav-links">
           <span className="welcome-message">Welcome, {user?.name || 'Admin'}</span>
-          <a onClick={() => onShowSection && onShowSection('home')}>Home</a>
-          <a onClick={() => onShowSection && onShowSection('about')}>About</a>
-          <a onClick={() => onShowSection && onShowSection('contact')}>Contact</a>
+          <a onClick={() => onShowSection('home')}>Home</a>
+          <a onClick={() => onShowSection('about')}>About</a>
+          <a onClick={() => onShowSection('contact')}>Contact</a>
           <a onClick={onLogout}>Logout</a>
         </div>
       </nav>
