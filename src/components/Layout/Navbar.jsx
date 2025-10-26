@@ -17,7 +17,7 @@ const Navbar = ({ user, onLogin, onLogout, onShowSection, onRegister, onShowDash
         </div>
       ) : (
         <>
-          {(user.user_type === 'lender' || user.userType === 'admin') && (
+          {(user.user_type === 'lender' || user.user_type === 'homebuyer' || user.userType === 'admin') && (
             <div style={{position: 'absolute', left: '50%', transform: 'translateX(-50%)', color: 'var(--primary-color)', fontWeight: '600', fontSize: '1.1rem'}}>
               Welcome,&nbsp;{(user.contact_person || user.name || '').split(' ')[0]} 🎉
             </div>
@@ -27,6 +27,7 @@ const Navbar = ({ user, onLogin, onLogout, onShowSection, onRegister, onShowDash
             <a onClick={() => onShowSection('about')}>About Us</a>
             <a onClick={() => onShowSection('contact')}>Contact Us</a>
             {user.user_type === 'lender' && <a onClick={() => onShowSection('dashboard')}>Dashboard</a>}
+            {user.user_type === 'homebuyer' && <a onClick={() => onShowSection('dashboard')}>Dashboard</a>}
             {user.userType === 'admin' ? (
               <a onClick={onShowDashboard}>Dashboard</a>
             ) : (

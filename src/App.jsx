@@ -4,6 +4,7 @@ import axios from 'axios';
 import Navbar from './components/Layout/Navbar';
 import LenderDashboard from './components/Lender/LenderDashboard';
 import AdminDashboard from './components/AdminDashboard.jsx';
+import HomebuyerDashboard from './components/Homebuyer/HomebuyerDashboard';
 import LoginModal from './components/Modals/LoginModal';
 import RegisterModal from './components/Modals/RegisterModal';
 import Properties from './components/Home/Properties';
@@ -192,7 +193,7 @@ function App() {
 
   const handleModalLogin = (userData) => {
     setUser(userData);
-    if (userData.user_type === 'lender') {
+    if (userData.user_type === 'lender' || userData.user_type === 'homebuyer') {
       setCurrentSection('dashboard');
     } else {
       setCurrentSection('home');
@@ -246,6 +247,10 @@ function App() {
       
       {currentSection === 'dashboard' && user && user.user_type === 'lender' && (
         <LenderDashboard user={user} />
+      )}
+      
+      {currentSection === 'dashboard' && user && user.user_type === 'homebuyer' && (
+        <HomebuyerDashboard user={user} onLogout={handleLogout} />
       )}
       
       {currentSection === 'home' && <Properties />}

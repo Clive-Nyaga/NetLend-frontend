@@ -51,7 +51,10 @@ const RegisterModal = ({ isOpen, onClose, onRegister, onSwitchToLogin }) => {
             onRegister(userData);
           } else {
             // Handle homebuyer login
-            const userData = loginResponse.user || loginResponse;
+            const userData = {
+              ...(loginResponse.user || loginResponse),
+              user_type: 'homebuyer'
+            };
             onRegister(userData);
           }
           onClose();
