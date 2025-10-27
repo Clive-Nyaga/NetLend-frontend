@@ -10,6 +10,17 @@ const ContactUs = () => {
     userType: 'buyer'
   });
 
+  const [openFaq, setOpenFaq] = useState(null);
+
+  const faqs = [
+    { question: 'How long does the mortgage approval process take?', answer: 'The typical approval process takes 48-72 hours after all required documents are submitted. Complex applications may take up to 7 business days.' },
+    { question: 'What documents do I need to apply?', answer: 'You\'ll need: National ID/Passport, proof of income (payslips or tax returns), bank statements for the last 6 months, and property valuation report.' },
+    { question: 'What is the minimum down payment required?', answer: 'Most lenders require a minimum of 10-20% down payment, though this varies by lender and property type. Check with individual lenders for specific requirements.' },
+    { question: 'Can I compare multiple lenders at once?', answer: 'Yes! That\'s the main benefit of NetLend. You can compare offers from all our partner lenders side-by-side and choose the best option for you.' },
+    { question: 'Is my personal information secure?', answer: 'Absolutely. We use bank-level 256-bit encryption and are fully compliant with Kenya\'s Data Protection Act 2019. Your data is never shared without your consent.' },
+    { question: 'What if my application is rejected?', answer: 'If one lender rejects your application, you can still apply with other lenders on our platform. Our team can also help you understand why and improve your application.' }
+  ];
+
   const handleChange = (e) => {
     setFormData({
       ...formData,
@@ -33,60 +44,41 @@ const ContactUs = () => {
 
   return (
     <div className="contact-page">
-      {/* Contact Hero Section */}
+      {/* Header */}
       <div className="contact-hero">
-        <div className="contact-hero-background">
-          
-          <div className="contact-hero-overlay"></div>
-        </div>
         <div className="container">
-          <div className="contact-hero-content">
-            <h1>Get In Touch</h1>
-            <p>We're here to help you navigate your mortgage journey. Reach out to our expert team for personalized assistance.</p>
+          <h1>Contact & Support</h1>
+          <p>We're here to help you with any questions or concerns</p>
+        </div>
+      </div>
+
+      {/* Contact Info Cards */}
+      <div className="contact-info-section">
+        <div className="container">
+          <div className="contact-info-grid">
+            <div className="contact-info-card">
+              <div className="contact-info-icon">📞</div>
+              <h3>Phone</h3>
+              <p>+254 700 123 456</p>
+              <p className="contact-info-sub">Mon-Fri, 8AM-6PM EAT</p>
+            </div>
+            <div className="contact-info-card">
+              <div className="contact-info-icon">📧</div>
+              <h3>Email</h3>
+              <p>info@netlend.co.ke</p>
+              <p className="contact-info-sub">Response within 24 hours</p>
+            </div>
+            <div className="contact-info-card">
+              <div className="contact-info-icon">📍</div>
+              <h3>Office</h3>
+              <p>Westlands, Nairobi</p>
+              <p className="contact-info-sub">Kenya</p>
+            </div>
           </div>
         </div>
       </div>
 
       <div className="container">
-        {/* Contact Methods */}
-        <div className="contact-methods">
-          <h2>Contact Information</h2>
-          <div className="contact-grid">
-            <div className="contact-card">
-              <div className="contact-icon">
-                
-              </div>
-              <h3>📞 Phone Support</h3>
-              <p><strong>Main Line:</strong> +254 700 123 456</p>
-              <p><strong>WhatsApp:</strong> +254 700 123 456</p>
-              <p>Monday - Friday: 8:00 AM - 6:00 PM</p>
-              <p>Saturday: 9:00 AM - 2:00 PM</p>
-            </div>
-
-            <div className="contact-card">
-              <div className="contact-icon">
-                
-              </div>
-              <h3>📧 Email Support</h3>
-              <p><strong>General:</strong> info@netlend.co.ke</p>
-              <p><strong>Support:</strong> support@netlend.co.ke</p>
-              <p><strong>Partnerships:</strong> partners@netlend.co.ke</p>
-              <p>Response time: Within 24 hours</p>
-            </div>
-
-            <div className="contact-card">
-              <div className="contact-icon">
-                
-              </div>
-              <h3>🏢 Office Location</h3>
-              <p><strong>NetLend Kenya Ltd</strong></p>
-              <p>Westlands Office Park</p>
-              <p>Waiyaki Way, Westlands</p>
-              <p>Nairobi, Kenya</p>
-              <p>P.O. Box 12345-00100</p>
-            </div>
-          </div>
-        </div>
 
         {/* Contact Form */}
         <div className="contact-form-section">
@@ -206,33 +198,59 @@ const ContactUs = () => {
           </div>
         </div>
 
+        {/* Business Hours & Map */}
+        <div className="contact-extras">
+          <div className="business-hours-card">
+            <h3>⏰ Business Hours</h3>
+            <div className="hours-list">
+              <div className="hours-item">
+                <span>Monday - Friday</span>
+                <span>8:00 AM - 6:00 PM EAT</span>
+              </div>
+              <div className="hours-item">
+                <span>Saturday</span>
+                <span>9:00 AM - 1:00 PM EAT</span>
+              </div>
+              <div className="hours-item closed">
+                <span>Sunday</span>
+                <span>Closed</span>
+              </div>
+            </div>
+          </div>
+          <div className="map-card">
+            <div className="map-placeholder">
+              <div className="map-icon">📍</div>
+              <p>Westlands Business District, Nairobi, Kenya</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Live Chat CTA */}
+        <div className="live-chat-cta">
+          <div className="chat-icon">💬</div>
+          <h3>Need Immediate Help?</h3>
+          <p>Chat with us live for instant support</p>
+          <button className="btn btn-secondary">Start Live Chat</button>
+        </div>
+
         {/* FAQ Section */}
         <div className="faq-section">
           <h2>Frequently Asked Questions</h2>
-          <div className="faq-grid">
-            <div className="faq-card">
-              <h3>🏠 For Homebuyers</h3>
-              <div className="faq-item">
-                <h4>How do I get started?</h4>
-                <p>Simply register on our platform, complete your profile, and submit your mortgage application. We'll connect you with suitable lenders.</p>
+          <div className="faq-accordion">
+            {faqs.map((faq, i) => (
+              <div key={i} className="faq-item">
+                <button 
+                  className="faq-question"
+                  onClick={() => setOpenFaq(openFaq === i ? null : i)}
+                >
+                  <span>{faq.question}</span>
+                  <span className="faq-icon">{openFaq === i ? '−' : '+'}</span>
+                </button>
+                {openFaq === i && (
+                  <div className="faq-answer">{faq.answer}</div>
+                )}
               </div>
-              <div className="faq-item">
-                <h4>Is NetLend free to use?</h4>
-                <p>Yes! Our platform is completely free for homebuyers. We earn through partnerships with lenders.</p>
-              </div>
-            </div>
-
-            <div className="faq-card">
-              <h3>🏦 For Lenders</h3>
-              <div className="faq-item">
-                <h4>How do I become a partner?</h4>
-                <p>Contact our partnerships team. We work with licensed banks, SACCOs, and approved financial institutions.</p>
-              </div>
-              <div className="faq-item">
-                <h4>What are the requirements?</h4>
-                <p>Valid CBK or SACCO license, compliance with regulations, and commitment to fair lending practices.</p>
-              </div>
-            </div>
+            ))}
           </div>
         </div>
       </div>

@@ -1743,3 +1743,611 @@ textarea {
     font-size: 3rem;
     margin-bottom: 0.5rem;
 }
+
+/* About Page Sections */
+.about-hero {
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+    color: white;
+    padding: 6rem 2rem;
+    text-align: center;
+}
+
+.about-hero h1 {
+    font-size: 3rem;
+    margin-bottom: 1.5rem;
+}
+
+.about-hero p {
+    font-size: 1.25rem;
+    max-width: 800px;
+    margin: 0 auto;
+    opacity: 0.95;
+}
+
+.about-section-white {
+    padding: 5rem 2rem;
+    background: white;
+}
+
+.about-section-gray {
+    padding: 5rem 2rem;
+    background: var(--secondary);
+}
+
+.story-content {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.story-content p {
+    margin-bottom: 1.5rem;
+    font-size: 1.125rem;
+    line-height: 1.8;
+}
+
+/* Mission & Vision */
+.mission-vision-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 2rem;
+    margin-top: 3rem;
+}
+
+.mv-card {
+    background: white;
+    padding: 3rem;
+    border-radius: var(--radius-lg);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    border: 1px solid var(--border);
+}
+
+.mv-icon {
+    font-size: 4rem;
+    margin-bottom: 1.5rem;
+}
+
+.mv-card h3 {
+    font-size: 1.75rem;
+    margin-bottom: 1rem;
+}
+
+/* Values */
+.values-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    margin-top: 3rem;
+}
+
+.value-card {
+    background: white;
+    padding: 2.5rem;
+    border-radius: var(--radius-lg);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    border: 1px solid var(--border);
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.value-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.12);
+}
+
+.value-icon {
+    font-size: 3.5rem;
+    margin-bottom: 1.5rem;
+}
+
+/* Timeline */
+.timeline-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    margin-top: 3rem;
+}
+
+.timeline-card {
+    background: white;
+    padding: 2rem;
+    border-radius: var(--radius-lg);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    border: 1px solid var(--border);
+    position: relative;
+}
+
+.timeline-year {
+    display: inline-block;
+    background: var(--primary);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: var(--radius-lg);
+    font-weight: 700;
+    font-family: 'Poppins', sans-serif;
+    margin-bottom: 1rem;
+}
+
+/* Team */
+.team-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+    margin-top: 3rem;
+}
+
+.team-card {
+    background: white;
+    padding: 2rem;
+    border-radius: var(--radius-lg);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    border: 1px solid var(--border);
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.team-card:hover {
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.12);
+}
+
+.team-avatar {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    font-weight: 700;
+    font-family: 'Poppins', sans-serif;
+    margin: 0 auto 1.5rem;
+}
+
+.team-role {
+    color: var(--primary);
+    font-weight: 600;
+    margin: 0.5rem 0;
+}
+
+.team-bio {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+/* Compliance */
+.compliance-section {
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+    color: white;
+    padding: 5rem 2rem;
+    text-align: center;
+}
+
+.compliance-section h2,
+.compliance-section p {
+    color: white;
+}
+
+.compliance-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+    margin-top: 3rem;
+}
+
+.compliance-item {
+    text-align: center;
+}
+
+.compliance-icon {
+    width: 80px;
+    height: 80px;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5rem;
+    margin: 0 auto 1.5rem;
+}
+
+.compliance-item h3 {
+    font-size: 1.25rem;
+    margin-bottom: 0.75rem;
+}
+
+.compliance-item p {
+    opacity: 0.9;
+}
+
+@media (max-width: 768px) {
+    .about-hero h1 {
+        font-size: 2rem;
+    }
+    
+    .mission-vision-grid,
+    .values-grid,
+    .timeline-grid,
+    .team-grid,
+    .compliance-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* About CTA Section */
+.about-cta {
+    text-align: center;
+    padding: 3rem 0;
+}
+
+.about-cta h3 {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+}
+
+.about-cta p {
+    font-size: 1.125rem;
+    color: var(--text-secondary);
+    max-width: 800px;
+    margin: 0 auto 2rem;
+}
+
+.cta-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+/* What We Do */
+.what-we-do-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 2rem;
+    margin-top: 3rem;
+}
+
+.wwd-card {
+    background: linear-gradient(135deg, white, var(--secondary));
+    padding: 3rem;
+    border-radius: var(--radius-lg);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    border: 1px solid var(--border);
+}
+
+.wwd-icon {
+    font-size: 4rem;
+    margin-bottom: 1.5rem;
+}
+
+.wwd-list {
+    list-style: none;
+    padding: 0;
+}
+
+.wwd-list li {
+    padding: 0.75rem 0;
+    font-size: 1.05rem;
+    color: var(--text-primary);
+}
+
+/* Commitment */
+.commitment-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+    margin-top: 3rem;
+}
+
+.commitment-card {
+    background: white;
+    padding: 2.5rem;
+    border-radius: var(--radius-lg);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    border: 1px solid var(--border);
+    text-align: center;
+}
+
+.commitment-icon {
+    font-size: 3.5rem;
+    margin-bottom: 1.5rem;
+}
+
+/* Why Choose */
+.why-choose-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+    margin-top: 3rem;
+}
+
+.why-card {
+    background: linear-gradient(135deg, white, var(--secondary));
+    padding: 2.5rem;
+    border-radius: var(--radius-lg);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    border: 1px solid var(--border);
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.why-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.12);
+}
+
+.why-icon {
+    font-size: 3.5rem;
+    margin-bottom: 1.5rem;
+}
+
+/* Impact */
+.impact-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 2rem;
+    margin-top: 3rem;
+}
+
+.impact-card {
+    background: white;
+    padding: 2.5rem;
+    border-radius: var(--radius-lg);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    border: 1px solid var(--border);
+    text-align: center;
+}
+
+.impact-number {
+    font-size: 3rem;
+    font-weight: 700;
+    font-family: 'Poppins', sans-serif;
+    color: var(--primary);
+    margin-bottom: 0.5rem;
+}
+
+.impact-card p {
+    color: var(--text-secondary);
+    font-size: 1rem;
+}
+
+@media (max-width: 768px) {
+    .what-we-do-grid,
+    .commitment-grid,
+    .why-choose-grid,
+    .impact-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Contact Page */
+.contact-hero {
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+    color: white;
+    padding: 4rem 2rem;
+    text-align: center;
+}
+
+.contact-hero h1 {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+.contact-info-section {
+    padding: 3rem 0;
+    background: var(--secondary);
+}
+
+.contact-info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+}
+
+.contact-info-card {
+    background: white;
+    padding: 2.5rem;
+    border-radius: var(--radius-lg);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    text-align: center;
+    border: 1px solid var(--border);
+}
+
+.contact-info-icon {
+    width: 80px;
+    height: 80px;
+    background: var(--primary);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5rem;
+    margin: 0 auto 1.5rem;
+}
+
+.contact-info-sub {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    margin-top: 0.5rem;
+}
+
+/* Contact Form */
+.contact-form-section {
+    padding: 3rem 0;
+}
+
+.contact-form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+}
+
+.form-info h2 {
+    margin-bottom: 1rem;
+}
+
+.form-benefits {
+    margin-top: 2rem;
+}
+
+.benefit-item {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.benefit-icon {
+    font-size: 2rem;
+    flex-shrink: 0;
+}
+
+.contact-form {
+    background: white;
+    padding: 2.5rem;
+    border-radius: var(--radius-lg);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    border: 1px solid var(--border);
+}
+
+.contact-submit {
+    width: 100%;
+}
+
+/* Business Hours & Map */
+.contact-extras {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin: 3rem 0;
+}
+
+.business-hours-card,
+.map-card {
+    background: white;
+    padding: 2rem;
+    border-radius: var(--radius-lg);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    border: 1px solid var(--border);
+}
+
+.hours-list {
+    margin-top: 1.5rem;
+}
+
+.hours-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 1rem 0;
+    border-bottom: 1px solid var(--border);
+}
+
+.hours-item.closed {
+    color: var(--text-secondary);
+    opacity: 0.6;
+}
+
+.map-placeholder {
+    aspect-ratio: 16/9;
+    background: var(--secondary);
+    border-radius: var(--radius-lg);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+}
+
+.map-icon {
+    font-size: 4rem;
+    color: var(--text-secondary);
+}
+
+/* Live Chat CTA */
+.live-chat-cta {
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+    color: white;
+    padding: 3rem;
+    border-radius: var(--radius-lg);
+    text-align: center;
+    margin: 3rem 0;
+}
+
+.chat-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+}
+
+.live-chat-cta h3 {
+    color: white;
+    margin-bottom: 0.5rem;
+}
+
+.live-chat-cta p {
+    margin-bottom: 1.5rem;
+    opacity: 0.95;
+}
+
+/* FAQ */
+.faq-section {
+    margin: 3rem 0;
+}
+
+.faq-accordion {
+    background: white;
+    border-radius: var(--radius-lg);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    border: 1px solid var(--border);
+    overflow: hidden;
+}
+
+.faq-item {
+    border-bottom: 1px solid var(--border);
+}
+
+.faq-item:last-child {
+    border-bottom: none;
+}
+
+.faq-question {
+    width: 100%;
+    padding: 1.5rem;
+    background: none;
+    border: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 500;
+    font-size: 1.05rem;
+    text-align: left;
+    transition: background 0.2s ease;
+}
+
+.faq-question:hover {
+    background: var(--secondary);
+}
+
+.faq-icon {
+    font-size: 1.5rem;
+    color: var(--primary);
+    font-weight: 700;
+}
+
+.faq-answer {
+    padding: 0 1.5rem 1.5rem;
+    color: var(--text-secondary);
+    line-height: 1.7;
+}
+
+@media (max-width: 768px) {
+    .contact-form-grid,
+    .contact-extras {
+        grid-template-columns: 1fr;
+    }
+    
+    .contact-hero h1 {
+        font-size: 2rem;
+    }
+}
