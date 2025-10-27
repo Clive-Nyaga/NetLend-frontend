@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import api from '../../services/api';
+import ImageUpload from '../ImageUpload';
 
 const MyListings = ({ lenderId }) => {
   const [listings, setListings] = useState([]);
@@ -16,7 +17,8 @@ const MyListings = ({ lenderId }) => {
     minimum_income: '',
     down_payment: '',
     bedrooms: '2',
-    images: []
+    images: [],
+    imageUrls: []
   });
   const [submitting, setSubmitting] = useState(false);
   const [formError, setFormError] = useState('');
@@ -351,16 +353,25 @@ const MyListings = ({ lenderId }) => {
                 </div>
               </div>
               <div className="form-group">
-                <label>Property Images (Exactly 5 Required)</label>
-                <input 
-                  type="file" 
-                  name="images"
-                  multiple 
-                  accept="image/*" 
-                  onChange={handleFileChange}
-                  required 
-                />
-                <small style={{color: 'var(--text-secondary)', fontSize: '0.875rem'}}>Upload exactly 5 property images</small>
+                <label>Property Images ({formData.imageUrls.length}/5)</label>
+                <ImageUpload onUploadSuccess={(url) => {
+                  if (formData.imageUrls.length < 5) {
+                    setFormData(prev => ({
+                      ...prev,
+                      imageUrls: [...prev.imageUrls, url]
+                    }));
+                  }
+                }} />
+                {formData.imageUrls.length > 0 && (
+                  <div style={{display: 'flex', gap: '0.5rem', flexWrap: 'wrap', marginTop: '1rem'}}>
+                    {formData.imageUrls.map((url, i) => (
+                      <div key={i} style={{position: 'relative'}}>
+                        <img src={url} alt={`Property ${i+1}`} style={{width: '80px', height: '80px', objectFit: 'cover', borderRadius: '8px'}} />
+                        <button type="button" onClick={() => setFormData(prev => ({...prev, imageUrls: prev.imageUrls.filter((_, idx) => idx !== i)}))} style={{position: 'absolute', top: '-5px', right: '-5px', background: 'red', color: 'white', border: 'none', borderRadius: '50%', width: '20px', height: '20px', cursor: 'pointer'}}>×</button>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
               <div className="form-row">
                 <div className="form-group">

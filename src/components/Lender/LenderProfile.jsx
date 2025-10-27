@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import ImageUpload from '../ImageUpload';
 
 const LenderProfile = ({ user }) => {
   const [profileData, setProfileData] = useState({
@@ -7,7 +8,8 @@ const LenderProfile = ({ user }) => {
     contact_email: user?.email || '',
     phone: user?.phone || '',
     address: user?.address || '',
-    description: user?.description || ''
+    description: user?.description || '',
+    logo: user?.logo || ''
   });
 
   const handleChange = (e) => {
@@ -28,6 +30,11 @@ const LenderProfile = ({ user }) => {
       <h2>Lender Profile</h2>
       
       <form onSubmit={handleSubmit}>
+        <div className="form-group">
+          <label>Company Logo</label>
+          <ImageUpload onUploadSuccess={(url) => setProfileData({...profileData, logo: url})} />
+          {profileData.logo && <img src={profileData.logo} alt="Logo" style={{width: '100px', marginTop: '1rem', borderRadius: '8px'}} />}
+        </div>
         <div className="form-row">
           <div className="form-group">
             <label>Company Name</label>
