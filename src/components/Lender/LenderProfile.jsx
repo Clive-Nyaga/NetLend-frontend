@@ -33,7 +33,6 @@ const LenderProfile = ({ user }) => {
         <div className="form-group">
           <label>Company Logo</label>
           <ImageUpload onUploadSuccess={(url) => setProfileData({...profileData, logo: url})} />
-          {profileData.logo && <img src={profileData.logo} alt="Logo" style={{width: '100px', marginTop: '1rem', borderRadius: '8px'}} />}
         </div>
         <div className="form-row">
           <div className="form-group">

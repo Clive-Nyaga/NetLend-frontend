@@ -36,7 +36,7 @@ const ContactUs = () => {
       {/* Contact Hero Section */}
       <div className="contact-hero">
         <div className="contact-hero-background">
-          <img src="https://images.unsplash.com/photo-1497366216548-37526070297c?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80" alt="Contact Us" className="contact-hero-image" />
+          
           <div className="contact-hero-overlay"></div>
         </div>
         <div className="container">
@@ -54,7 +54,7 @@ const ContactUs = () => {
           <div className="contact-grid">
             <div className="contact-card">
               <div className="contact-icon">
-                <img src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Phone" />
+                
               </div>
               <h3>📞 Phone Support</h3>
               <p><strong>Main Line:</strong> +254 700 123 456</p>
@@ -65,7 +65,7 @@ const ContactUs = () => {
 
             <div className="contact-card">
               <div className="contact-icon">
-                <img src="https://images.unsplash.com/photo-1596526131083-e8c633c948d2?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Email" />
+                
               </div>
               <h3>📧 Email Support</h3>
               <p><strong>General:</strong> info@netlend.co.ke</p>
@@ -76,7 +76,7 @@ const ContactUs = () => {
 
             <div className="contact-card">
               <div className="contact-icon">
-                <img src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Office" />
+                
               </div>
               <h3>🏢 Office Location</h3>
               <p><strong>NetLend Kenya Ltd</strong></p>

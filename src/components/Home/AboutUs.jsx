@@ -4,7 +4,7 @@ const AboutUs = ({ onShowRegister, onShowContact }) => {
       {/* About Hero Section */}
       <div className="about-hero">
         <div className="about-hero-background">
-          <img src="https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80" alt="NetLend About" className="about-hero-image" />
+          
           <div className="about-hero-overlay"></div>
         </div>
         <div className="container">
@@ -35,7 +35,7 @@ const AboutUs = ({ onShowRegister, onShowContact }) => {
           <div className="vision-mission">
             <div className="vm-card">
               <div className="vm-icon">
-                <img src="https://images.unsplash.com/photo-1560472354-b33ff0c44a43?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Who We Are" />
+                
               </div>
               <h3>🏠 Who We Are</h3>
               <p>
@@ -45,7 +45,7 @@ const AboutUs = ({ onShowRegister, onShowContact }) => {
 
             <div className="vm-card">
               <div className="vm-icon">
-                <img src="https://images.unsplash.com/photo-1551836022-deb4988cc6c0?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Our Mission" />
+                
               </div>
               <h3>🎯 Our Mission</h3>
               <p>
@@ -59,7 +59,7 @@ const AboutUs = ({ onShowRegister, onShowContact }) => {
             <div className="services-grid">
               <div className="service-card">
                 <div className="service-icon">
-                  <img src="https://images.unsplash.com/photo-1560472354-b33ff0c44a43?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="For Borrowers" />
+                  
                 </div>
                 <h4>🏠 For Borrowers</h4>
                 <ul>
@@ -71,7 +71,7 @@ const AboutUs = ({ onShowRegister, onShowContact }) => {
               </div>
               <div className="service-card">
                 <div className="service-icon">
-                  <img src="https://images.unsplash.com/photo-1554224155-6726b3ff858f?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="For Lenders" />
+                  
                 </div>
                 <h4>🏦 For Lenders</h4>
                 <ul>
@@ -89,28 +89,28 @@ const AboutUs = ({ onShowRegister, onShowContact }) => {
             <div className="commitment-grid">
               <div className="commitment-item">
                 <div className="commitment-icon">
-                  <img src="https://images.unsplash.com/photo-1589829545856-d10d557cf95f?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Compliance" />
+                  
                 </div>
                 <h4>⚖️ Regulatory Compliance</h4>
                 <p>We operate in full compliance with Kenya's Data Protection Act (2019), Central Bank of Kenya (CBK) guidelines, and Consumer Protection laws.</p>
               </div>
               <div className="commitment-item">
                 <div className="commitment-icon">
-                  <img src="https://images.unsplash.com/photo-1563013544-824ae1b704d3?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Security" />
+                  
                 </div>
                 <h4>🔒 Data Security</h4>
                 <p>Your personal and financial information is protected with bank-level security measures and never shared with unauthorized parties.</p>
               </div>
               <div className="commitment-item">
                 <div className="commitment-icon">
-                  <img src="https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Transparency" />
+                  
                 </div>
                 <h4>📊 Transparency</h4>
                 <p>We ensure all mortgage terms, interest rates, and fees are clearly disclosed upfront with no hidden charges.</p>
               </div>
               <div className="commitment-item">
                 <div className="commitment-icon">
-                  <img src="https://images.unsplash.com/photo-1450101499163-c8848c66ca85?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Fair Lending" />
+                  
                 </div>
                 <h4>🤝 Fair Lending</h4>
                 <p>We promote ethical lending practices and work only with licensed, verified financial institutions.</p>
@@ -123,28 +123,28 @@ const AboutUs = ({ onShowRegister, onShowContact }) => {
             <div className="why-choose-grid">
               <div className="why-choose-item">
                 <div className="why-choose-icon">
-                  <img src="https://images.unsplash.com/photo-1554224155-6726b3ff858f?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Verified Lenders" />
+                  
                 </div>
                 <h4>✅ Verified Lenders</h4>
                 <p>All our partner lenders are licensed and comply with CBK and SACCO regulatory frameworks.</p>
               </div>
               <div className="why-choose-item">
                 <div className="why-choose-icon">
-                  <img src="https://images.unsplash.com/photo-1563013544-824ae1b704d3?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Secure Platform" />
+                  
                 </div>
                 <h4>🔐 Secure Platform</h4>
                 <p>Advanced security measures protect your data and transactions.</p>
               </div>
               <div className="why-choose-item">
                 <div className="why-choose-icon">
-                  <img src="https://images.unsplash.com/photo-1551836022-deb4988cc6c0?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="No Direct Lending" />
+                  
                 </div>
                 <h4>🎯 No Direct Lending</h4>
                 <p>We facilitate connections; we don't lend money, ensuring neutrality and transparency.</p>
               </div>
               <div className="why-choose-item">
                 <div className="why-choose-icon">
-                  <img src="https://images.unsplash.com/photo-1600880292203-757bb62b4baf?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Comprehensive Support" />
+                  
                 </div>
                 <h4>📞 Comprehensive Support</h4>
                 <p>From application to repayment, we provide ongoing support throughout your mortgage journey.</p>
@@ -179,7 +179,7 @@ const AboutUs = ({ onShowRegister, onShowContact }) => {
             <div className="team-grid">
               <div className="team-member">
                 <div className="team-photo">
-                  <img src="https://images.unsplash.com/photo-1494790108755-2616b612b786?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Sarah Wanjiku" />
+                  
                 </div>
                 <h4>Sarah Wanjiku</h4>
                 <p><strong>CEO & Founder</strong></p>
@@ -187,7 +187,7 @@ const AboutUs = ({ onShowRegister, onShowContact }) => {
               </div>
               <div className="team-member">
                 <div className="team-photo">
-                  <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="David Kimani" />
+                  
                 </div>
                 <h4>David Kimani</h4>
                 <p><strong>CTO</strong></p>
@@ -195,7 +195,7 @@ const AboutUs = ({ onShowRegister, onShowContact }) => {
               </div>
               <div className="team-member">
                 <div className="team-photo">
-                  <img src="https://images.unsplash.com/photo-1580489944761-15a19d654956?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Grace Achieng" />
+                  
                 </div>
                 <h4>Grace Achieng</h4>
                 <p><strong>Head of Partnerships</strong></p>

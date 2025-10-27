@@ -113,7 +113,6 @@ const PropertyListings = () => {
         <div className="properties-grid">
           {filteredProperties.map((property, index) => (
             <div key={index} className="property-card">
-              <img 
                 src={property.image || `https://images.unsplash.com/photo-${1564013799919 + index}?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80`} 
                 alt={property.title} 
               />

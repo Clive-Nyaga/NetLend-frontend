@@ -366,7 +366,7 @@ const MyListings = ({ lenderId }) => {
                   <div style={{display: 'flex', gap: '0.5rem', flexWrap: 'wrap', marginTop: '1rem'}}>
                     {formData.imageUrls.map((url, i) => (
                       <div key={i} style={{position: 'relative'}}>
-                        <img src={url} alt={`Property ${i+1}`} style={{width: '80px', height: '80px', objectFit: 'cover', borderRadius: '8px'}} />
+                        
                         <button type="button" onClick={() => setFormData(prev => ({...prev, imageUrls: prev.imageUrls.filter((_, idx) => idx !== i)}))} style={{position: 'absolute', top: '-5px', right: '-5px', background: 'red', color: 'white', border: 'none', borderRadius: '50%', width: '20px', height: '20px', cursor: 'pointer'}}>×</button>
                       </div>
                     ))}
