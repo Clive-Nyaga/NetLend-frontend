@@ -1,4 +1,4 @@
-const AboutUs = () => {
+const AboutUs = ({ onShowRegister, onShowContact }) => {
   return (
     <div className="about-page-wrapper">
       {/* About Hero Section */}
@@ -210,8 +210,8 @@ const AboutUs = () => {
               Whether you're a first-time homebuyer or a financial institution looking to expand your reach, NetLend provides the tools and connections you need. Join thousands of Kenyans who trust NetLend for their mortgage needs.
             </p>
             <div className="cta-buttons">
-              <button className="btn btn-primary">Start Your Application</button>
-              <button className="btn btn-secondary">Partner With Us</button>
+              <button className="btn btn-primary" onClick={onShowRegister}>Start Your Application</button>
+              <button className="btn btn-secondary" onClick={onShowContact}>Partner With Us</button>
             </div>
           </div>
         </div>

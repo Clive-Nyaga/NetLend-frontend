@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
 import api from '../../services/api';
 
-const Properties = () => {
+const Properties = ({ onShowRegister, onShowLogin, onShowContact }) => {
   const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [selectedProperty, setSelectedProperty] = useState(null);
+  const [showPropertyModal, setShowPropertyModal] = useState(false);
 
   useEffect(() => {
     loadProperties();
@@ -102,7 +104,7 @@ const Properties = () => {
               </div>
               <h3>Exciting Opportunities Coming Soon!</h3>
               <p>Our lender partners are preparing amazing mortgage offers for you. Register now to be the first to know when new opportunities become available.</p>
-              <button className="btn btn-primary">Get Notified</button>
+              <button className="btn btn-primary" onClick={onShowRegister}>Get Notified</button>
             </div>
           ) : (
             properties.map((property, index) => {
@@ -122,7 +124,10 @@ const Properties = () => {
                     <p><strong>🏠 Type:</strong> {property.property_type}</p>
                     <p><strong>📊 Interest Rate:</strong> {property.interest_rate}% per annum</p>
                     <p><strong>⏰ Repayment:</strong> {property.repayment_period} years</p>
-                    <button className="btn btn-primary property-btn">View Details</button>
+                    <button className="btn btn-primary property-btn" onClick={() => {
+                      setSelectedProperty(property);
+                      setShowPropertyModal(true);
+                    }}>View Details</button>
                   </div>
                 </div>
               );
@@ -173,8 +178,13 @@ const Properties = () => {
               </div>
               
               <div className="lender-cta">
-                <button className="btn btn-primary lender-btn">Become a Partner</button>
-                <button className="btn btn-secondary lender-btn">Download Partnership Guide</button>
+                <button className="btn btn-primary lender-btn" onClick={onShowContact}>Become a Partner</button>
+                <button className="btn btn-secondary lender-btn" onClick={() => {
+                  const link = document.createElement('a');
+                  link.href = '/partnership-guide.pdf';
+                  link.download = 'NetLend-Partnership-Guide.pdf';
+                  link.click();
+                }}>Download Partnership Guide</button>
               </div>
             </div>
             
@@ -245,6 +255,44 @@ const Properties = () => {
           </div>
         </div>
       </div>
+
+      {/* Property Details Modal */}
+      {showPropertyModal && selectedProperty && (
+        <div className="modal-overlay" onClick={() => setShowPropertyModal(false)}>
+          <div className="modal-content property-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h2>{selectedProperty.title}</h2>
+              <button className="close-btn" onClick={() => setShowPropertyModal(false)}>×</button>
+            </div>
+            <div className="modal-body">
+              <div className="property-details">
+                <img src={selectedProperty.image || 'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'} alt={selectedProperty.title} className="property-detail-image" />
+                <div className="property-info-detailed">
+                  <div className="price-highlight">KSH {selectedProperty.price_range?.toLocaleString()}</div>
+                  <div className="property-specs">
+                    <p><strong>📍 Location:</strong> {selectedProperty.address}, {selectedProperty.county}</p>
+                    <p><strong>🏠 Property Type:</strong> {selectedProperty.property_type}</p>
+                    <p><strong>📊 Interest Rate:</strong> {selectedProperty.interest_rate}% per annum</p>
+                    <p><strong>⏰ Repayment Period:</strong> {selectedProperty.repayment_period} years</p>
+                    <p><strong>💰 Down Payment:</strong> {selectedProperty.down_payment || '20%'}</p>
+                    <p><strong>📋 Description:</strong> {selectedProperty.description || 'Beautiful property in a prime location with modern amenities and excellent connectivity.'}</p>
+                  </div>
+                  <div className="property-actions">
+                    <button className="btn btn-primary" onClick={() => {
+                      setShowPropertyModal(false);
+                      onShowLogin();
+                    }}>Apply for Mortgage</button>
+                    <button className="btn btn-secondary" onClick={() => {
+                      setShowPropertyModal(false);
+                      onShowContact();
+                    }}>Contact Lender</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 };

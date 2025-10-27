@@ -2,171 +2,183 @@ import { useState } from 'react';
 
 const MortgageCalculator = () => {
   const [formData, setFormData] = useState({
-    homePrice: '',
-    downPayment: '',
+    loanAmount: '',
     interestRate: '',
     loanTerm: '30',
+    downPayment: '',
     propertyTax: '',
-    insurance: ''
+    insurance: '',
+    pmi: ''
   });
+  
   const [results, setResults] = useState(null);
 
-  const handleChange = (e) => {
+  const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
-      [name]: value,
-      ...(name === 'homePrice' || name === 'downPayment' ? {
-        loanAmount: (prev.homePrice || 0) - (name === 'downPayment' ? value : prev.downPayment || 0)
-      } : {})
+      [name]: value
     }));
   };
 
-  const calculatePayment = (e) => {
+  const calculateMortgage = (e) => {
     e.preventDefault();
-    const { homePrice, downPayment, interestRate, loanTerm, propertyTax, insurance } = formData;
     
-    const principal = homePrice - downPayment;
-    const monthlyRate = interestRate / 100 / 12;
-    const numPayments = loanTerm * 12;
+    const principal = parseFloat(formData.loanAmount) - parseFloat(formData.downPayment || 0);
+    const monthlyRate = parseFloat(formData.interestRate) / 100 / 12;
+    const numberOfPayments = parseFloat(formData.loanTerm) * 12;
     
-    const monthlyPI = principal * (monthlyRate * Math.pow(1 + monthlyRate, numPayments)) / 
-                     (Math.pow(1 + monthlyRate, numPayments) - 1);
+    // Monthly mortgage payment calculation
+    const monthlyPayment = principal * (monthlyRate * Math.pow(1 + monthlyRate, numberOfPayments)) / 
+                          (Math.pow(1 + monthlyRate, numberOfPayments) - 1);
     
-    const monthlyTax = propertyTax / 12;
-    const monthlyInsurance = insurance / 12;
-    const totalMonthly = monthlyPI + monthlyTax + monthlyInsurance;
+    // Additional monthly costs
+    const monthlyTax = parseFloat(formData.propertyTax || 0) / 12;
+    const monthlyInsurance = parseFloat(formData.insurance || 0) / 12;
+    const monthlyPMI = parseFloat(formData.pmi || 0);
+    
+    const totalMonthlyPayment = monthlyPayment + monthlyTax + monthlyInsurance + monthlyPMI;
+    const totalInterest = (monthlyPayment * numberOfPayments) - principal;
+    const totalCost = principal + totalInterest;
     
     setResults({
-      principalInterest: monthlyPI,
-      monthlyTax,
-      monthlyInsurance,
-      totalPayment: totalMonthly,
-      totalInterest: (monthlyPI * numPayments) - principal,
-      totalCost: monthlyPI * numPayments
+      monthlyPayment: monthlyPayment.toFixed(2),
+      totalMonthlyPayment: totalMonthlyPayment.toFixed(2),
+      totalInterest: totalInterest.toFixed(2),
+      totalCost: totalCost.toFixed(2),
+      principal: principal.toFixed(2)
     });
   };
 
   return (
-    <div className="container">
-      <h2>Advanced Mortgage Calculator</h2>
-      <div className="calculator-grid">
-        <div className="calc-inputs">
-          <form onSubmit={calculatePayment}>
-            <div className="form-group">
-              <label>Home Price ($)</label>
-              <input 
-                type="number" 
-                name="homePrice"
-                value={formData.homePrice}
-                onChange={handleChange}
-                placeholder="400,000" 
-              />
-            </div>
-            <div className="form-group">
-              <label>Down Payment ($)</label>
-              <input 
-                type="number" 
-                name="downPayment"
-                value={formData.downPayment}
-                onChange={handleChange}
-                placeholder="80,000" 
-              />
-            </div>
-            <div className="form-group">
-              <label>Loan Amount ($)</label>
-              <input 
-                type="number" 
-                value={formData.homePrice - formData.downPayment || ''}
-                readOnly 
-              />
-            </div>
+    <div className="calculator-container">
+      <div className="calculator-header">
+        <h2>Mortgage Calculator</h2>
+        <p>Calculate your monthly mortgage payments and total loan costs</p>
+      </div>
+      
+      <div className="calculator-content">
+        <form onSubmit={calculateMortgage} className="calculator-form">
+          <div className="form-group">
+            <label>Home Price (KSH)</label>
+            <input
+              type="number"
+              name="loanAmount"
+              value={formData.loanAmount}
+              onChange={handleInputChange}
+              placeholder="5,000,000"
+              required
+            />
+          </div>
+          
+          <div className="form-group">
+            <label>Down Payment (KSH)</label>
+            <input
+              type="number"
+              name="downPayment"
+              value={formData.downPayment}
+              onChange={handleInputChange}
+              placeholder="1,000,000"
+            />
+          </div>
+          
+          <div className="form-row">
             <div className="form-group">
               <label>Interest Rate (%)</label>
-              <input 
-                type="number" 
+              <input
+                type="number"
+                step="0.01"
                 name="interestRate"
                 value={formData.interestRate}
-                onChange={handleChange}
-                step="0.01" 
-                placeholder="6.5" 
-                required 
+                onChange={handleInputChange}
+                placeholder="12.5"
+                required
               />
             </div>
+            
             <div className="form-group">
-              <label>Loan Term (years)</label>
-              <select name="loanTerm" value={formData.loanTerm} onChange={handleChange}>
+              <label>Loan Term (Years)</label>
+              <select
+                name="loanTerm"
+                value={formData.loanTerm}
+                onChange={handleInputChange}
+              >
                 <option value="15">15 years</option>
                 <option value="20">20 years</option>
                 <option value="25">25 years</option>
                 <option value="30">30 years</option>
               </select>
             </div>
-            <div className="form-group">
-              <label>Annual Property Tax ($)</label>
-              <input 
-                type="number" 
-                name="propertyTax"
-                value={formData.propertyTax}
-                onChange={handleChange}
-                placeholder="4,800" 
-              />
-            </div>
-            <div className="form-group">
-              <label>Annual Insurance ($)</label>
-              <input 
-                type="number" 
-                name="insurance"
-                value={formData.insurance}
-                onChange={handleChange}
-                placeholder="1,200" 
-              />
-            </div>
-            <button type="submit" className="btn">Calculate Payment</button>
-          </form>
-        </div>
+          </div>
+          
+          <div className="form-group">
+            <label>Annual Property Tax (KSH)</label>
+            <input
+              type="number"
+              name="propertyTax"
+              value={formData.propertyTax}
+              onChange={handleInputChange}
+              placeholder="50,000"
+            />
+          </div>
+          
+          <div className="form-group">
+            <label>Annual Home Insurance (KSH)</label>
+            <input
+              type="number"
+              name="insurance"
+              value={formData.insurance}
+              onChange={handleInputChange}
+              placeholder="25,000"
+            />
+          </div>
+          
+          <div className="form-group">
+            <label>Monthly PMI (KSH)</label>
+            <input
+              type="number"
+              name="pmi"
+              value={formData.pmi}
+              onChange={handleInputChange}
+              placeholder="5,000"
+            />
+          </div>
+          
+          <button type="submit" className="btn btn-primary calculate-btn">
+            Calculate Payment
+          </button>
+        </form>
         
-        <div className="calc-results">
-          {results && (
-            <>
+        {results && (
+          <div className="results-section">
+            <h3>Calculation Results</h3>
+            <div className="results-grid">
               <div className="result-card">
-                <h3>Monthly Payment Breakdown</h3>
-                <div className="payment-breakdown">
-                  <div className="payment-item">
-                    <span>Principal & Interest:</span>
-                    <span>${results.principalInterest?.toFixed(2)}</span>
-                  </div>
-                  <div className="payment-item">
-                    <span>Property Tax:</span>
-                    <span>${results.monthlyTax?.toFixed(2)}</span>
-                  </div>
-                  <div className="payment-item">
-                    <span>Insurance:</span>
-                    <span>${results.monthlyInsurance?.toFixed(2)}</span>
-                  </div>
-                  <div className="payment-item total">
-                    <span>Total Monthly Payment:</span>
-                    <span>${results.totalPayment?.toFixed(2)}</span>
-                  </div>
-                </div>
+                <h4>Monthly Payment</h4>
+                <div className="result-value">KSH {parseFloat(results.monthlyPayment).toLocaleString()}</div>
+                <p>Principal & Interest only</p>
               </div>
               
               <div className="result-card">
-                <h3>Loan Summary</h3>
-                <div className="loan-summary">
-                  <div className="summary-item">
-                    <span>Total Interest Paid:</span>
-                    <span>${results.totalInterest?.toFixed(2)}</span>
-                  </div>
-                  <div className="summary-item">
-                    <span>Total Cost of Loan:</span>
-                    <span>${results.totalCost?.toFixed(2)}</span>
-                  </div>
-                </div>
+                <h4>Total Monthly Payment</h4>
+                <div className="result-value">KSH {parseFloat(results.totalMonthlyPayment).toLocaleString()}</div>
+                <p>Including taxes & insurance</p>
               </div>
-            </>
-          )}
-        </div>
+              
+              <div className="result-card">
+                <h4>Total Interest</h4>
+                <div className="result-value">KSH {parseFloat(results.totalInterest).toLocaleString()}</div>
+                <p>Over life of loan</p>
+              </div>
+              
+              <div className="result-card">
+                <h4>Total Cost</h4>
+                <div className="result-value">KSH {parseFloat(results.totalCost).toLocaleString()}</div>
+                <p>Principal + Interest</p>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

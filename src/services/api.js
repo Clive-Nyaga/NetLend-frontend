@@ -182,6 +182,43 @@ const api = {
       console.error('Error fetching mortgages:', error);
       return [];
     }
+  },
+
+  updateMortgageListing: async (listingId, listingData) => {
+    const token = localStorage.getItem('access_token');
+    const headers = {
+      'Content-Type': 'application/json'
+    };
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+    const response = await fetch(`${API_BASE_URL}/mortgages/${listingId}`, {
+      method: 'PUT',
+      headers,
+      body: JSON.stringify(listingData)
+    });
+    const result = await response.json();
+    if (!response.ok) {
+      throw new Error(result.message || result.error || 'Failed to update listing');
+    }
+    return result;
+  },
+
+  deleteMortgageListing: async (listingId) => {
+    const token = localStorage.getItem('access_token');
+    const headers = {};
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+    const response = await fetch(`${API_BASE_URL}/mortgages/${listingId}`, {
+      method: 'DELETE',
+      headers
+    });
+    if (!response.ok) {
+      const result = await response.json();
+      throw new Error(result.message || result.error || 'Failed to delete listing');
+    }
+    return { success: true };
   }
 };
 

@@ -253,9 +253,23 @@ function App() {
         <HomebuyerDashboard user={user} onLogout={handleLogout} />
       )}
       
-      {currentSection === 'home' && <Properties />}
-      {currentSection === 'about' && <AboutUs />}
+      {currentSection === 'home' && (
+        <Properties 
+          onShowRegister={() => setShowRegisterModal(true)}
+          onShowLogin={() => setShowLoginModal(true)}
+          onShowContact={() => setCurrentSection('contact')}
+        />
+      )}
+      {currentSection === 'about' && (
+        <AboutUs 
+          onShowRegister={() => setShowRegisterModal(true)}
+          onShowContact={() => setCurrentSection('contact')}
+        />
+      )}
       {currentSection === 'contact' && <ContactUs />}
+      {currentSection === 'mortgage-calculator' && <MortgageCalculator />}
+      {currentSection === 'affordability-calculator' && <AffordabilityCalculator />}
+      {currentSection === 'loan-comparison' && <LoanComparison />}
       
       <LoginModal 
         isOpen={showLoginModal}

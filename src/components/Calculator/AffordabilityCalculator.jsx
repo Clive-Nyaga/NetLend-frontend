@@ -2,118 +2,238 @@ import { useState } from 'react';
 
 const AffordabilityCalculator = () => {
   const [formData, setFormData] = useState({
-    annualIncome: '',
+    monthlyIncome: '',
     monthlyDebts: '',
-    downPaymentPercent: '20',
-    creditScore: 'excellent'
+    downPayment: '',
+    interestRate: '12.5',
+    loanTerm: '30',
+    propertyTax: '1',
+    insurance: '0.5',
+    debtToIncomeRatio: '28'
   });
-  const [result, setResult] = useState(null);
+  
+  const [results, setResults] = useState(null);
 
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
   };
 
   const calculateAffordability = (e) => {
     e.preventDefault();
-    const { annualIncome, monthlyDebts, downPaymentPercent, creditScore } = formData;
     
-    const monthlyIncome = annualIncome / 12;
-    const maxMonthlyPayment = (monthlyIncome * 0.28) - monthlyDebts;
+    const monthlyIncome = parseFloat(formData.monthlyIncome);
+    const monthlyDebts = parseFloat(formData.monthlyDebts || 0);
+    const downPayment = parseFloat(formData.downPayment || 0);
+    const interestRate = parseFloat(formData.interestRate) / 100 / 12;
+    const loanTerm = parseFloat(formData.loanTerm) * 12;
+    const dtiRatio = parseFloat(formData.debtToIncomeRatio) / 100;
     
-    const rateMap = {
-      excellent: 6.0,
-      good: 6.5,
-      fair: 7.0,
-      poor: 8.0
-    };
+    // Calculate maximum monthly payment based on DTI ratio
+    const maxMonthlyPayment = (monthlyIncome * dtiRatio) - monthlyDebts;
     
-    const interestRate = rateMap[creditScore] / 100 / 12;
-    const numPayments = 30 * 12;
+    // Estimate property tax and insurance as percentage of home value
+    const taxRate = parseFloat(formData.propertyTax) / 100 / 12;
+    const insuranceRate = parseFloat(formData.insurance) / 100 / 12;
     
-    const maxLoanAmount = maxMonthlyPayment * (Math.pow(1 + interestRate, numPayments) - 1) / 
-                         (interestRate * Math.pow(1 + interestRate, numPayments));
+    // Calculate maximum loan amount
+    // P = M * [(1 + r)^n - 1] / [r * (1 + r)^n]
+    const maxLoanAmount = maxMonthlyPayment * ((Math.pow(1 + interestRate, loanTerm) - 1) / 
+                         (interestRate * Math.pow(1 + interestRate, loanTerm)));
     
-    const maxHomePrice = maxLoanAmount / (1 - downPaymentPercent / 100);
-    const recommendedDown = maxHomePrice * (downPaymentPercent / 100);
+    // Adjust for property tax and insurance
+    const adjustedMaxLoan = maxLoanAmount / (1 + taxRate + insuranceRate);
     
-    setResult({
-      maxHomePrice,
-      maxMonthlyPayment,
-      recommendedDown,
-      estimatedRate: rateMap[creditScore]
+    // Maximum home price
+    const maxHomePrice = adjustedMaxLoan + downPayment;
+    
+    // Calculate actual monthly payment components
+    const monthlyPI = adjustedMaxLoan * (interestRate * Math.pow(1 + interestRate, loanTerm)) / 
+                     (Math.pow(1 + interestRate, loanTerm) - 1);
+    const monthlyTaxInsurance = maxHomePrice * (taxRate + insuranceRate);
+    const totalMonthlyPayment = monthlyPI + monthlyTaxInsurance;
+    
+    setResults({
+      maxHomePrice: maxHomePrice.toFixed(0),
+      maxLoanAmount: adjustedMaxLoan.toFixed(0),
+      monthlyPayment: monthlyPI.toFixed(0),
+      monthlyTaxInsurance: monthlyTaxInsurance.toFixed(0),
+      totalMonthlyPayment: totalMonthlyPayment.toFixed(0),
+      remainingIncome: (monthlyIncome - totalMonthlyPayment - monthlyDebts).toFixed(0),
+      dtiUsed: ((totalMonthlyPayment + monthlyDebts) / monthlyIncome * 100).toFixed(1)
     });
   };
 
   return (
-    <div className="container">
-      <h2>Affordability Calculator</h2>
+    <div className="calculator-container">
+      <div className="calculator-header">
+        <h2>Home Affordability Calculator</h2>
+        <p>Determine how much house you can afford based on your income and expenses</p>
+      </div>
       
-      <form onSubmit={calculateAffordability}>
-        <div className="form-row">
+      <div className="calculator-content">
+        <form onSubmit={calculateAffordability} className="calculator-form">
           <div className="form-group">
-            <label>Annual Income ($)</label>
-            <input 
-              type="number" 
-              name="annualIncome"
-              value={formData.annualIncome}
-              onChange={handleChange}
-              placeholder="75,000" 
-              required 
+            <label>Monthly Gross Income (KSH)</label>
+            <input
+              type="number"
+              name="monthlyIncome"
+              value={formData.monthlyIncome}
+              onChange={handleInputChange}
+              placeholder="200,000"
+              required
             />
           </div>
+          
           <div className="form-group">
-            <label>Monthly Debts ($)</label>
-            <input 
-              type="number" 
+            <label>Monthly Debt Payments (KSH)</label>
+            <input
+              type="number"
               name="monthlyDebts"
               value={formData.monthlyDebts}
-              onChange={handleChange}
-              placeholder="500" 
+              onChange={handleInputChange}
+              placeholder="15,000"
+            />
+            <small>Include car loans, credit cards, student loans, etc.</small>
+          </div>
+          
+          <div className="form-group">
+            <label>Available Down Payment (KSH)</label>
+            <input
+              type="number"
+              name="downPayment"
+              value={formData.downPayment}
+              onChange={handleInputChange}
+              placeholder="1,000,000"
             />
           </div>
-        </div>
-        
-        <div className="form-row">
-          <div className="form-group">
-            <label>Down Payment (%)</label>
-            <input 
-              type="number" 
-              name="downPaymentPercent"
-              value={formData.downPaymentPercent}
-              onChange={handleChange}
-              placeholder="20" 
-              min="0" 
-              max="100" 
-            />
+          
+          <div className="form-row">
+            <div className="form-group">
+              <label>Interest Rate (%)</label>
+              <input
+                type="number"
+                step="0.01"
+                name="interestRate"
+                value={formData.interestRate}
+                onChange={handleInputChange}
+                placeholder="12.5"
+              />
+            </div>
+            
+            <div className="form-group">
+              <label>Loan Term (Years)</label>
+              <select
+                name="loanTerm"
+                value={formData.loanTerm}
+                onChange={handleInputChange}
+              >
+                <option value="15">15 years</option>
+                <option value="20">20 years</option>
+                <option value="25">25 years</option>
+                <option value="30">30 years</option>
+              </select>
+            </div>
           </div>
+          
+          <div className="form-row">
+            <div className="form-group">
+              <label>Property Tax Rate (%)</label>
+              <input
+                type="number"
+                step="0.1"
+                name="propertyTax"
+                value={formData.propertyTax}
+                onChange={handleInputChange}
+                placeholder="1.0"
+              />
+            </div>
+            
+            <div className="form-group">
+              <label>Insurance Rate (%)</label>
+              <input
+                type="number"
+                step="0.1"
+                name="insurance"
+                value={formData.insurance}
+                onChange={handleInputChange}
+                placeholder="0.5"
+              />
+            </div>
+          </div>
+          
           <div className="form-group">
-            <label>Credit Score</label>
-            <select name="creditScore" value={formData.creditScore} onChange={handleChange}>
-              <option value="excellent">Excellent (740+)</option>
-              <option value="good">Good (670-739)</option>
-              <option value="fair">Fair (580-669)</option>
-              <option value="poor">Poor (Below 580)</option>
+            <label>Debt-to-Income Ratio (%)</label>
+            <select
+              name="debtToIncomeRatio"
+              value={formData.debtToIncomeRatio}
+              onChange={handleInputChange}
+            >
+              <option value="28">28% (Conservative)</option>
+              <option value="31">31% (Moderate)</option>
+              <option value="36">36% (Aggressive)</option>
+              <option value="43">43% (Maximum FHA)</option>
             </select>
+            <small>Recommended maximum percentage of income for housing</small>
           </div>
-        </div>
+          
+          <button type="submit" className="btn btn-primary calculate-btn">
+            Calculate Affordability
+          </button>
+        </form>
         
-        <button type="submit" className="btn">Calculate Affordability</button>
-      </form>
-      
-      {result && (
-        <div className="affordability-result">
-          <h3>You Can Afford</h3>
-          <div className="affordability-amount">${result.maxHomePrice?.toLocaleString()}</div>
-          <div className="affordability-details">
-            <p>Maximum monthly payment: <span>${result.maxMonthlyPayment?.toFixed(2)}</span></p>
-            <p>Recommended down payment: <span>${result.recommendedDown?.toLocaleString()}</span></p>
-            <p>Estimated interest rate: <span>{result.estimatedRate}%</span></p>
+        {results && (
+          <div className="results-section">
+            <h3>Affordability Results</h3>
+            <div className="results-grid">
+              <div className="result-card primary">
+                <h4>Maximum Home Price</h4>
+                <div className="result-value">KSH {parseFloat(results.maxHomePrice).toLocaleString()}</div>
+                <p>Based on your income and debts</p>
+              </div>
+              
+              <div className="result-card">
+                <h4>Maximum Loan Amount</h4>
+                <div className="result-value">KSH {parseFloat(results.maxLoanAmount).toLocaleString()}</div>
+                <p>After down payment</p>
+              </div>
+              
+              <div className="result-card">
+                <h4>Monthly Payment</h4>
+                <div className="result-value">KSH {parseFloat(results.monthlyPayment).toLocaleString()}</div>
+                <p>Principal & Interest</p>
+              </div>
+              
+              <div className="result-card">
+                <h4>Tax & Insurance</h4>
+                <div className="result-value">KSH {parseFloat(results.monthlyTaxInsurance).toLocaleString()}</div>
+                <p>Monthly estimate</p>
+              </div>
+              
+              <div className="result-card">
+                <h4>Total Monthly Payment</h4>
+                <div className="result-value">KSH {parseFloat(results.totalMonthlyPayment).toLocaleString()}</div>
+                <p>Including all costs</p>
+              </div>
+              
+              <div className="result-card">
+                <h4>Remaining Income</h4>
+                <div className="result-value">KSH {parseFloat(results.remainingIncome).toLocaleString()}</div>
+                <p>After housing & debts</p>
+              </div>
+            </div>
+            
+            <div className="affordability-summary">
+              <h4>Summary</h4>
+              <p>Your debt-to-income ratio would be <strong>{results.dtiUsed}%</strong></p>
+              <p>You would have <strong>KSH {parseFloat(results.remainingIncome).toLocaleString()}</strong> remaining for other expenses</p>
+            </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 };

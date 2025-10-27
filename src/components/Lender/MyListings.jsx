@@ -15,11 +15,13 @@ const MyListings = ({ lenderId }) => {
     repayment_period: '30',
     minimum_income: '',
     down_payment: '',
+    bedrooms: '2',
     images: []
   });
   const [submitting, setSubmitting] = useState(false);
   const [formError, setFormError] = useState('');
   const [formMessage, setFormMessage] = useState('');
+  const [editingListing, setEditingListing] = useState(null);
 
   useEffect(() => {
     loadListings();
@@ -29,6 +31,7 @@ const MyListings = ({ lenderId }) => {
     try {
       const response = await api.getLenderListings(lenderId);
       console.log('Received response in component:', response);
+      console.log('First listing structure:', response[0]);
       // Handle both array format and object format
       if (Array.isArray(response)) {
         setListings(response);
@@ -80,24 +83,34 @@ const MyListings = ({ lenderId }) => {
     
     setSubmitting(true);
     try {
-      // Try minimal payload first
       const submitData = {
         lender_id: parseInt(lenderId),
         subject: String(formData.title).trim(),
         property_type: String(formData.property_type),
         address: String(formData.address),
-        county: String(formData.county)
+        county: String(formData.county),
+        price_range: parseFloat(formData.price_range) || 0,
+        interest_rate: parseFloat(formData.interest_rate) || 0,
+        repayment_period: parseInt(formData.repayment_period) || 30,
+        minimum_income: parseFloat(formData.minimum_income) || 0,
+        down_payment: parseFloat(formData.down_payment) || 20,
+        bedrooms: parseInt(formData.bedrooms) || 2
       };
       
       console.log('Submitting minimal data:', submitData);
       console.log('Subject type:', typeof submitData.subject);
       console.log('Subject value:', JSON.stringify(submitData.subject));
       
-      await api.createMortgageListing(submitData);
-      setFormMessage('Listing created successfully!');
+      if (editingListing) {
+        await api.updateMortgageListing(editingListing.id, submitData);
+        setFormMessage('Listing updated successfully!');
+      } else {
+        await api.createMortgageListing(submitData);
+        setFormMessage('Listing created successfully!');
+      }
+      
       setTimeout(() => {
-        setShowAddForm(false);
-        setFormMessage('');
+        handleCloseForm();
       }, 2000);
       setFormData({
         title: '',
@@ -109,6 +122,7 @@ const MyListings = ({ lenderId }) => {
         repayment_period: '30',
         minimum_income: '',
         down_payment: '',
+        bedrooms: '2',
         images: []
       });
       loadListings();
@@ -118,6 +132,59 @@ const MyListings = ({ lenderId }) => {
     } finally {
       setSubmitting(false);
     }
+  };
+
+  const handleEditListing = (listing) => {
+    setEditingListing(listing);
+    setFormData({
+      title: listing.title || '',
+      property_type: listing.property_type || 'apartment',
+      address: listing.address || '',
+      county: listing.county || '',
+      price_range: listing.price_range || '',
+      interest_rate: listing.interest_rate || '',
+      repayment_period: listing.repayment_period || '30',
+      minimum_income: listing.minimum_income || '',
+      down_payment: listing.down_payment || '',
+      bedrooms: listing.bedrooms || '2',
+      images: []
+    });
+    setShowAddForm(true);
+  };
+
+  const handleDeleteListing = async (listingId) => {
+    if (window.confirm('Are you sure you want to delete this listing?')) {
+      try {
+        await api.deleteMortgageListing(listingId);
+        setFormMessage('Listing deleted successfully!');
+        setTimeout(() => setFormMessage(''), 3000);
+        loadListings();
+      } catch (error) {
+        console.error('Failed to delete listing:', error);
+        setFormError('Failed to delete listing: ' + error.message);
+        setTimeout(() => setFormError(''), 3000);
+      }
+    }
+  };
+
+  const handleCloseForm = () => {
+    setShowAddForm(false);
+    setEditingListing(null);
+    setFormData({
+      title: '',
+      property_type: 'apartment',
+      address: '',
+      county: '',
+      price_range: '',
+      interest_rate: '',
+      repayment_period: '30',
+      minimum_income: '',
+      down_payment: '',
+      bedrooms: '2',
+      images: []
+    });
+    setFormError('');
+    setFormMessage('');
   };
 
   return (
@@ -133,29 +200,34 @@ const MyListings = ({ lenderId }) => {
         ) : listings.length === 0 ? (
           <p>No listings yet. Create your first mortgage offer!</p>
         ) : (
-          listings.map((listing, index) => (
+          listings.map((listing, index) => {
+            console.log('Listing data:', listing);
+            console.log('Available fields:', Object.keys(listing));
+            return (
             <div key={index} className="listing-card">
-              <h3>{listing.title}</h3>
-              <p><strong>Type:</strong> {listing.property_type}</p>
-              <p><strong>Address:</strong> {listing.address}</p>
-              <p><strong>County:</strong> {listing.county}</p>
-              <p><strong>Price Range:</strong> KSH {listing.price_range?.toLocaleString()}</p>
-              <p><strong>Interest Rate:</strong> {listing.interest_rate}%</p>
-              <p><strong>Repayment Period:</strong> {listing.repayment_period} years</p>
+              <h3>{listing.title || 'Property Listing'}</h3>
+              <p><strong>Location:</strong> {listing.location}</p>
+              <p><strong>Price:</strong> KSH {listing.price?.toLocaleString()}</p>
+              <p><strong>Interest Rate:</strong> {listing.rate}%</p>
+              <p><strong>Term:</strong> {listing.term} years</p>
+              <p><strong>Type:</strong> {listing.type}</p>
+              <p><strong>Bedrooms:</strong> {listing.bedrooms || listing.rooms || 'Not specified'}</p>
+              <p><strong>Created:</strong> {listing.createdAt}</p>
               <div className="listing-actions">
-                <button className="btn">Edit</button>
-                <button className="btn danger">Remove</button>
+                <button className="btn" onClick={() => handleEditListing(listing)}>Edit</button>
+                <button className="btn danger" onClick={() => handleDeleteListing(listing.id)}>Remove</button>
               </div>
             </div>
-          ))
+            );
+          })
         )}
       </div>
 
       {showAddForm && (
         <div className="modal show">
           <div className="modal-content" style={{maxWidth: '600px', maxHeight: '90vh', overflow: 'hidden'}}>
-            <span className="close" onClick={() => setShowAddForm(false)}>&times;</span>
-            <h2>Add Mortgage Offer</h2>
+            <span className="close" onClick={handleCloseForm}>&times;</span>
+            <h2>{editingListing ? 'Edit Mortgage Offer' : 'Add Mortgage Offer'}</h2>
             <div style={{maxHeight: '75vh', overflowY: 'auto', paddingRight: '1rem'}}>
               {formError && (
                 <div style={{background: '#fee2e2', color: '#991b1b', padding: '0.75rem', borderRadius: '8px', marginBottom: '1rem', fontSize: '0.9rem'}}>
@@ -320,15 +392,19 @@ const MyListings = ({ lenderId }) => {
               </div>
               <div className="form-row">
                 <div className="form-group">
-                  <label>Minimum Income (KSH)</label>
-                  <input 
-                    type="number" 
-                    name="minimum_income"
-                    value={formData.minimum_income}
+                  <label>Number of Bedrooms</label>
+                  <select 
+                    name="bedrooms"
+                    value={formData.bedrooms}
                     onChange={handleInputChange}
-                    placeholder="500000" 
                     required
-                  />
+                  >
+                    <option value="1">1 Bedroom</option>
+                    <option value="2">2 Bedrooms</option>
+                    <option value="3">3 Bedrooms</option>
+                    <option value="4">4 Bedrooms</option>
+                    <option value="5">5+ Bedrooms</option>
+                  </select>
                 </div>
                 <div className="form-group">
                   <label>Down Payment (%)</label>
@@ -342,8 +418,22 @@ const MyListings = ({ lenderId }) => {
                   />
                 </div>
               </div>
+              <div className="form-group">
+                <label>Minimum Income (KSH)</label>
+                <input 
+                  type="number" 
+                  name="minimum_income"
+                  value={formData.minimum_income}
+                  onChange={handleInputChange}
+                  placeholder="500000" 
+                  required
+                />
+              </div>
                 <button type="submit" className="btn" disabled={submitting}>
-                  {submitting ? 'Creating...' : 'Create Listing'}
+                  {submitting ? (editingListing ? 'Updating...' : 'Creating...') : (editingListing ? 'Update Listing' : 'Create Listing')}
+                </button>
+                <button type="button" className="btn btn-secondary" onClick={handleCloseForm} style={{marginLeft: '1rem'}}>
+                  Cancel
                 </button>
               </form>
             </div>
