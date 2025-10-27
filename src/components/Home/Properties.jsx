@@ -35,12 +35,8 @@ const Properties = ({ onShowRegister, onShowLogin, onShowContact }) => {
             <button className="btn btn-primary" onClick={() => window.location.href = '#compare'}>Compare Mortgages</button>
             <button className="btn btn-secondary" onClick={() => window.location.href = '#about'}>Learn More</button>
           </div>
-        </div>
-      </div>
-
-      {/* Trust Indicators */}
-      <div className="trust-indicators">
-        <div className="container">
+          
+          {/* Trust Indicators */}
           <div className="trust-items">
             <div className="trust-item">
               <div className="trust-logo">🏛️</div>

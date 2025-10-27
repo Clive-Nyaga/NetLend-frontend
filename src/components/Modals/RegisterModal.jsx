@@ -88,10 +88,10 @@ const RegisterModal = ({ isOpen, onClose, onRegister, onSwitchToLogin }) => {
 
   return (
     <div className={`modal ${isOpen ? 'show' : ''}`}>
-      <div className="modal-content" style={{maxHeight: '90vh', overflow: 'hidden'}}>
+      <div className="modal-content" style={{maxHeight: '95vh', overflow: 'auto'}}>
         <span className="close" onClick={onClose}>&times;</span>
         <h2>Register</h2>
-        <div style={{maxHeight: '75vh', overflowY: 'auto', paddingRight: '1rem'}}>
+        <div>
           {error && (
             <div style={{background: '#fee2e2', color: '#991b1b', padding: '0.75rem', borderRadius: '8px', marginBottom: '1rem', fontSize: '0.9rem'}}>
               {error}
