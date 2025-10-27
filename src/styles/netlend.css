@@ -17,12 +17,15 @@
     --dark-color: #2d3748;
     --light-gray: #F5F8FA;
     --border-color: #e2e8f0;
-    --text-primary: #2d3748;
-    --text-secondary: #718096;
-    --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.1);
-    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
-    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
-    --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1);
+    --text-primary: #333333;
+    --text-secondary: #555555;
+    --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+    --radius-sm: 8px;
+    --radius-md: 10px;
+    --radius-lg: 12px;
 }
 
 body {
@@ -108,10 +111,8 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .nav-links a:hover {
-    color: white;
-    background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-md);
+    color: var(--primary-color);
+    background: var(--secondary-color);
 }
 
 #welcomeUser {
@@ -241,24 +242,22 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .btn {
-    background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+    background: var(--primary-color);
     color: white;
     border: none;
     padding: 1rem 2rem;
-    border-radius: 12px;
+    border-radius: var(--radius-lg);
     font-size: 1rem;
-    font-weight: 600;
+    font-weight: 500;
+    font-family: 'Poppins', sans-serif;
     cursor: pointer;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    position: relative;
-    overflow: hidden;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
     margin-right: 1rem;
 }
 
 .btn:hover {
-    transform: translateY(-3px);
+    background: var(--primary-dark);
+    transform: translateY(-2px);
     box-shadow: var(--shadow-lg);
 }
 
@@ -314,11 +313,12 @@ h2::after {
 
 .property-card {
     border: 1px solid var(--border-color);
-    border-radius: 12px;
+    border-radius: var(--radius-lg);
     overflow: hidden;
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     background: white;
     position: relative;
+    box-shadow: var(--shadow-sm);
 }
 
 .property-card:hover {
@@ -579,11 +579,11 @@ input, select, textarea {
     width: 100%;
     padding: 1rem 1.25rem;
     border: 2px solid var(--border-color);
-    border-radius: 12px;
+    border-radius: var(--radius-lg);
     font-size: 1rem;
     transition: all 0.3s ease;
     background: white;
-    font-family: inherit;
+    font-family: 'Inter', sans-serif;
     color: var(--text-primary);
 }
 
@@ -678,8 +678,8 @@ textarea {
 .stat-card {
     background: white;
     padding: 1.5rem;
-    border-radius: 12px;
-    box-shadow: var(--shadow-md);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
     text-align: center;
     border: 1px solid var(--border-color);
     transition: all 0.3s ease;
@@ -693,8 +693,8 @@ textarea {
     top: 0;
     left: 0;
     right: 0;
-    height: 4px;
-    background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+    height: 3px;
+    background: var(--primary-color);
 }
 
 .stat-card:hover {
