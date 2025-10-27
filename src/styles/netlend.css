@@ -1442,7 +1442,8 @@ textarea {
 
 /* About Page Enhancements */
 .about-page-wrapper {
-    padding-top: 80px;
+    margin: 0;
+    padding: 0;
 }
 
 .about-hero-image {
@@ -1769,8 +1770,9 @@ textarea {
 .about-hero {
     background: linear-gradient(135deg, var(--primary), var(--accent));
     color: white;
-    padding: 4rem 2rem;
+    padding: 7rem 2rem 4rem;
     text-align: center;
+    margin-top: 0;
 }
 
 .about-hero h1 {
@@ -1938,15 +1940,22 @@ textarea {
 
 /* Compliance */
 .compliance-section {
-    background: linear-gradient(135deg, var(--primary), var(--accent));
-    color: white;
+    background: white;
+    color: var(--text-primary);
     padding: 3rem 2rem;
     text-align: center;
 }
 
-.compliance-section h2,
+.compliance-section h2 {
+    color: var(--text-primary) !important;
+}
+
 .compliance-section p {
-    color: white;
+    color: var(--text-primary) !important;
+}
+
+.compliance-section .section-subtitle {
+    color: var(--text-secondary) !important;
 }
 
 .compliance-grid {

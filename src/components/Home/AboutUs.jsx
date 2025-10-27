@@ -15,10 +15,9 @@ const AboutUs = ({ onShowRegister, onShowContact }) => {
   ];
 
   const team = [
-    { name: 'James Kariuki', role: 'CEO & Co-Founder', bio: '15+ years in fintech and banking sector', initials: 'JK' },
-    { name: 'Sarah Muthoni', role: 'CTO', bio: 'Former lead engineer at major tech company', initials: 'SM' },
-    { name: 'David Ochieng', role: 'Head of Compliance', bio: 'Expert in CBK regulations and data protection', initials: 'DO' },
-    { name: 'Grace Akinyi', role: 'Head of Customer Success', bio: 'Passionate about exceptional customer experience', initials: 'GA' }
+    { name: 'Clive Nyaga', role: 'CEO & Co-Founder', bio: '15+ years in fintech and banking sector', initials: 'CN' },
+    { name: 'Aaaqil West', role: 'CTO', bio: 'Former lead engineer at major tech company', initials: 'AW' },
+    { name: 'Jaynne Wangeci', role: 'Head of Customer Success', bio: 'Passionate about exceptional customer experience', initials: 'JW' }
   ];
 
   return (
