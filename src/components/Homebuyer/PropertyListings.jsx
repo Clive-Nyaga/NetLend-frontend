@@ -22,8 +22,15 @@ const PropertyListings = () => {
   });
   const [submitting, setSubmitting] = useState(false);
 
-  const counties = ['Nairobi', 'Mombasa', 'Kiambu', 'Nakuru', 'Kisumu', 'Machakos', 'Kajiado'];
-  const propertyTypes = ['apartment', 'bungalow', 'villa', 'townhouse'];
+  const counties = [
+    'Baringo', 'Bomet', 'Bungoma', 'Busia', 'Elgeyo-Marakwet', 'Embu', 'Garissa', 'Homa Bay',
+    'Isiolo', 'Kajiado', 'Kakamega', 'Kericho', 'Kiambu', 'Kilifi', 'Kirinyaga', 'Kisii',
+    'Kisumu', 'Kitui', 'Kwale', 'Laikipia', 'Lamu', 'Machakos', 'Makueni', 'Mandera',
+    'Marsabit', 'Meru', 'Migori', 'Mombasa', 'Murang\'a', 'Nairobi', 'Nakuru', 'Nandi',
+    'Narok', 'Nyamira', 'Nyandarua', 'Nyeri', 'Samburu', 'Siaya', 'Taita-Taveta', 'Tana River',
+    'Tharaka-Nithi', 'Trans Nzoia', 'Turkana', 'Uasin Gishu', 'Vihiga', 'Wajir', 'West Pokot'
+  ];
+  const propertyTypes = ['apartment', 'bungalow', 'villa', 'townhouse', 'house', 'flat'];
 
   useEffect(() => {
     loadProperties();
@@ -31,8 +38,16 @@ const PropertyListings = () => {
 
   const loadProperties = async () => {
     try {
-      const response = await api.getAllMortgages();
-      setProperties(response || []);
+      console.log('Loading properties for buyer dashboard...');
+      const response = await api.getProperties();
+      console.log('Properties response:', response);
+      const propertiesArray = Array.isArray(response) ? response : [];
+      if (propertiesArray.length > 0) {
+        console.log('First property structure:', propertiesArray[0]);
+        console.log('Property fields:', Object.keys(propertiesArray[0]));
+      }
+      console.log('Setting properties:', propertiesArray);
+      setProperties(propertiesArray);
     } catch (error) {
       console.error('Failed to load properties:', error);
     } finally {
@@ -41,13 +56,17 @@ const PropertyListings = () => {
   };
 
   const filteredProperties = properties.filter(property => {
+    const price = property.price_range || property.price || 0;
+    const location = property.location || property.address || '';
+    const propertyType = property.property_type || property.type || '';
+    
     return (
-      (!filters.county || property.county === filters.county) &&
-      (!filters.propertyType || property.property_type === filters.propertyType) &&
-      (!filters.minPrice || property.price_range >= parseInt(filters.minPrice)) &&
-      (!filters.maxPrice || property.price_range <= parseInt(filters.maxPrice)) &&
-      (!filters.bedrooms || property.bedrooms >= parseInt(filters.bedrooms)) &&
-      (!filters.maxDownPayment || (property.price_range * 0.2) <= parseInt(filters.maxDownPayment))
+      (!filters.county || location.toLowerCase().includes(filters.county.toLowerCase())) &&
+      (!filters.propertyType || propertyType.toLowerCase().includes(filters.propertyType.toLowerCase())) &&
+      (!filters.minPrice || price >= parseInt(filters.minPrice)) &&
+      (!filters.maxPrice || price <= parseInt(filters.maxPrice)) &&
+      (!filters.bedrooms || (property.bedrooms && property.bedrooms >= parseInt(filters.bedrooms))) &&
+      (!filters.maxDownPayment || (price * 0.2) <= parseInt(filters.maxDownPayment))
     );
   });
 
@@ -154,13 +173,17 @@ const PropertyListings = () => {
                   alt={property.title} 
                 />
                 <div className="property-info">
-                  <h3>{property.title}</h3>
-                  <div className="price">KSH {property.price_range?.toLocaleString()}</div>
-                  <p><strong>📍</strong> {property.address}, {property.county}</p>
-                  <p><strong>🏠</strong> {property.property_type}</p>
-                  <p><strong>📊</strong> {property.interest_rate}% interest</p>
-                  <p><strong>⏰</strong> {property.repayment_period} years</p>
-                  <p><strong>💰</strong> Down Payment: KSH {(property.price_range * 0.2)?.toLocaleString()}</p>
+                  <h3>{property.title || `Property ${property.id}`}</h3>
+                  <div className="price">KSH {(property.price_range || property.price)?.toLocaleString()}</div>
+                  <p><strong>📍</strong> {property.address || property.location}</p>
+                  <p><strong>🏦</strong> Lender: {property.lender}</p>
+                  <p><strong>🏠</strong> Type: {property.property_type || property.type}</p>
+                  <p><strong>🛏️</strong> Bedrooms: {property.bedrooms || 'N/A'}</p>
+                  <p><strong>🚿</strong> Bathrooms: {property.bathrooms || 'N/A'}</p>
+                  <p><strong>📐</strong> Size: {property.size || 'N/A'} sq ft</p>
+                  <p><strong>📊</strong> Interest Rate: {property.interest_rate}% per annum</p>
+                  <p><strong>⏰</strong> Repayment: {property.repayment_period} years</p>
+                  <p><strong>💰</strong> Down Payment: KSH {((property.price_range || property.price) * 0.2)?.toLocaleString()}</p>
                   <button className="btn btn-primary" onClick={() => handleApply(property)}>
                     Apply for Mortgage
                   </button>
@@ -186,10 +209,16 @@ const PropertyListings = () => {
               <button className="close-btn" onClick={() => setShowModal(false)}>×</button>
             </div>
             <div className="modal-body">
-              <h4>{selectedProperty.title}</h4>
-              <p><strong>Price:</strong> KSH {selectedProperty.price_range?.toLocaleString()}</p>
-              <p><strong>Location:</strong> {selectedProperty.address}, {selectedProperty.county}</p>
-              <p><strong>Interest Rate:</strong> {selectedProperty.interest_rate}%</p>
+              <h4>{selectedProperty.title || `Property ${selectedProperty.id}`}</h4>
+              <p><strong>Price:</strong> KSH {(selectedProperty.price_range || selectedProperty.price)?.toLocaleString()}</p>
+              <p><strong>Location:</strong> {selectedProperty.address || selectedProperty.location}</p>
+              <p><strong>Lender:</strong> {selectedProperty.lender}</p>
+              <p><strong>Property Type:</strong> {selectedProperty.property_type || selectedProperty.type}</p>
+              <p><strong>Bedrooms:</strong> {selectedProperty.bedrooms || 'N/A'}</p>
+              <p><strong>Bathrooms:</strong> {selectedProperty.bathrooms || 'N/A'}</p>
+              <p><strong>Size:</strong> {selectedProperty.size || 'N/A'} sq ft</p>
+              <p><strong>Interest Rate:</strong> {selectedProperty.interest_rate}% per annum</p>
+              <p><strong>Repayment Period:</strong> {selectedProperty.repayment_period} years</p>
               
               <div className="form-group">
                 <label>Loan Amount (KSH)</label>

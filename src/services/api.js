@@ -38,27 +38,14 @@ const api = {
   // Properties endpoints
   getProperties: async () => {
     try {
-      const response = await fetch(`${API_BASE_URL}/mortgages/`);
+      const response = await fetch(`${API_BASE_URL}/homebuyer/properties`);
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}`);
       }
       return await response.json();
     } catch (error) {
       console.error('API Error:', error);
-      // Return mock data when API fails
-      return {
-        properties: [
-          {
-            title: 'Modern 3BR Apartment',
-            property_type: 'Apartment',
-            address: '123 Westlands Road',
-            county: 'Nairobi',
-            price_range: 8500000,
-            interest_rate: 12.5,
-            repayment_period: 25
-          }
-        ]
-      };
+      return { mortgages: [] };
     }
   },
 
