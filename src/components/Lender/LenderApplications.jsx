@@ -45,23 +45,67 @@ const LenderApplications = ({ lenderId }) => {
         ) : (
           applications.map((app, index) => (
             <div key={index} className="app-card">
-              <h3>Application #{app.id}</h3>
-              <p>Applicant: {app.applicantName}</p>
-              <p>Amount: KSH {app.amount?.toLocaleString()}</p>
-              <p>Status: <span className={`status ${app.status}`}>{app.status}</span></p>
-              <div>
+              <div className="app-header">
+                <h3>Application #{app.id}</h3>
+                <span className={`status ${app.status}`}>{app.status}</span>
+              </div>
+              
+              <div className="applicant-details">
+                <h4>Buyer Information</h4>
+                <div className="buyer-info-grid">
+                  <div className="info-section">
+                    <h5>Personal Details</h5>
+                    <p><strong>Name:</strong> {app.applicantName || app.buyer?.name || 'N/A'}</p>
+                    <p><strong>Email:</strong> {app.buyer?.email || 'N/A'}</p>
+                    <p><strong>Phone:</strong> {app.buyer?.phone || 'N/A'}</p>
+                    <p><strong>ID Number:</strong> {app.buyer?.idNumber || 'N/A'}</p>
+                  </div>
+                  
+                  <div className="info-section">
+                    <h5>Financial Profile</h5>
+                    <p><strong>Monthly Income:</strong> KSH {app.buyer?.monthlyIncome?.toLocaleString() || 'N/A'}</p>
+                    <p><strong>Employment:</strong> {app.buyer?.employmentType || 'N/A'}</p>
+                    <p><strong>Employer:</strong> {app.buyer?.employer || 'N/A'}</p>
+                    <p><strong>Credit Score:</strong> {app.buyer?.creditScore || 'N/A'}</p>
+                  </div>
+                  
+                  <div className="info-section">
+                    <h5>Loan Details</h5>
+                    <p><strong>Requested Amount:</strong> KSH {app.amount?.toLocaleString() || 'N/A'}</p>
+                    <p><strong>Property Value:</strong> KSH {app.propertyValue?.toLocaleString() || 'N/A'}</p>
+                    <p><strong>Down Payment:</strong> KSH {app.downPayment?.toLocaleString() || 'N/A'}</p>
+                    <p><strong>Loan Term:</strong> {app.loanTerm || 'N/A'} years</p>
+                  </div>
+                </div>
+                
+                {app.buyer?.documents && (
+                  <div className="documents-section">
+                    <h5>Submitted Documents</h5>
+                    <div className="documents-list">
+                      {app.buyer.documents.map((doc, idx) => (
+                        <span key={idx} className="document-badge">{doc}</span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+              
+              <div className="app-actions">
                 <button 
                   className="btn success" 
                   onClick={() => updateStatus(app.id, 'approved')}
+                  disabled={app.status === 'approved'}
                 >
                   Approve
                 </button>
                 <button 
                   className="btn danger" 
                   onClick={() => updateStatus(app.id, 'rejected')}
+                  disabled={app.status === 'rejected'}
                 >
                   Reject
                 </button>
+                <button className="btn secondary">Request More Info</button>
               </div>
             </div>
           ))
