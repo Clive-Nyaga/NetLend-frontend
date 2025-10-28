@@ -219,6 +219,26 @@ const api = {
       throw new Error(result.message || result.error || 'Failed to delete listing');
     }
     return { success: true };
+  },
+
+  submitMortgageApplication: async (applicationData) => {
+    const token = localStorage.getItem('access_token');
+    const headers = {
+      'Content-Type': 'application/json'
+    };
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+    const response = await fetch(`${API_BASE_URL}/applications`, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify(applicationData)
+    });
+    const result = await response.json();
+    if (!response.ok) {
+      throw new Error(result.message || result.error || 'Failed to submit application');
+    }
+    return result;
   }
 };
 

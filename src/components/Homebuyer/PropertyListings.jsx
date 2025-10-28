@@ -15,6 +15,12 @@ const PropertyListings = () => {
   const [selectedProperty, setSelectedProperty] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [showAll, setShowAll] = useState(false);
+  const [applicationData, setApplicationData] = useState({
+    loanAmount: '',
+    monthlyIncome: '',
+    employmentStatus: 'employed'
+  });
+  const [submitting, setSubmitting] = useState(false);
 
   const counties = ['Nairobi', 'Mombasa', 'Kiambu', 'Nakuru', 'Kisumu', 'Machakos', 'Kajiado'];
   const propertyTypes = ['apartment', 'bungalow', 'villa', 'townhouse'];
@@ -47,7 +53,35 @@ const PropertyListings = () => {
 
   const handleApply = (property) => {
     setSelectedProperty(property);
+    setApplicationData({
+      loanAmount: property.price_range * 0.8,
+      monthlyIncome: '',
+      employmentStatus: 'employed'
+    });
     setShowModal(true);
+  };
+
+  const handleSubmitApplication = async () => {
+    if (!applicationData.monthlyIncome) {
+      alert('Please enter your monthly income');
+      return;
+    }
+    
+    setSubmitting(true);
+    try {
+      await api.submitMortgageApplication({
+        property_id: selectedProperty.id,
+        loan_amount: applicationData.loanAmount,
+        monthly_income: applicationData.monthlyIncome,
+        employment_status: applicationData.employmentStatus
+      });
+      alert('Application submitted successfully!');
+      setShowModal(false);
+    } catch (error) {
+      alert('Failed to submit application: ' + error.message);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -159,17 +193,29 @@ const PropertyListings = () => {
               
               <div className="form-group">
                 <label>Loan Amount (KSH)</label>
-                <input type="number" defaultValue={selectedProperty.price_range * 0.8} />
+                <input 
+                  type="number" 
+                  value={applicationData.loanAmount}
+                  onChange={(e) => setApplicationData({...applicationData, loanAmount: e.target.value})}
+                />
               </div>
               
               <div className="form-group">
                 <label>Monthly Income (KSH)</label>
-                <input type="number" placeholder="Enter your monthly income" />
+                <input 
+                  type="number" 
+                  placeholder="Enter your monthly income"
+                  value={applicationData.monthlyIncome}
+                  onChange={(e) => setApplicationData({...applicationData, monthlyIncome: e.target.value})}
+                />
               </div>
               
               <div className="form-group">
                 <label>Employment Status</label>
-                <select>
+                <select 
+                  value={applicationData.employmentStatus}
+                  onChange={(e) => setApplicationData({...applicationData, employmentStatus: e.target.value})}
+                >
                   <option value="employed">Employed</option>
                   <option value="self-employed">Self Employed</option>
                   <option value="business">Business Owner</option>
@@ -177,7 +223,13 @@ const PropertyListings = () => {
               </div>
               
               <div className="form-actions">
-                <button className="btn btn-primary">Submit Application</button>
+                <button 
+                  className="btn btn-primary" 
+                  onClick={handleSubmitApplication}
+                  disabled={submitting}
+                >
+                  {submitting ? 'Submitting...' : 'Submit Application'}
+                </button>
                 <button className="btn btn-secondary" onClick={() => setShowModal(false)}>Cancel</button>
               </div>
             </div>

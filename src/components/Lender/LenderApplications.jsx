@@ -11,8 +11,10 @@ const LenderApplications = ({ lenderId }) => {
 
   const loadApplications = async () => {
     try {
+      console.log('Loading applications for lender:', lenderId);
       const response = await api.getLenderApplications(lenderId);
-      setApplications(response.applications || []);
+      console.log('Applications response:', response);
+      setApplications(Array.isArray(response) ? response : response.applications || []);
     } catch (error) {
       console.error('Failed to load applications:', error);
     } finally {
@@ -36,7 +38,10 @@ const LenderApplications = ({ lenderId }) => {
         {loading ? (
           <p>Loading applications...</p>
         ) : applications.length === 0 ? (
-          <p>No applications received yet.</p>
+          <div>
+            <p>No applications received yet.</p>
+            <p>Debug: Loaded {applications.length} applications</p>
+          </div>
         ) : (
           applications.map((app, index) => (
             <div key={index} className="app-card">
