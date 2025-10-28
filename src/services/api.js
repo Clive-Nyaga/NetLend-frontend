@@ -3,6 +3,22 @@ const API_BASE_URL = 'http://127.0.0.1:5000/api';
 const api = {
   // Auth endpoints
   login: async (credentials) => {
+    // Check if it's a buyer login (mock for now)
+    const buyerEmails = ['buyer@test.com', 'test@example.com'];
+    if (buyerEmails.includes(credentials.email)) {
+      // Simulate API delay
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      return {
+        user: {
+          id: 1,
+          full_name: 'Test Buyer',
+          email: credentials.email,
+          user_type: 'buyer'
+        }
+      };
+    }
+    
+    // For lenders, use actual API
     const response = await fetch(`${API_BASE_URL}/auth/login`, {
       method: 'POST',
       headers: { 
@@ -135,12 +151,21 @@ const api = {
   },
 
   register: async (userData) => {
+    // For buyers, use mock registration since backend isn't running
+    if (userData.userType === 'buyer') {
+      // Simulate API delay
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      return { message: 'Registration successful' };
+    }
+    
+    // For lenders, use actual API
     const requestData = {
       email: userData.email,
       password: userData.password,
       full_name: userData.name,
       user_type: userData.userType
     };
+    
     const response = await fetch(`${API_BASE_URL}/auth/register`, {
       method: 'POST',
       headers: { 
@@ -155,7 +180,44 @@ const api = {
       throw new Error(result.message || 'Registration failed');
     }
     return result;
+  },
+
+  // Buyer endpoints
+  searchProperties: async (filters) => {
+    const params = new URLSearchParams(filters);
+    const response = await fetch(`${API_BASE_URL}/properties/search?${params}`);
+    return response.json();
+  },
+
+  getBuyerApplications: async (buyerId) => {
+    const response = await fetch(`${API_BASE_URL}/buyer/${buyerId}/applications`);
+    return response.json();
+  },
+
+  getBuyerMessages: async (buyerId) => {
+    const response = await fetch(`${API_BASE_URL}/buyer/${buyerId}/messages`);
+    return response.json();
+  },
+
+  sendMessage: async (messageData) => {
+    const response = await fetch(`${API_BASE_URL}/messages`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(messageData)
+    });
+    return response.json();
+  },
+
+  updateBuyerProfile: async (buyerId, profileData) => {
+    const response = await fetch(`${API_BASE_URL}/buyer/${buyerId}/profile`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(profileData)
+    });
+    return response.json();
   }
 };
+
+export const { searchProperties, getBuyerApplications, getBuyerMessages, sendMessage, updateBuyerProfile } = api;
 
 export default api;

@@ -1,0 +1,132 @@
+/* M-Pesa Payment Styles */
+.mpesa-payment {
+    text-align: center;
+    padding: 1rem;
+}
+
+.payment-details {
+    margin-top: 1.5rem;
+}
+
+.payment-details p {
+    font-size: 1.25rem;
+    margin-bottom: 2rem;
+    color: var(--text-primary);
+}
+
+.payment-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-top: 2rem;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #00C851, #007E33);
+    color: white;
+    border: none;
+    padding: 1rem 2rem;
+    border-radius: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+}
+
+.btn-primary:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.btn-secondary {
+    background: transparent;
+    color: #718096;
+    border: 2px solid #e2e8f0;
+    padding: 1rem 2rem;
+    border-radius: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-secondary:hover {
+    border-color: #1a365d;
+    color: #1a365d;
+}
+
+.payment-status {
+    margin-top: 1.5rem;
+    padding: 1rem;
+    background: #e8f5e8;
+    border-radius: 8px;
+    color: #2d5a2d;
+    font-weight: 500;
+}
+
+.payment-success {
+    text-align: center;
+    padding: 2rem;
+    color: #38a169;
+}
+
+.payment-success h2 {
+    color: #38a169;
+    margin-bottom: 1rem;
+}
+
+.payment-info {
+    background: #f7fafc;
+    padding: 1.5rem;
+    border-radius: 12px;
+    margin-bottom: 2rem;
+}
+
+.payment-methods {
+    margin: 2rem 0;
+}
+
+.method-option {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1rem;
+    background: #f7fafc;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+}
+
+.method-option input[type="radio"] {
+    width: auto;
+    margin: 0;
+}
+
+.method-option label {
+    margin: 0;
+    font-weight: 600;
+    color: #2d3748;
+}
+
+.application-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.application-actions button {
+    flex: 1;
+}
+
+@media (max-width: 768px) {
+    .payment-buttons {
+        flex-direction: column;
+    }
+    
+    .application-actions {
+        flex-direction: column;
+    }
+}

@@ -26,30 +26,44 @@ const RegisterModal = ({ isOpen, onClose, onRegister, onSwitchToLogin }) => {
       console.log('User type:', formData.userType);
       console.log('Response keys:', Object.keys(response));
       if (response.message === 'Registration successful') {
-        // Registration successful, now auto-login the user
+        // For buyers, create mock user data immediately
+        if (formData.userType === 'buyer') {
+          const userData = {
+            id: Date.now(),
+            full_name: formData.name,
+            email: formData.email,
+            user_type: 'buyer'
+          };
+          onRegister(userData);
+          onClose();
+          return;
+        }
+        
+        // For lenders, do auto-login
         try {
           const loginResponse = await api.login({
             email: formData.email,
             password: formData.password
           });
-          console.log('Auto-login response:', loginResponse);
           
-          if (formData.userType === 'lender' && loginResponse.lender) {
-            // Store token for lenders
-            if (loginResponse.access_token) {
-              localStorage.setItem('access_token', loginResponse.access_token);
-            }
-            const userData = {
-              ...loginResponse.lender,
-              user_type: 'lender',
-              access_token: loginResponse.access_token
-            };
-            onRegister(userData);
-          } else {
-            // Handle homebuyer login
-            const userData = loginResponse.user || loginResponse;
-            onRegister(userData);
+          let userData;
+          if (loginResponse.access_token) {
+            localStorage.setItem('access_token', loginResponse.access_token);
           }
+          
+          if (loginResponse.lender) {
+            userData = {
+              ...loginResponse.lender,
+              user_type: 'lender'
+            };
+          } else {
+            userData = {
+              ...loginResponse,
+              user_type: formData.userType
+            };
+          }
+          
+          onRegister(userData);
           onClose();
         } catch (loginError) {
           console.error('Auto-login failed:', loginError);
