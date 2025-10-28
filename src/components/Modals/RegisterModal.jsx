@@ -12,11 +12,15 @@ const RegisterModal = ({ isOpen, onClose, onRegister, onSwitchToLogin }) => {
   });
   const [loading, setLoading] = useState(false);
   const [showTermsModal, setShowTermsModal] = useState(false);
+  const [error, setError] = useState('');
+  const [message, setMessage] = useState('');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError('');
+    setMessage('');
     if (!formData.agreeToTerms) {
-      alert('You must agree to the Terms and Conditions to proceed.');
+      setError('You must agree to the Terms and Conditions to proceed.');
       return;
     }
     setLoading(true);
@@ -25,21 +29,8 @@ const RegisterModal = ({ isOpen, onClose, onRegister, onSwitchToLogin }) => {
       console.log('Registration response:', response);
       console.log('User type:', formData.userType);
       console.log('Response keys:', Object.keys(response));
-      if (response.message === 'Registration successful') {
-        // For buyers, create mock user data immediately
-        if (formData.userType === 'buyer') {
-          const userData = {
-            id: Date.now(),
-            full_name: formData.name,
-            email: formData.email,
-            user_type: 'buyer'
-          };
-          onRegister(userData);
-          onClose();
-          return;
-        }
-        
-        // For lenders, do auto-login
+      if (response.message && (response.message === 'Registration successful' || response.message === 'Buyer registration successful' || response.message === 'Lender registration successful')) {
+        // Registration successful, now auto-login the user
         try {
           const loginResponse = await api.login({
             email: formData.email,
@@ -57,23 +48,27 @@ const RegisterModal = ({ isOpen, onClose, onRegister, onSwitchToLogin }) => {
               user_type: 'lender'
             };
           } else {
-            userData = {
-              ...loginResponse,
-              user_type: formData.userType
+            // Handle homebuyer login
+            if (loginResponse.access_token) {
+              localStorage.setItem('access_token', loginResponse.access_token);
+            }
+            const userData = {
+              ...(loginResponse.user || loginResponse),
+              user_type: 'homebuyer',
+              access_token: loginResponse.access_token
             };
+            onRegister(userData);
           }
-          
-          onRegister(userData);
           onClose();
         } catch (loginError) {
           console.error('Auto-login failed:', loginError);
-          alert('Registration successful! Please log in manually.');
-          onClose();
+          setMessage('Registration successful! Please log in manually.');
+          setTimeout(() => onClose(), 2000);
         }
       }
     } catch (error) {
       console.error('Registration failed:', error);
-      alert(error.message || 'Registration failed');
+      setError(error.message || 'Registration failed');
     } finally {
       setLoading(false);
     }
@@ -91,10 +86,21 @@ const RegisterModal = ({ isOpen, onClose, onRegister, onSwitchToLogin }) => {
 
   return (
     <div className={`modal ${isOpen ? 'show' : ''}`}>
-      <div className="modal-content">
+      <div className="modal-content" style={{maxHeight: '95vh', overflow: 'auto'}}>
         <span className="close" onClick={onClose}>&times;</span>
         <h2>Register</h2>
-        <form onSubmit={handleSubmit}>
+        <div>
+          {error && (
+            <div style={{background: '#fee2e2', color: '#991b1b', padding: '0.75rem', borderRadius: '8px', marginBottom: '1rem', fontSize: '0.9rem'}}>
+              {error}
+            </div>
+          )}
+          {message && (
+            <div style={{background: '#d1fae5', color: '#065f46', padding: '0.75rem', borderRadius: '8px', marginBottom: '1rem', fontSize: '0.9rem'}}>
+              {message}
+            </div>
+          )}
+          <form onSubmit={handleSubmit}>
           <div className="form-group">
             <label>Full Name</label>
             <input 
@@ -151,13 +157,14 @@ const RegisterModal = ({ isOpen, onClose, onRegister, onSwitchToLogin }) => {
               </label>
             </div>
           </div>
-          <button type="submit" className="btn" disabled={loading || !formData.agreeToTerms}>
-            {loading ? 'Creating Account...' : 'Sign Up'}
-          </button>
-        </form>
-        <p style={{textAlign: 'center', marginTop: '1rem'}}>
-          Already have an account? <a onClick={onSwitchToLogin} style={{color: 'var(--primary-color)', cursor: 'pointer', textDecoration: 'underline'}}>Login</a>
-        </p>
+            <button type="submit" className="btn" disabled={loading || !formData.agreeToTerms}>
+              {loading ? 'Creating Account...' : 'Sign Up'}
+            </button>
+          </form>
+          <p style={{textAlign: 'center', marginTop: '1rem'}}>
+            Already have an account? <a onClick={onSwitchToLogin} style={{color: 'var(--primary-color)', cursor: 'pointer', textDecoration: 'underline'}}>Login</a>
+          </p>
+        </div>
       </div>
       
       <TermsModal 

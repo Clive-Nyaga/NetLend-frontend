@@ -182,42 +182,89 @@ const api = {
     return result;
   },
 
-  // Buyer endpoints
-  searchProperties: async (filters) => {
-    const params = new URLSearchParams(filters);
-    const response = await fetch(`${API_BASE_URL}/properties/search?${params}`);
-    return response.json();
+  // Admin endpoints
+  getAllLenders: async () => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/lenders`);
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+      return await response.json();
+    } catch (error) {
+      console.error('Error fetching lenders:', error);
+      return [];
+    }
   },
 
-  getBuyerApplications: async (buyerId) => {
-    const response = await fetch(`${API_BASE_URL}/buyer/${buyerId}/applications`);
-    return response.json();
+  getAllMortgages: async () => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/mortgages/`);
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+      return await response.json();
+    } catch (error) {
+      console.error('Error fetching mortgages:', error);
+      return [];
+    }
   },
 
-  getBuyerMessages: async (buyerId) => {
-    const response = await fetch(`${API_BASE_URL}/buyer/${buyerId}/messages`);
-    return response.json();
+  updateMortgageListing: async (listingId, listingData) => {
+    const token = localStorage.getItem('access_token');
+    const headers = {
+      'Content-Type': 'application/json'
+    };
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+    const response = await fetch(`${API_BASE_URL}/mortgages/${listingId}`, {
+      method: 'PATCH',
+      headers,
+      body: JSON.stringify(listingData)
+    });
+    const result = await response.json();
+    if (!response.ok) {
+      throw new Error(result.message || result.error || 'Failed to update listing');
+    }
+    return result;
   },
 
-  sendMessage: async (messageData) => {
-    const response = await fetch(`${API_BASE_URL}/messages`, {
+  deleteMortgageListing: async (listingId) => {
+    const token = localStorage.getItem('access_token');
+    const headers = {};
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+    const response = await fetch(`${API_BASE_URL}/mortgages/${listingId}`, {
+      method: 'DELETE',
+      headers
+    });
+    if (!response.ok) {
+      const result = await response.json();
+      throw new Error(result.message || result.error || 'Failed to delete listing');
+    }
+    return { success: true };
+  },
+
+  submitMortgageApplication: async (applicationData) => {
+    const token = localStorage.getItem('access_token');
+    const headers = {
+      'Content-Type': 'application/json'
+    };
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+    const response = await fetch(`${API_BASE_URL}/applications`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(messageData)
+      headers,
+      body: JSON.stringify(applicationData)
     });
-    return response.json();
-  },
-
-  updateBuyerProfile: async (buyerId, profileData) => {
-    const response = await fetch(`${API_BASE_URL}/buyer/${buyerId}/profile`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(profileData)
-    });
-    return response.json();
+    const result = await response.json();
+    if (!response.ok) {
+      throw new Error(result.message || result.error || 'Failed to submit application');
+    }
+    return result;
   }
 };
-
-export const { searchProperties, getBuyerApplications, getBuyerMessages, sendMessage, updateBuyerProfile } = api;
 
 export default api;

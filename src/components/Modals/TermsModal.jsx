@@ -3,10 +3,10 @@ const TermsModal = ({ isOpen, onClose }) => {
 
   return (
     <div className={`modal ${isOpen ? 'show' : ''}`}>
-      <div className="modal-content terms-modal">
+      <div className="modal-content terms-modal" style={{maxWidth: '800px', maxHeight: '90vh', overflow: 'hidden', display: 'flex', flexDirection: 'column'}}>
         <span className="close" onClick={onClose}>&times;</span>
         <h2>NetLend Terms and Conditions</h2>
-        <div className="terms-full-content">
+        <div className="terms-full-content" style={{overflowY: 'auto', flex: 1, paddingRight: '1rem'}}>
           <h3>1. Introduction</h3>
           <p>NetLend is a web-based mortgage facilitation platform that connects borrowers seeking mortgage loans with lenders (banks, SACCOs, or private institutions) offering mortgage products.</p>
           <p>By using NetLend, users agree to these Terms and Conditions, which define the rights, obligations, and responsibilities of all parties involved.</p>

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import api from '../../services/api';
+import ImageUpload from '../ImageUpload';
 
 const MyListings = ({ lenderId }) => {
   const [listings, setListings] = useState([]);
@@ -15,9 +16,15 @@ const MyListings = ({ lenderId }) => {
     repayment_period: '30',
     minimum_income: '',
     down_payment: '',
-    images: []
+    bedrooms: '2',
+    images: [],
+    imageUrls: []
   });
   const [submitting, setSubmitting] = useState(false);
+  const [formError, setFormError] = useState('');
+  const [formMessage, setFormMessage] = useState('');
+  const [editingListing, setEditingListing] = useState(null);
+  const [showAll, setShowAll] = useState(false);
 
   useEffect(() => {
     loadListings();
@@ -27,6 +34,7 @@ const MyListings = ({ lenderId }) => {
     try {
       const response = await api.getLenderListings(lenderId);
       console.log('Received response in component:', response);
+      console.log('First listing structure:', response[0]);
       // Handle both array format and object format
       if (Array.isArray(response)) {
         setListings(response);
@@ -51,10 +59,11 @@ const MyListings = ({ lenderId }) => {
   const handleFileChange = (e) => {
     const files = Array.from(e.target.files);
     if (files.length !== 5) {
-      alert('Please select exactly 5 images');
+      setFormError('Please select exactly 5 images');
       e.target.value = '';
       return;
     }
+    setFormError('');
     setFormData(prev => ({
       ...prev,
       images: files
@@ -63,34 +72,50 @@ const MyListings = ({ lenderId }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setFormError('');
+    setFormMessage('');
     // Temporarily skip image validation
     // if (formData.images.length !== 5) {
-    //   alert('Please upload exactly 5 images');
+    //   setFormError('Please upload exactly 5 images');
     //   return;
     // }
     if (!formData.title || formData.title.trim() === '') {
-      alert('Please enter a property title');
+      setFormError('Please enter a property title');
       return;
     }
     
     setSubmitting(true);
     try {
-      // Try minimal payload first
       const submitData = {
         lender_id: parseInt(lenderId),
         subject: String(formData.title).trim(),
         property_type: String(formData.property_type),
         address: String(formData.address),
-        county: String(formData.county)
+        county: String(formData.county),
+        price_range: parseFloat(formData.price_range) || 0,
+        interest_rate: parseFloat(formData.interest_rate) || 0,
+        repayment_period: parseInt(formData.repayment_period) || 30,
+        minimum_income: parseFloat(formData.minimum_income) || 0,
+        down_payment: parseFloat(formData.down_payment) || 20,
+        bedrooms: parseInt(formData.bedrooms) || 2,
+        images: formData.imageUrls || []
       };
       
       console.log('Submitting minimal data:', submitData);
       console.log('Subject type:', typeof submitData.subject);
       console.log('Subject value:', JSON.stringify(submitData.subject));
       
-      await api.createMortgageListing(submitData);
-      alert('Listing created successfully!');
-      setShowAddForm(false);
+      if (editingListing) {
+        await api.updateMortgageListing(editingListing.id, submitData);
+        setFormMessage('Listing updated successfully!');
+      } else {
+        await api.createMortgageListing(submitData);
+        setFormMessage('Listing created successfully!');
+      }
+      
+      setTimeout(() => {
+        handleCloseForm();
+      }, 2000);
       setFormData({
         title: '',
         property_type: 'apartment',
@@ -101,15 +126,69 @@ const MyListings = ({ lenderId }) => {
         repayment_period: '30',
         minimum_income: '',
         down_payment: '',
+        bedrooms: '2',
         images: []
       });
       loadListings();
     } catch (error) {
       console.error('Failed to create listing:', error);
-      alert('Failed to create listing: ' + error.message);
+      setFormError('Failed to create listing: ' + error.message);
     } finally {
       setSubmitting(false);
     }
+  };
+
+  const handleEditListing = (listing) => {
+    setEditingListing(listing);
+    setFormData({
+      title: listing.title || '',
+      property_type: listing.property_type || 'apartment',
+      address: listing.address || '',
+      county: listing.county || '',
+      price_range: listing.price_range || '',
+      interest_rate: listing.interest_rate || '',
+      repayment_period: listing.repayment_period || '30',
+      minimum_income: listing.minimum_income || '',
+      down_payment: listing.down_payment || '',
+      bedrooms: listing.bedrooms || '2',
+      images: []
+    });
+    setShowAddForm(true);
+  };
+
+  const handleDeleteListing = async (listingId) => {
+    if (window.confirm('Are you sure you want to delete this listing?')) {
+      try {
+        await api.deleteMortgageListing(listingId);
+        setFormMessage('Listing deleted successfully!');
+        setTimeout(() => setFormMessage(''), 3000);
+        loadListings();
+      } catch (error) {
+        console.error('Failed to delete listing:', error);
+        setFormError('Failed to delete listing: ' + error.message);
+        setTimeout(() => setFormError(''), 3000);
+      }
+    }
+  };
+
+  const handleCloseForm = () => {
+    setShowAddForm(false);
+    setEditingListing(null);
+    setFormData({
+      title: '',
+      property_type: 'apartment',
+      address: '',
+      county: '',
+      price_range: '',
+      interest_rate: '',
+      repayment_period: '30',
+      minimum_income: '',
+      down_payment: '',
+      bedrooms: '2',
+      images: []
+    });
+    setFormError('');
+    setFormMessage('');
   };
 
   return (
@@ -125,30 +204,66 @@ const MyListings = ({ lenderId }) => {
         ) : listings.length === 0 ? (
           <p>No listings yet. Create your first mortgage offer!</p>
         ) : (
-          listings.map((listing, index) => (
-            <div key={index} className="listing-card">
-              <h3>{listing.title}</h3>
-              <p><strong>Type:</strong> {listing.property_type}</p>
-              <p><strong>Address:</strong> {listing.address}</p>
-              <p><strong>County:</strong> {listing.county}</p>
-              <p><strong>Price Range:</strong> KSH {listing.price_range?.toLocaleString()}</p>
-              <p><strong>Interest Rate:</strong> {listing.interest_rate}%</p>
-              <p><strong>Repayment Period:</strong> {listing.repayment_period} years</p>
-              <div className="listing-actions">
-                <button className="btn">Edit</button>
-                <button className="btn danger">Remove</button>
+          <>
+            {(showAll ? listings : listings.slice(0, 3)).map((listing, index) => {
+              console.log('Listing data:', listing);
+              console.log('Available fields:', Object.keys(listing));
+              console.log('Listing images field:', listing.images);
+              return (
+              <div key={index} className="listing-card">
+              <img 
+                src={listing.images && listing.images.length > 0 ? listing.images[0] : `https://picsum.photos/400/200?random=${index}`} 
+                alt={listing.title || 'Property'}
+                className="property-image"
+                onError={(e) => {
+                  console.log('Image failed to load:', e.target.src);
+                  e.target.src = `https://via.placeholder.com/400x200/0057B7/ffffff?text=Property+Image`;
+                }}
+              />
+              <div className="listing-content">
+                <h3>{listing.title || 'Property Listing'}</h3>
+                <p><strong>Location:</strong> {listing.location}</p>
+                <p><strong>Price:</strong> KSH {listing.price?.toLocaleString()}</p>
+                <p><strong>Interest Rate:</strong> {listing.rate}%</p>
+                <p><strong>Term:</strong> {listing.term} years</p>
+                <p><strong>Type:</strong> {listing.type}</p>
+                <p><strong>Bedrooms:</strong> {listing.bedrooms || listing.rooms || 'Not specified'}</p>
+                <p><strong>Created:</strong> {listing.createdAt}</p>
+                <div className="listing-actions">
+                  <button className="btn" onClick={() => handleEditListing(listing)}>Edit</button>
+                  <button className="btn danger" onClick={() => handleDeleteListing(listing.id)}>Remove</button>
+                </div>
               </div>
             </div>
-          ))
+            );
+          })}
+          {!showAll && listings.length > 3 && (
+            <div style={{textAlign: 'center', marginTop: '2rem', gridColumn: '1 / -1'}}>
+              <button className="btn btn-secondary" onClick={() => setShowAll(true)}>
+                View More ({listings.length - 3} more)
+              </button>
+            </div>
+          )}
+          </>
         )}
       </div>
 
       {showAddForm && (
         <div className="modal show">
           <div className="modal-content" style={{maxWidth: '600px', maxHeight: '90vh', overflow: 'hidden'}}>
-            <span className="close" onClick={() => setShowAddForm(false)}>&times;</span>
-            <h2>Add Mortgage Offer</h2>
+            <span className="close" onClick={handleCloseForm}>&times;</span>
+            <h2>{editingListing ? 'Edit Mortgage Offer' : 'Add Mortgage Offer'}</h2>
             <div style={{maxHeight: '75vh', overflowY: 'auto', paddingRight: '1rem'}}>
+              {formError && (
+                <div style={{background: '#fee2e2', color: '#991b1b', padding: '0.75rem', borderRadius: '8px', marginBottom: '1rem', fontSize: '0.9rem'}}>
+                  {formError}
+                </div>
+              )}
+              {formMessage && (
+                <div style={{background: '#d1fae5', color: '#065f46', padding: '0.75rem', borderRadius: '8px', marginBottom: '1rem', fontSize: '0.9rem'}}>
+                  {formMessage}
+                </div>
+              )}
               <form onSubmit={handleSubmit}>
               <div className="form-row">
                 <div className="form-group">
@@ -261,16 +376,25 @@ const MyListings = ({ lenderId }) => {
                 </div>
               </div>
               <div className="form-group">
-                <label>Property Images (Exactly 5 Required)</label>
-                <input 
-                  type="file" 
-                  name="images"
-                  multiple 
-                  accept="image/*" 
-                  onChange={handleFileChange}
-                  required 
-                />
-                <small style={{color: 'var(--text-secondary)', fontSize: '0.875rem'}}>Upload exactly 5 property images</small>
+                <label>Property Images ({formData.imageUrls?.length || 0}/5)</label>
+                <ImageUpload onUploadSuccess={(url) => {
+                  if ((formData.imageUrls?.length || 0) < 5) {
+                    setFormData(prev => ({
+                      ...prev,
+                      imageUrls: [...(prev.imageUrls || []), url]
+                    }));
+                  }
+                }} />
+                {(formData.imageUrls?.length || 0) > 0 && (
+                  <div style={{display: 'flex', gap: '0.5rem', flexWrap: 'wrap', marginTop: '1rem'}}>
+                    {(formData.imageUrls || []).map((url, i) => (
+                      <div key={i} style={{position: 'relative'}}>
+                        
+                        <button type="button" onClick={() => setFormData(prev => ({...prev, imageUrls: prev.imageUrls.filter((_, idx) => idx !== i)}))} style={{position: 'absolute', top: '-5px', right: '-5px', background: 'red', color: 'white', border: 'none', borderRadius: '50%', width: '20px', height: '20px', cursor: 'pointer'}}>×</button>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
               <div className="form-row">
                 <div className="form-group">
@@ -302,15 +426,19 @@ const MyListings = ({ lenderId }) => {
               </div>
               <div className="form-row">
                 <div className="form-group">
-                  <label>Minimum Income (KSH)</label>
-                  <input 
-                    type="number" 
-                    name="minimum_income"
-                    value={formData.minimum_income}
+                  <label>Number of Bedrooms</label>
+                  <select 
+                    name="bedrooms"
+                    value={formData.bedrooms}
                     onChange={handleInputChange}
-                    placeholder="500000" 
                     required
-                  />
+                  >
+                    <option value="1">1 Bedroom</option>
+                    <option value="2">2 Bedrooms</option>
+                    <option value="3">3 Bedrooms</option>
+                    <option value="4">4 Bedrooms</option>
+                    <option value="5">5+ Bedrooms</option>
+                  </select>
                 </div>
                 <div className="form-group">
                   <label>Down Payment (%)</label>
@@ -324,8 +452,22 @@ const MyListings = ({ lenderId }) => {
                   />
                 </div>
               </div>
+              <div className="form-group">
+                <label>Minimum Income (KSH)</label>
+                <input 
+                  type="number" 
+                  name="minimum_income"
+                  value={formData.minimum_income}
+                  onChange={handleInputChange}
+                  placeholder="500000" 
+                  required
+                />
+              </div>
                 <button type="submit" className="btn" disabled={submitting}>
-                  {submitting ? 'Creating...' : 'Create Listing'}
+                  {submitting ? (editingListing ? 'Updating...' : 'Creating...') : (editingListing ? 'Update Listing' : 'Create Listing')}
+                </button>
+                <button type="button" className="btn btn-secondary" onClick={handleCloseForm} style={{marginLeft: '1rem'}}>
+                  Cancel
                 </button>
               </form>
             </div>
