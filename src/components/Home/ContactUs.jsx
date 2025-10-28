@@ -218,10 +218,16 @@ const ContactUs = () => {
             </div>
           </div>
           <div className="map-card">
-            <div className="map-placeholder">
-              <div className="map-icon">📍</div>
-              <p>Westlands Business District, Nairobi, Kenya</p>
-            </div>
+            <iframe
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3988.8177449!2d36.8062!3d-1.2674!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x182f1a6bf7445dc1%3A0x940b62a3c8efde4c!2sWestlands%2C%20Nairobi!5e0!3m2!1sen!2ske!4v1234567890"
+              width="100%"
+              height="100%"
+              style={{border: 0, borderRadius: 'var(--radius-lg)'}}
+              allowFullScreen=""
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              title="NetLend Office Location - Westlands, Nairobi"
+            ></iframe>
           </div>
         </div>
 

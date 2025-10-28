@@ -517,7 +517,15 @@ function AdminDashboard({ user, onLogout, onShowSection }) {
           <div key={user.id} className="user-card">
             <div className="user-info">
               <h3>{user.name}</h3>
-              <p>{user.email}</p>
+              <p><strong>Email:</strong> {user.email}</p>
+              {user.userType === 'lender' && (
+                <>
+                  {user.company_name && <p><strong>Company:</strong> {user.company_name}</p>}
+                  {user.phone && <p><strong>Phone:</strong> {user.phone}</p>}
+                  {user.address && <p><strong>Address:</strong> {user.address}</p>}
+                  {user.license_number && <p><strong>License:</strong> {user.license_number}</p>}
+                </>
+              )}
               <span className="user-type">{user.userType}</span>
               <span className={`status ${user.verified ? 'approved' : 'pending'}`}>
                 {user.verified ? 'Verified' : 'Pending'}

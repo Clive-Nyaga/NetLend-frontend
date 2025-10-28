@@ -1779,7 +1779,9 @@ textarea {
 
 /* About Page Sections */
 .about-hero {
-    background: linear-gradient(135deg, var(--primary), var(--accent));
+    background: linear-gradient(135deg, rgba(0, 87, 183, 0.7), rgba(0, 173, 239, 0.7)), url('https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=1600&q=80');
+    background-size: cover;
+    background-position: center;
     color: white;
     padding: 7rem 2rem 4rem;
     text-align: center;
@@ -2163,7 +2165,9 @@ textarea {
 
 /* Contact Page */
 .contact-hero {
-    background: linear-gradient(135deg, var(--primary), var(--accent));
+    background: linear-gradient(135deg, rgba(0, 87, 183, 0.7), rgba(0, 173, 239, 0.7)), url('https://images.unsplash.com/photo-1423666639041-f56000c27a9a?w=1600&q=80');
+    background-size: cover;
+    background-position: center;
     color: white;
     padding: 3rem 2rem;
     text-align: center;
@@ -2270,6 +2274,12 @@ textarea {
     border-radius: var(--radius-lg);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
     border: 1px solid var(--border);
+}
+
+.map-card {
+    padding: 0;
+    overflow: hidden;
+    min-height: 400px;
 }
 
 .hours-list {
