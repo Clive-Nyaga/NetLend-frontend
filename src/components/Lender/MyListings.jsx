@@ -24,6 +24,7 @@ const MyListings = ({ lenderId }) => {
   const [formError, setFormError] = useState('');
   const [formMessage, setFormMessage] = useState('');
   const [editingListing, setEditingListing] = useState(null);
+  const [showAll, setShowAll] = useState(false);
 
   useEffect(() => {
     loadListings();
@@ -96,7 +97,8 @@ const MyListings = ({ lenderId }) => {
         repayment_period: parseInt(formData.repayment_period) || 30,
         minimum_income: parseFloat(formData.minimum_income) || 0,
         down_payment: parseFloat(formData.down_payment) || 20,
-        bedrooms: parseInt(formData.bedrooms) || 2
+        bedrooms: parseInt(formData.bedrooms) || 2,
+        images: formData.imageUrls || []
       };
       
       console.log('Submitting minimal data:', submitData);
@@ -202,26 +204,47 @@ const MyListings = ({ lenderId }) => {
         ) : listings.length === 0 ? (
           <p>No listings yet. Create your first mortgage offer!</p>
         ) : (
-          listings.map((listing, index) => {
-            console.log('Listing data:', listing);
-            console.log('Available fields:', Object.keys(listing));
-            return (
-            <div key={index} className="listing-card">
-              <h3>{listing.title || 'Property Listing'}</h3>
-              <p><strong>Location:</strong> {listing.location}</p>
-              <p><strong>Price:</strong> KSH {listing.price?.toLocaleString()}</p>
-              <p><strong>Interest Rate:</strong> {listing.rate}%</p>
-              <p><strong>Term:</strong> {listing.term} years</p>
-              <p><strong>Type:</strong> {listing.type}</p>
-              <p><strong>Bedrooms:</strong> {listing.bedrooms || listing.rooms || 'Not specified'}</p>
-              <p><strong>Created:</strong> {listing.createdAt}</p>
-              <div className="listing-actions">
-                <button className="btn" onClick={() => handleEditListing(listing)}>Edit</button>
-                <button className="btn danger" onClick={() => handleDeleteListing(listing.id)}>Remove</button>
+          <>
+            {(showAll ? listings : listings.slice(0, 3)).map((listing, index) => {
+              console.log('Listing data:', listing);
+              console.log('Available fields:', Object.keys(listing));
+              console.log('Listing images field:', listing.images);
+              return (
+              <div key={index} className="listing-card">
+              <img 
+                src={listing.images && listing.images.length > 0 ? listing.images[0] : `https://picsum.photos/400/200?random=${index}`} 
+                alt={listing.title || 'Property'}
+                className="property-image"
+                onError={(e) => {
+                  console.log('Image failed to load:', e.target.src);
+                  e.target.src = `https://via.placeholder.com/400x200/0057B7/ffffff?text=Property+Image`;
+                }}
+              />
+              <div className="listing-content">
+                <h3>{listing.title || 'Property Listing'}</h3>
+                <p><strong>Location:</strong> {listing.location}</p>
+                <p><strong>Price:</strong> KSH {listing.price?.toLocaleString()}</p>
+                <p><strong>Interest Rate:</strong> {listing.rate}%</p>
+                <p><strong>Term:</strong> {listing.term} years</p>
+                <p><strong>Type:</strong> {listing.type}</p>
+                <p><strong>Bedrooms:</strong> {listing.bedrooms || listing.rooms || 'Not specified'}</p>
+                <p><strong>Created:</strong> {listing.createdAt}</p>
+                <div className="listing-actions">
+                  <button className="btn" onClick={() => handleEditListing(listing)}>Edit</button>
+                  <button className="btn danger" onClick={() => handleDeleteListing(listing.id)}>Remove</button>
+                </div>
               </div>
             </div>
             );
-          })
+          })}
+          {!showAll && listings.length > 3 && (
+            <div style={{textAlign: 'center', marginTop: '2rem', gridColumn: '1 / -1'}}>
+              <button className="btn btn-secondary" onClick={() => setShowAll(true)}>
+                View More ({listings.length - 3} more)
+              </button>
+            </div>
+          )}
+          </>
         )}
       </div>
 
@@ -353,18 +376,18 @@ const MyListings = ({ lenderId }) => {
                 </div>
               </div>
               <div className="form-group">
-                <label>Property Images ({formData.imageUrls.length}/5)</label>
+                <label>Property Images ({formData.imageUrls?.length || 0}/5)</label>
                 <ImageUpload onUploadSuccess={(url) => {
-                  if (formData.imageUrls.length < 5) {
+                  if ((formData.imageUrls?.length || 0) < 5) {
                     setFormData(prev => ({
                       ...prev,
-                      imageUrls: [...prev.imageUrls, url]
+                      imageUrls: [...(prev.imageUrls || []), url]
                     }));
                   }
                 }} />
-                {formData.imageUrls.length > 0 && (
+                {(formData.imageUrls?.length || 0) > 0 && (
                   <div style={{display: 'flex', gap: '0.5rem', flexWrap: 'wrap', marginTop: '1rem'}}>
-                    {formData.imageUrls.map((url, i) => (
+                    {(formData.imageUrls || []).map((url, i) => (
                       <div key={i} style={{position: 'relative'}}>
                         
                         <button type="button" onClick={() => setFormData(prev => ({...prev, imageUrls: prev.imageUrls.filter((_, idx) => idx !== i)}))} style={{position: 'absolute', top: '-5px', right: '-5px', background: 'red', color: 'white', border: 'none', borderRadius: '50%', width: '20px', height: '20px', cursor: 'pointer'}}>×</button>

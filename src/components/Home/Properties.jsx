@@ -13,8 +13,8 @@ const Properties = ({ onShowRegister, onShowLogin, onShowContact }) => {
 
   const loadProperties = async () => {
     try {
-      const response = await api.getProperties();
-      setProperties(response.properties || []);
+      const response = await api.getAllMortgages();
+      setProperties((response || []).slice(0, 6));
     } catch (error) {
       console.error('Failed to load properties:', error);
     } finally {
@@ -139,14 +139,13 @@ const Properties = ({ onShowRegister, onShowLogin, onShowContact }) => {
             </div>
           ) : (
             properties.map((property, index) => {
-              const propertyImages = [
-                'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80',
-                'https://images.unsplash.com/photo-1570129477492-45c003edd2be?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80',
-                'https://images.unsplash.com/photo-1605276374104-dee2a0ed3cd6?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80'
-              ];
               return (
                 <div key={index} className="property-card">
-                  
+                  <img 
+                    src={property.images && property.images[0] ? property.images[0] : `https://images.unsplash.com/photo-${1564013799919 + index}?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80`}
+                    alt={property.title}
+                    className="property-image"
+                  />
                   <div className="property-badge">Featured</div>
                   <div className="property-info">
                     <h3>{property.title}</h3>
@@ -331,7 +330,15 @@ const Properties = ({ onShowRegister, onShowLogin, onShowContact }) => {
             </div>
             <div className="modal-body">
               <div className="property-details">
-                
+                <div className="property-images">
+                  {selectedProperty.images && selectedProperty.images.length > 0 ? (
+                    selectedProperty.images.map((image, idx) => (
+                      <img key={idx} src={image} alt={`${selectedProperty.title} ${idx + 1}`} className="property-detail-image" />
+                    ))
+                  ) : (
+                    <img src={`https://images.unsplash.com/photo-1564013799919?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80`} alt={selectedProperty.title} className="property-detail-image" />
+                  )}
+                </div>
                 <div className="property-info-detailed">
                   <div className="price-highlight">KSH {selectedProperty.price_range?.toLocaleString()}</div>
                   <div className="property-specs">

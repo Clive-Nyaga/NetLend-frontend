@@ -14,6 +14,7 @@ const PropertyListings = () => {
   });
   const [selectedProperty, setSelectedProperty] = useState(null);
   const [showModal, setShowModal] = useState(false);
+  const [showAll, setShowAll] = useState(false);
 
   const counties = ['Nairobi', 'Mombasa', 'Kiambu', 'Nakuru', 'Kisumu', 'Machakos', 'Kajiado'];
   const propertyTypes = ['apartment', 'bungalow', 'villa', 'townhouse'];
@@ -24,8 +25,8 @@ const PropertyListings = () => {
 
   const loadProperties = async () => {
     try {
-      const response = await api.getProperties();
-      setProperties(response.properties || []);
+      const response = await api.getAllMortgages();
+      setProperties(response || []);
     } catch (error) {
       console.error('Failed to load properties:', error);
     } finally {
@@ -110,28 +111,37 @@ const PropertyListings = () => {
       {loading ? (
         <p>Loading properties...</p>
       ) : (
-        <div className="properties-grid">
-          {filteredProperties.map((property, index) => (
-            <div key={index} className="property-card">
-              <img 
-                src={property.image || `https://images.unsplash.com/photo-${1564013799919 + index}?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80`} 
-                alt={property.title} 
-              />
-              <div className="property-info">
-                <h3>{property.title}</h3>
-                <div className="price">KSH {property.price_range?.toLocaleString()}</div>
-                <p><strong>📍</strong> {property.address}, {property.county}</p>
-                <p><strong>🏠</strong> {property.property_type}</p>
-                <p><strong>📊</strong> {property.interest_rate}% interest</p>
-                <p><strong>⏰</strong> {property.repayment_period} years</p>
-                <p><strong>💰</strong> Down Payment: KSH {(property.price_range * 0.2)?.toLocaleString()}</p>
-                <button className="btn btn-primary" onClick={() => handleApply(property)}>
-                  Apply for Mortgage
-                </button>
+        <>
+          <div className="properties-grid">
+            {(showAll ? filteredProperties : filteredProperties.slice(0, 3)).map((property, index) => (
+              <div key={index} className="property-card">
+                <img 
+                  src={property.images && property.images[0] ? property.images[0] : `https://images.unsplash.com/photo-${1564013799919 + index}?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80`} 
+                  alt={property.title} 
+                />
+                <div className="property-info">
+                  <h3>{property.title}</h3>
+                  <div className="price">KSH {property.price_range?.toLocaleString()}</div>
+                  <p><strong>📍</strong> {property.address}, {property.county}</p>
+                  <p><strong>🏠</strong> {property.property_type}</p>
+                  <p><strong>📊</strong> {property.interest_rate}% interest</p>
+                  <p><strong>⏰</strong> {property.repayment_period} years</p>
+                  <p><strong>💰</strong> Down Payment: KSH {(property.price_range * 0.2)?.toLocaleString()}</p>
+                  <button className="btn btn-primary" onClick={() => handleApply(property)}>
+                    Apply for Mortgage
+                  </button>
+                </div>
               </div>
+            ))}
+          </div>
+          {!showAll && filteredProperties.length > 0 && (
+            <div style={{textAlign: 'center', marginTop: '2rem'}}>
+              <button className="btn btn-secondary" onClick={() => setShowAll(true)}>
+                View More ({filteredProperties.length - 3} more)
+              </button>
             </div>
-          ))}
-        </div>
+          )}
+        </>
       )}
 
       {showModal && selectedProperty && (

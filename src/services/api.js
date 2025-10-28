@@ -193,7 +193,7 @@ const api = {
       headers['Authorization'] = `Bearer ${token}`;
     }
     const response = await fetch(`${API_BASE_URL}/mortgages/${listingId}`, {
-      method: 'PUT',
+      method: 'PATCH',
       headers,
       body: JSON.stringify(listingData)
     });
