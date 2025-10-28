@@ -13,8 +13,9 @@ const Properties = ({ onShowRegister, onShowLogin, onShowContact }) => {
 
   const loadProperties = async () => {
     try {
-      const response = await api.getAllMortgages();
-      setProperties((response || []).slice(0, 6));
+      const response = await api.getProperties();
+      const mortgages = Array.isArray(response) ? response : [];
+      setProperties(mortgages.slice(0, 6));
     } catch (error) {
       console.error('Failed to load properties:', error);
     } finally {
