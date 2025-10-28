@@ -132,7 +132,7 @@ const Properties = ({ onShowRegister, onShowLogin, onShowContact }) => {
           ) : properties.length === 0 ? (
             <div className="no-properties">
               <div className="no-properties-icon">
-                
+                🏠
               </div>
               <h3>Exciting Opportunities Coming Soon!</h3>
               <p>Our lender partners are preparing amazing mortgage offers for you. Register now to be the first to know when new opportunities become available.</p>

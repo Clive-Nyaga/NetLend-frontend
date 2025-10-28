@@ -349,8 +349,8 @@ label {
     border-radius: var(--radius-lg);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
     width: 100%;
-    max-width: 100%;
-    margin: 0;
+    max-width: 1400px;
+    margin: 0 auto;
     position: relative;
 }
 
@@ -1128,7 +1128,7 @@ textarea {
 
 /* How It Works Section */
 .how-it-works {
-    padding: 3rem 2rem;
+    padding: 2.5rem 2rem;
     background: var(--secondary);
 }
 
@@ -1195,7 +1195,7 @@ textarea {
 
 /* Benefits Section */
 .benefits-section {
-    padding: 3rem 2rem;
+    padding: 2.5rem 2rem;
     background: white;
 }
 
@@ -1242,7 +1242,7 @@ textarea {
 
 /* Lender Section */
 .lender-section {
-    padding: 3rem 2rem;
+    padding: 2.5rem 2rem;
     background: linear-gradient(135deg, var(--secondary), white);
 }
 
@@ -1286,7 +1286,7 @@ textarea {
 
 /* Success Stories */
 .success-stories {
-    padding: 3rem 2rem;
+    padding: 2.5rem 2rem;
     background: white;
 }
 
@@ -1564,7 +1564,7 @@ textarea {
 
 /* Features Section */
 .features-section {
-    padding: 3rem 2rem;
+    padding: 2.5rem 2rem;
     background: var(--secondary);
 }
 
@@ -1611,7 +1611,7 @@ textarea {
 
 /* Testimonials */
 .testimonials-section {
-    padding: 3rem 2rem;
+    padding: 2.5rem 2rem;
     background: var(--secondary);
 }
 
@@ -1656,7 +1656,7 @@ textarea {
 
 /* Partners Section */
 .partners-section {
-    padding: 3rem 2rem;
+    padding: 2.5rem 2rem;
     background: white;
 }
 
@@ -1685,30 +1685,30 @@ textarea {
 
 /* CTA Section */
 .cta-section {
-    padding: 3rem 2rem;
-    background: linear-gradient(135deg, var(--primary), var(--accent));
-    color: white;
+    padding: 2.5rem 2rem;
+    background: white;
+    color: var(--text-primary);
     text-align: center;
 }
 
 .cta-section h2 {
-    color: white;
+    color: var(--text-primary);
     margin-bottom: 1rem;
 }
 
 .cta-section p {
     font-size: 1.125rem;
     margin-bottom: 2rem;
-    opacity: 0.95;
+    color: var(--text-secondary);
 }
 
 .cta-section .btn {
-    background: white;
-    color: var(--primary);
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+    color: white;
 }
 
 .cta-section .btn:hover {
-    background: var(--secondary);
+    opacity: 0.9;
 }
 
 @media (max-width: 768px) {
@@ -1803,12 +1803,12 @@ textarea {
 }
 
 .about-section-white {
-    padding: 3rem 2rem;
+    padding: 2.5rem 2rem;
     background: white;
 }
 
 .about-section-gray {
-    padding: 3rem 2rem;
+    padding: 2.5rem 2rem;
     background: var(--secondary);
 }
 
@@ -1957,7 +1957,7 @@ textarea {
 .compliance-section {
     background: white;
     color: var(--text-primary);
-    padding: 3rem 2rem;
+    padding: 2.5rem 2rem;
     text-align: center;
 }
 
@@ -2181,7 +2181,7 @@ textarea {
 }
 
 .contact-info-section {
-    padding: 3rem 0;
+    padding: 2.5rem 0;
     background: var(--secondary);
 }
 
@@ -2221,7 +2221,7 @@ textarea {
 
 /* Contact Form */
 .contact-form-section {
-    padding: 3rem 0;
+    padding: 2.5rem 0;
 }
 
 .contact-form-grid {
@@ -2266,7 +2266,7 @@ textarea {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 2rem;
-    margin: 3rem 0;
+    margin: 2.5rem 0;
 }
 
 .business-hours-card,
@@ -2320,10 +2320,10 @@ textarea {
 .live-chat-cta {
     background: linear-gradient(135deg, var(--primary), var(--accent));
     color: white;
-    padding: 3rem;
+    padding: 2.5rem;
     border-radius: var(--radius-lg);
     text-align: center;
-    margin: 3rem 0;
+    margin: 2.5rem 0;
 }
 
 .chat-icon {
@@ -2343,7 +2343,7 @@ textarea {
 
 /* FAQ */
 .faq-section {
-    margin: 3rem 0;
+    margin: 2.5rem 0;
 }
 
 .faq-accordion {
