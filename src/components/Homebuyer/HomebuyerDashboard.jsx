@@ -4,6 +4,7 @@ import AffordabilityCalculator from '../Calculator/AffordabilityCalculator';
 import LoanComparison from '../Calculator/LoanComparison';
 import PropertyListings from './PropertyListings';
 import BuyerProfile from './BuyerProfile';
+import MyMortgages from './MyMortgages';
 import '../../styles/netlend.css';
 
 const HomebuyerDashboard = ({ user, onLogout }) => {
@@ -20,6 +21,7 @@ const HomebuyerDashboard = ({ user, onLogout }) => {
           <li><a onClick={() => setActiveSection('affordability-calculator')} className={activeSection === 'affordability-calculator' ? 'active' : ''}>Affordability Calculator</a></li>
           <li><a onClick={() => setActiveSection('loan-comparison')} className={activeSection === 'loan-comparison' ? 'active' : ''}>Loan Comparison</a></li>
           <li><a onClick={() => setActiveSection('applications')} className={activeSection === 'applications' ? 'active' : ''}>My Applications</a></li>
+          <li><a onClick={() => setActiveSection('mortgages')} className={activeSection === 'mortgages' ? 'active' : ''}>My Mortgages</a></li>
           <li><a onClick={() => setActiveSection('profile')} className={activeSection === 'profile' ? 'active' : ''}>Profile</a></li>
           <li><a onClick={onLogout}>Logout</a></li>
         </ul>
@@ -72,6 +74,8 @@ const HomebuyerDashboard = ({ user, onLogout }) => {
             </div>
           </div>
         )}
+        
+        {activeSection === 'mortgages' && <MyMortgages />}
         
         {activeSection === 'profile' && <BuyerProfile />}
       </div>

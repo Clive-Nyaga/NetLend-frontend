@@ -301,6 +301,22 @@ const api = {
       throw new Error(result.message || result.error || 'Failed to get creditworthiness');
     }
     return result;
+  },
+
+  getBuyerMortgages: async () => {
+    const token = localStorage.getItem('access_token');
+    const headers = {};
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+    const response = await fetch(`${API_BASE_URL}/homebuyer/my-mortgages`, {
+      headers
+    });
+    const result = await response.json();
+    if (!response.ok) {
+      throw new Error(result.message || result.error || 'Failed to get mortgages');
+    }
+    return result;
   }
 };
 
