@@ -15,7 +15,10 @@ const Properties = ({ onShowRegister, onShowLogin, onShowContact }) => {
     try {
       const response = await api.getProperties();
       const mortgages = Array.isArray(response) ? response : [];
-      setProperties(mortgages.slice(0, 6));
+      const availableProperties = mortgages.filter(property => 
+        property.status === 'active' || property.status === 'ACTIVE' || !property.status
+      );
+      setProperties(availableProperties.slice(0, 6));
     } catch (error) {
       console.error('Failed to load properties:', error);
     } finally {
@@ -147,14 +150,20 @@ const Properties = ({ onShowRegister, onShowLogin, onShowContact }) => {
                     alt={property.title}
                     className="property-image"
                   />
-                  <div className="property-badge">Featured</div>
+                  <div className="property-badge">
+                    {property.status === 'ACQUIRED' ? 'Under Contract' : 
+                     property.status === 'SOLD' ? 'Sold' : 'Available'}
+                  </div>
                   <div className="property-info">
-                    <h3>{property.title}</h3>
-                    <div className="price">KSH {property.price_range?.toLocaleString()}</div>
-                    <p><strong>📍 Location:</strong> {property.address}, {property.county}</p>
-                    <p><strong>🏠 Type:</strong> {property.property_type}</p>
-                    <p><strong>📊 Interest Rate:</strong> {property.interest_rate}% per annum</p>
-                    <p><strong>⏰ Repayment:</strong> {property.repayment_period} years</p>
+                    <h3>{property.title || property.subject || 'Property Listing'}</h3>
+                    <div className="price">KSH {(property.price_range || property.price || 0).toLocaleString()}</div>
+                    {(property.description) && (
+                      <p className="property-description">{property.description.length > 100 ? property.description.substring(0, 100) + '...' : property.description}</p>
+                    )}
+                    <p><strong>📍 Location:</strong> {property.address || property.location}, {property.county}</p>
+                    <p><strong>🏠 Type:</strong> {property.property_type || property.type}</p>
+                    <p><strong>📊 Interest Rate:</strong> {property.interest_rate || property.rate}% per annum</p>
+                    <p><strong>⏰ Repayment:</strong> {property.repayment_period || property.term} years</p>
                     <button className="btn btn-primary property-btn" onClick={() => {
                       setSelectedProperty(property);
                       setShowPropertyModal(true);
@@ -326,7 +335,7 @@ const Properties = ({ onShowRegister, onShowLogin, onShowContact }) => {
         <div className="modal-overlay" onClick={() => setShowPropertyModal(false)}>
           <div className="modal-content property-modal" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
-              <h2>{selectedProperty.title}</h2>
+              <h2>{selectedProperty.title || selectedProperty.subject || 'Property Details'}</h2>
               <button className="close-btn" onClick={() => setShowPropertyModal(false)}>×</button>
             </div>
             <div className="modal-body">
@@ -341,12 +350,12 @@ const Properties = ({ onShowRegister, onShowLogin, onShowContact }) => {
                   )}
                 </div>
                 <div className="property-info-detailed">
-                  <div className="price-highlight">KSH {selectedProperty.price_range?.toLocaleString()}</div>
+                  <div className="price-highlight">KSH {(selectedProperty.price_range || selectedProperty.price || 0).toLocaleString()}</div>
                   <div className="property-specs">
-                    <p><strong>📍 Location:</strong> {selectedProperty.address}, {selectedProperty.county}</p>
-                    <p><strong>🏠 Property Type:</strong> {selectedProperty.property_type}</p>
-                    <p><strong>📊 Interest Rate:</strong> {selectedProperty.interest_rate}% per annum</p>
-                    <p><strong>⏰ Repayment Period:</strong> {selectedProperty.repayment_period} years</p>
+                    <p><strong>📍 Location:</strong> {selectedProperty.address || selectedProperty.location}, {selectedProperty.county}</p>
+                    <p><strong>🏠 Property Type:</strong> {selectedProperty.property_type || selectedProperty.type}</p>
+                    <p><strong>📊 Interest Rate:</strong> {selectedProperty.interest_rate || selectedProperty.rate}% per annum</p>
+                    <p><strong>⏰ Repayment Period:</strong> {selectedProperty.repayment_period || selectedProperty.term} years</p>
                     <p><strong>💰 Down Payment:</strong> {selectedProperty.down_payment || '20%'}</p>
                     <p><strong>📋 Description:</strong> {selectedProperty.description || 'Beautiful property in a prime location with modern amenities and excellent connectivity.'}</p>
                   </div>

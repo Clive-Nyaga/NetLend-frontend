@@ -42,12 +42,15 @@ const PropertyListings = () => {
       const response = await api.getProperties();
       console.log('Properties response:', response);
       const propertiesArray = Array.isArray(response) ? response : [];
-      if (propertiesArray.length > 0) {
-        console.log('First property structure:', propertiesArray[0]);
-        console.log('Property fields:', Object.keys(propertiesArray[0]));
+      const availableProperties = propertiesArray.filter(property => 
+        property.status === 'active' || property.status === 'Active' || !property.status
+      );
+      if (availableProperties.length > 0) {
+        console.log('First property structure:', availableProperties[0]);
+        console.log('Property fields:', Object.keys(availableProperties[0]));
       }
-      console.log('Setting properties:', propertiesArray);
-      setProperties(propertiesArray);
+      console.log('Setting available properties:', availableProperties);
+      setProperties(availableProperties);
     } catch (error) {
       console.error('Failed to load properties:', error);
     } finally {
@@ -175,6 +178,9 @@ const PropertyListings = () => {
                 <div className="property-info">
                   <h3>{property.title || `Property ${property.id}`}</h3>
                   <div className="price">KSH {(property.price_range || property.price)?.toLocaleString()}</div>
+                  {property.description && (
+                    <p className="property-description">{property.description.length > 100 ? property.description.substring(0, 100) + '...' : property.description}</p>
+                  )}
                   <p><strong>📍</strong> {property.address || property.location}</p>
                   <p><strong>🏦</strong> Lender: {property.lender}</p>
                   <p><strong>🏠</strong> Type: {property.property_type || property.type}</p>

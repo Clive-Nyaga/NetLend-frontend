@@ -17,6 +17,7 @@ const MyListings = ({ lenderId }) => {
     minimum_income: '',
     down_payment: '',
     bedrooms: '2',
+    description: '',
     images: [],
     imageUrls: []
   });
@@ -98,6 +99,7 @@ const MyListings = ({ lenderId }) => {
         minimum_income: parseFloat(formData.minimum_income) || 0,
         down_payment: parseFloat(formData.down_payment) || 20,
         bedrooms: parseInt(formData.bedrooms) || 2,
+        description: String(formData.description).trim(),
         images: formData.imageUrls || []
       };
       
@@ -127,6 +129,7 @@ const MyListings = ({ lenderId }) => {
         minimum_income: '',
         down_payment: '',
         bedrooms: '2',
+        description: '',
         images: []
       });
       loadListings();
@@ -151,6 +154,7 @@ const MyListings = ({ lenderId }) => {
       minimum_income: listing.minimum_income || '',
       down_payment: listing.down_payment || '',
       bedrooms: listing.bedrooms || '2',
+      description: listing.description || '',
       images: []
     });
     setShowAddForm(true);
@@ -165,7 +169,7 @@ const MyListings = ({ lenderId }) => {
         loadListings();
       } catch (error) {
         console.error('Failed to delete listing:', error);
-        setFormError('Failed to delete listing: ' + error.message);
+        setFormError('Failed to update status: ' + error.message);
         setTimeout(() => setFormError(''), 3000);
       }
     }
@@ -185,6 +189,7 @@ const MyListings = ({ lenderId }) => {
       minimum_income: '',
       down_payment: '',
       bedrooms: '2',
+      description: '',
       images: []
     });
     setFormError('');
@@ -228,9 +233,25 @@ const MyListings = ({ lenderId }) => {
                 <p><strong>Term:</strong> {listing.term} years</p>
                 <p><strong>Type:</strong> {listing.type}</p>
                 <p><strong>Bedrooms:</strong> {listing.bedrooms || listing.rooms || 'Not specified'}</p>
+                <p><strong>Status:</strong> 
+                  <span className={`status-badge ${listing.status?.toLowerCase() || 'active'}`}>
+                    {listing.status === 'ACQUIRED' ? 'Under Contract' : 
+                     listing.status === 'SOLD' ? 'Sold' : 'Available'}
+                  </span>
+                </p>
+                {(listing.status === 'ACQUIRED' || listing.status === 'SOLD') && (
+                  <p><strong>Payment Progress:</strong> 
+                    KSH {(listing.amount_paid || 0).toLocaleString()} / KSH {(listing.price || listing.price_range || 0).toLocaleString()}
+                    ({Math.round(((listing.amount_paid || 0) / (listing.price || listing.price_range || 1)) * 100)}%)
+                  </p>
+                )}
                 <p><strong>Created:</strong> {listing.createdAt}</p>
                 <div className="listing-actions">
-                  <button className="btn" onClick={() => handleEditListing(listing)}>Edit</button>
+                  {(listing.status !== 'ACQUIRED' && listing.status !== 'SOLD') ? (
+                    <button className="btn" onClick={() => handleEditListing(listing)}>Edit</button>
+                  ) : (
+                    <button className="btn" disabled title="Cannot edit properties with payments">Edit (Locked)</button>
+                  )}
                   <button className="btn danger" onClick={() => handleDeleteListing(listing.id)}>Remove</button>
                 </div>
               </div>
@@ -451,6 +472,17 @@ const MyListings = ({ lenderId }) => {
                     required
                   />
                 </div>
+              </div>
+              <div className="form-group">
+                <label>Property Description</label>
+                <textarea 
+                  name="description"
+                  value={formData.description}
+                  onChange={handleInputChange}
+                  placeholder="Describe the property features, amenities, and location benefits..."
+                  rows="4"
+                  style={{resize: 'vertical', minHeight: '100px'}}
+                />
               </div>
               <div className="form-group">
                 <label>Minimum Income (KSH)</label>
