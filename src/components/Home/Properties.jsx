@@ -33,8 +33,8 @@ const Properties = ({ onShowRegister, onShowLogin, onShowContact }) => {
             Compare lenders, apply online, and manage your mortgage all in one place. Kenya's most trusted digital mortgage platform.
           </p>
           <div className="hero-buttons">
-            <button className="btn btn-primary" onClick={() => window.location.href = '#compare'}>Compare Mortgages</button>
-            <button className="btn btn-secondary" onClick={() => window.location.href = '#about'}>Learn More</button>
+            <button className="btn btn-primary" onClick={() => document.querySelector('.properties-grid')?.scrollIntoView({ behavior: 'smooth' })}>Compare Mortgages</button>
+            <button className="btn btn-secondary" onClick={onShowContact}>Learn More</button>
           </div>
           
           {/* Trust Indicators */}
@@ -131,9 +131,7 @@ const Properties = ({ onShowRegister, onShowLogin, onShowContact }) => {
             <p>Loading properties...</p>
           ) : properties.length === 0 ? (
             <div className="no-properties">
-              <div className="no-properties-icon">
-                🏠
-              </div>
+              <div className="no-properties-icon">🏠</div>
               <h3>Exciting Opportunities Coming Soon!</h3>
               <p>Our lender partners are preparing amazing mortgage offers for you. Register now to be the first to know when new opportunities become available.</p>
               <button className="btn btn-primary" onClick={onShowRegister}>Get Notified</button>
@@ -142,19 +140,21 @@ const Properties = ({ onShowRegister, onShowLogin, onShowContact }) => {
             properties.map((property, index) => {
               return (
                 <div key={index} className="property-card">
-                  <img 
-                    src={property.images && property.images[0] ? property.images[0] : `https://images.unsplash.com/photo-${1564013799919 + index}?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80`}
-                    alt={property.title}
-                    className="property-image"
-                  />
+                  {property.images && Array.isArray(property.images) && property.images.length > 0 && property.images[0] && (
+                    <img 
+                      src={property.images[0]}
+                      alt={property.title || 'Property'}
+                      className="property-image"
+                    />
+                  )}
                   <div className="property-badge">Featured</div>
                   <div className="property-info">
-                    <h3>{property.title}</h3>
-                    <div className="price">KSH {property.price_range?.toLocaleString()}</div>
-                    <p><strong>📍 Location:</strong> {property.address}, {property.county}</p>
-                    <p><strong>🏠 Type:</strong> {property.property_type}</p>
-                    <p><strong>📊 Interest Rate:</strong> {property.interest_rate}% per annum</p>
-                    <p><strong>⏰ Repayment:</strong> {property.repayment_period} years</p>
+                    <h3>{property.title || 'Property'}</h3>
+                    <div className="price">KSH {property.price_range?.toLocaleString() || 'N/A'}</div>
+                    <p><strong>📍 Location:</strong> {property.address || 'N/A'}{property.county ? `, ${property.county}` : ''}</p>
+                    <p><strong>🏠 Type:</strong> {property.property_type || 'N/A'}</p>
+                    <p><strong>📊 Interest Rate:</strong> {property.interest_rate || 'N/A'}% per annum</p>
+                    <p><strong>⏰ Repayment:</strong> {property.repayment_period || 'N/A'} years</p>
                     <button className="btn btn-primary property-btn" onClick={() => {
                       setSelectedProperty(property);
                       setShowPropertyModal(true);
@@ -271,16 +271,17 @@ const Properties = ({ onShowRegister, onShowLogin, onShowContact }) => {
           <p className="section-subtitle">We work with Kenya's leading financial institutions</p>
           <div className="partners-grid">
             {[
-              { name: 'KCB Bank', icon: '🏦' },
-              { name: 'Equity Bank', icon: '🏛️' },
-              { name: 'Co-operative Bank', icon: '🤝' },
-              { name: 'NCBA Bank', icon: '💼' },
-              { name: 'Stanbic Bank', icon: '🏢' },
-              { name: 'Absa Bank', icon: '🏪' }
+              { name: 'KCB Bank', icon: '🏦', desc: 'Competitive rates' },
+              { name: 'Equity Bank', icon: '🏛️', desc: 'Fast approval' },
+              { name: 'Co-operative Bank', icon: '🤝', desc: 'Flexible terms' },
+              { name: 'NCBA Bank', icon: '💼', desc: 'Low deposits' },
+              { name: 'Stanbic Bank', icon: '🏢', desc: 'Premium service' },
+              { name: 'Absa Bank', icon: '🏪', desc: 'Digital first' }
             ].map((lender, i) => (
               <div key={i} className="partner-card">
                 <div className="partner-logo">{lender.icon}</div>
-                <div>{lender.name}</div>
+                <div className="partner-name">{lender.name}</div>
+                <div className="partner-desc">{lender.desc}</div>
               </div>
             ))}
           </div>
@@ -332,12 +333,10 @@ const Properties = ({ onShowRegister, onShowLogin, onShowContact }) => {
             <div className="modal-body">
               <div className="property-details">
                 <div className="property-images">
-                  {selectedProperty.images && selectedProperty.images.length > 0 ? (
+                  {selectedProperty.images && selectedProperty.images.length > 0 && (
                     selectedProperty.images.map((image, idx) => (
                       <img key={idx} src={image} alt={`${selectedProperty.title} ${idx + 1}`} className="property-detail-image" />
                     ))
-                  ) : (
-                    <img src={`https://images.unsplash.com/photo-1564013799919?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80`} alt={selectedProperty.title} className="property-detail-image" />
                   )}
                 </div>
                 <div className="property-info-detailed">
