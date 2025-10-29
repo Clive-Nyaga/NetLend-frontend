@@ -69,19 +69,28 @@ const LenderApplications = ({ lenderId }) => {
                     <h5>Applicant Details</h5>
                     <p><strong>Name:</strong> {app.applicantName || app.applicant || app.buyerName || app.name || 'N/A'}</p>
                     <p><strong>Property:</strong> {app.property || 'N/A'}</p>
-                    <p><strong>Notes:</strong> {app.notes || 'No additional notes'}</p>
+                    <p><strong>Email:</strong> {app.buyer_email || 'N/A'}</p>
+                    <p><strong>Phone:</strong> {app.buyer_phone || 'N/A'}</p>
                   </div>
                   
                   <div className="info-section">
-                    <h5>Application Details</h5>
+                    <h5>Financial Profile</h5>
+                    <p><strong>Monthly Income:</strong> KSH {(app.monthly_income || 0).toLocaleString()}</p>
+                    <p><strong>Employment:</strong> {app.employment_status || 'N/A'}</p>
                     <p><strong>Loan Amount:</strong> KSH {app.amount?.toLocaleString() || 'N/A'}</p>
+                    <p><strong>Down Payment:</strong> KSH {app.down_payment?.toLocaleString() || 'N/A'}</p>
+                  </div>
+                  
+                  <div className="info-section">
+                    <h5>Assessment & Status</h5>
+                    {app.creditworthiness_score && (
+                      <p><strong>Credit Score:</strong> <span style={{color: app.creditworthiness_score >= 70 ? '#10b981' : app.creditworthiness_score >= 50 ? '#f59e0b' : '#ef4444'}}>{app.creditworthiness_score}/100</span></p>
+                    )}
+                    {app.risk_level && (
+                      <p><strong>Risk Level:</strong> <span style={{color: app.risk_level === 'Low' ? '#10b981' : app.risk_level === 'Medium' ? '#f59e0b' : '#ef4444'}}>{app.risk_level} Risk</span></p>
+                    )}
                     <p><strong>Application Date:</strong> {app.submittedAt || 'N/A'}</p>
                     <p><strong>Status:</strong> <span className={`status ${app.status}`}>{app.status || 'pending'}</span></p>
-                  </div>
-                  
-                  <div className="info-section">
-                    <h5>Additional Information</h5>
-                    <p><em>Complete buyer profile information will be available once the buyer completes their full application with financial details.</em></p>
                   </div>
                 </div>
                 

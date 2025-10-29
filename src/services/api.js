@@ -237,7 +237,7 @@ const api = {
       headers['Authorization'] = `Bearer ${token}`;
     }
     const response = await fetch(`${API_BASE_URL}/homebuyer/profile`, {
-      method: 'PUT',
+      method: 'PATCH',
       headers,
       body: JSON.stringify(profileData)
     });
@@ -315,6 +315,42 @@ const api = {
     const result = await response.json();
     if (!response.ok) {
       throw new Error(result.message || result.error || 'Failed to get mortgages');
+    }
+    return result;
+  },
+
+  getLenderProfile: async () => {
+    const token = localStorage.getItem('access_token');
+    const headers = {};
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+    const response = await fetch(`${API_BASE_URL}/lender/profile`, {
+      headers
+    });
+    const result = await response.json();
+    if (!response.ok) {
+      throw new Error(result.message || result.error || 'Failed to get lender profile');
+    }
+    return result;
+  },
+
+  updateLenderProfile: async (profileData) => {
+    const token = localStorage.getItem('access_token');
+    const headers = {
+      'Content-Type': 'application/json'
+    };
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+    const response = await fetch(`${API_BASE_URL}/lender/profile`, {
+      method: 'PATCH',
+      headers,
+      body: JSON.stringify(profileData)
+    });
+    const result = await response.json();
+    if (!response.ok) {
+      throw new Error(result.message || result.error || 'Failed to update lender profile');
     }
     return result;
   }
