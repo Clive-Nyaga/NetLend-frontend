@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import api from '../../services/api';
 
 const Analytics = ({ lenderId }) => {
   const [analytics, setAnalytics] = useState({
@@ -13,16 +14,45 @@ const Analytics = ({ lenderId }) => {
   const [showDetails, setShowDetails] = useState(false);
 
   useEffect(() => {
-    // Mock analytics data
-    setAnalytics({
-      totalLoans: 45,
-      activeLoans: 32,
-      monthlyRevenue: 1250000,
-      defaultRate: 2.3,
-      avgInterestRate: 12.8,
-      totalDisbursed: 25000000
-    });
+    loadAnalytics();
   }, [lenderId]);
+
+  const loadAnalytics = async () => {
+    try {
+      console.log('Loading analytics for lender:', lenderId);
+      const [applicationsResponse, listingsResponse] = await Promise.all([
+        api.getLenderApplications(lenderId),
+        api.getLenderListings(lenderId)
+      ]);
+      
+      const applications = Array.isArray(applicationsResponse) ? applicationsResponse : applicationsResponse.applications || [];
+      const listings = Array.isArray(listingsResponse) ? listingsResponse : [];
+      
+      const approvedApps = applications.filter(app => app.status === 'approved');
+      const pendingApps = applications.filter(app => app.status === 'pending');
+      
+      const totalDisbursed = approvedApps.reduce((sum, app) => sum + (app.amount || 0), 0);
+      const monthlyRevenue = totalDisbursed * 0.01; // Estimate 1% monthly revenue
+      
+      setAnalytics({
+        totalLoans: applications.length,
+        activeLoans: approvedApps.length,
+        monthlyRevenue: monthlyRevenue,
+        defaultRate: 0, // Would need additional data
+        avgInterestRate: 12.5, // Would need property data
+        totalDisbursed: totalDisbursed
+      });
+      
+      console.log('Analytics calculated:', {
+        totalApplications: applications.length,
+        approved: approvedApps.length,
+        pending: pendingApps.length,
+        totalDisbursed: totalDisbursed
+      });
+    } catch (error) {
+      console.error('Failed to load analytics:', error);
+    }
+  };
 
   const handleCardClick = (metric) => {
     setSelectedMetric(metric);
@@ -32,13 +62,13 @@ const Analytics = ({ lenderId }) => {
   const getDetailedData = (metric) => {
     const details = {
       totalLoans: {
-        title: 'Total Loans Breakdown',
+        title: 'Total Applications Breakdown',
         data: [
-          { label: 'Approved Loans', value: 45, color: '#10b981' },
-          { label: 'Pending Applications', value: 12, color: '#f59e0b' },
-          { label: 'Rejected Applications', value: 8, color: '#ef4444' }
+          { label: 'Total Applications', value: analytics.totalLoans, color: '#3b82f6' },
+          { label: 'Approved Applications', value: analytics.activeLoans, color: '#10b981' },
+          { label: 'Pending Applications', value: analytics.totalLoans - analytics.activeLoans, color: '#f59e0b' }
         ],
-        trend: '+15% from last month'
+        trend: 'Based on current data'
       },
       activeLoans: {
         title: 'Active Loans Details',
@@ -52,11 +82,11 @@ const Analytics = ({ lenderId }) => {
       monthlyRevenue: {
         title: 'Revenue Breakdown',
         data: [
-          { label: 'Interest Income', value: 950000, color: '#10b981' },
-          { label: 'Processing Fees', value: 200000, color: '#3b82f6' },
-          { label: 'Other Charges', value: 100000, color: '#8b5cf6' }
+          { label: 'Estimated Monthly Revenue', value: analytics.monthlyRevenue, color: '#10b981' },
+          { label: 'Total Disbursed', value: analytics.totalDisbursed, color: '#3b82f6' },
+          { label: 'Active Loans', value: analytics.activeLoans, color: '#8b5cf6' }
         ],
-        trend: '+22% from last month'
+        trend: 'Based on approved applications'
       },
       defaultRate: {
         title: 'Default Rate Analysis',
@@ -77,13 +107,13 @@ const Analytics = ({ lenderId }) => {
         trend: 'Stable from last month'
       },
       totalDisbursed: {
-        title: 'Disbursement Breakdown',
+        title: 'Disbursement Summary',
         data: [
-          { label: 'This Month', value: 5200000, color: '#3b82f6' },
-          { label: 'Last Month', value: 4800000, color: '#6b7280' },
-          { label: 'YTD Total', value: 25000000, color: '#10b981' }
+          { label: 'Total Disbursed', value: analytics.totalDisbursed, color: '#10b981' },
+          { label: 'Number of Loans', value: analytics.activeLoans, color: '#3b82f6' },
+          { label: 'Average Loan Size', value: analytics.activeLoans > 0 ? Math.round(analytics.totalDisbursed / analytics.activeLoans) : 0, color: '#8b5cf6' }
         ],
-        trend: '+8.3% from last month'
+        trend: 'Based on approved applications'
       }
     };
     return details[metric] || {};

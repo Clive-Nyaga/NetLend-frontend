@@ -226,6 +226,81 @@ const api = {
       throw new Error(result.message || result.error || 'Failed to submit application');
     }
     return result;
+  },
+
+  updateBuyerProfile: async (profileData) => {
+    const token = localStorage.getItem('access_token');
+    const headers = {
+      'Content-Type': 'application/json'
+    };
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+    const response = await fetch(`${API_BASE_URL}/homebuyer/profile`, {
+      method: 'PUT',
+      headers,
+      body: JSON.stringify(profileData)
+    });
+    const result = await response.json();
+    if (!response.ok) {
+      throw new Error(result.message || result.error || 'Failed to update profile');
+    }
+    return result;
+  },
+
+  getBuyerProfile: async () => {
+    const token = localStorage.getItem('access_token');
+    const headers = {};
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+    const response = await fetch(`${API_BASE_URL}/homebuyer/profile`, {
+      headers
+    });
+    const result = await response.json();
+    if (!response.ok) {
+      throw new Error(result.message || result.error || 'Failed to get profile');
+    }
+    return result;
+  },
+
+  uploadDocument: async (documentData) => {
+    const token = localStorage.getItem('access_token');
+    const formData = new FormData();
+    formData.append('document', documentData.file);
+    formData.append('type', documentData.type);
+    
+    const headers = {};
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+    
+    const response = await fetch(`${API_BASE_URL}/homebuyer/documents`, {
+      method: 'POST',
+      headers,
+      body: formData
+    });
+    const result = await response.json();
+    if (!response.ok) {
+      throw new Error(result.message || result.error || 'Failed to upload document');
+    }
+    return result;
+  },
+
+  getCreditworthiness: async () => {
+    const token = localStorage.getItem('access_token');
+    const headers = {};
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+    const response = await fetch(`${API_BASE_URL}/homebuyer/creditworthiness`, {
+      headers
+    });
+    const result = await response.json();
+    if (!response.ok) {
+      throw new Error(result.message || result.error || 'Failed to get creditworthiness');
+    }
+    return result;
   }
 };
 

@@ -3,6 +3,7 @@ import MortgageCalculator from '../Calculator/MortgageCalculator';
 import AffordabilityCalculator from '../Calculator/AffordabilityCalculator';
 import LoanComparison from '../Calculator/LoanComparison';
 import PropertyListings from './PropertyListings';
+import BuyerProfile from './BuyerProfile';
 import '../../styles/netlend.css';
 
 const HomebuyerDashboard = ({ user, onLogout }) => {
@@ -72,30 +73,7 @@ const HomebuyerDashboard = ({ user, onLogout }) => {
           </div>
         )}
         
-        {activeSection === 'profile' && (
-          <div className="section">
-            <h2>My Profile</h2>
-            <div className="profile-form">
-              <div className="form-group">
-                <label>Full Name</label>
-                <input type="text" value={user?.name || ''} readOnly />
-              </div>
-              <div className="form-group">
-                <label>Email</label>
-                <input type="email" value={user?.email || ''} readOnly />
-              </div>
-              <div className="form-group">
-                <label>Phone Number</label>
-                <input type="tel" placeholder="Enter your phone number" />
-              </div>
-              <div className="form-group">
-                <label>Monthly Income (KSH)</label>
-                <input type="number" placeholder="Enter your monthly income" />
-              </div>
-              <button className="btn">Update Profile</button>
-            </div>
-          </div>
-        )}
+        {activeSection === 'profile' && <BuyerProfile />}
       </div>
     </div>
   );
