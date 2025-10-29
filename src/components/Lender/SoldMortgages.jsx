@@ -90,8 +90,22 @@ const SoldMortgages = ({ lenderId }) => {
               </div>
               
               <div className="mortgage-actions">
-                <button className="btn secondary">View Details</button>
-                <button className="btn">Download Contract</button>
+                <button 
+                  className="btn secondary" 
+                  onClick={() => {
+                    alert(`Viewing details for ${mortgage.property || `Application #${mortgage.id}`}:\n\nBorrower: ${mortgage.applicantName || mortgage.applicant}\nAmount: KSH ${mortgage.amount?.toLocaleString()}\nStatus: ${mortgage.status}\nDate: ${mortgage.submittedAt}`);
+                  }}
+                >
+                  View Details
+                </button>
+                <button 
+                  className="btn" 
+                  onClick={() => {
+                    alert(`Downloading contract for ${mortgage.property || `Application #${mortgage.id}`}...\n\nContract would be generated and downloaded here.`);
+                  }}
+                >
+                  Download Contract
+                </button>
               </div>
             </div>
           ))

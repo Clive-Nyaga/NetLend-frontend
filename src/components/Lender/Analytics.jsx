@@ -188,8 +188,22 @@ const Analytics = ({ lenderId }) => {
       )}
       
       <div className="analytics-actions">
-        <button className="btn">Download PDF Report</button>
-        <button className="btn">Download Excel Report</button>
+        <button 
+          className="btn" 
+          onClick={() => {
+            alert('Generating PDF report...\n\nReport would include:\n- Total Loans: ' + analytics.totalLoans + '\n- Active Loans: ' + analytics.activeLoans + '\n- Monthly Revenue: KSH ' + analytics.monthlyRevenue?.toLocaleString() + '\n- Total Disbursed: KSH ' + analytics.totalDisbursed?.toLocaleString());
+          }}
+        >
+          Download PDF Report
+        </button>
+        <button 
+          className="btn" 
+          onClick={() => {
+            alert('Generating Excel report...\n\nSpreadsheet would contain detailed analytics data for further analysis.');
+          }}
+        >
+          Download Excel Report
+        </button>
         <button className="btn secondary" onClick={() => setShowDetails(false)}>Reset View</button>
       </div>
     </div>

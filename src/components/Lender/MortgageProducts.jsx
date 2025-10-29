@@ -21,17 +21,28 @@ const MortgageProducts = ({ lenderId }) => {
   };
 
   const addProduct = async () => {
-    // This would open a form modal in a real implementation
+    const name = prompt('Product Name:', 'Fixed Rate Mortgage');
+    if (!name) return;
+    
+    const rate = prompt('Interest Rate (%):', '12.5');
+    if (!rate) return;
+    
+    const term = prompt('Term (years):', '30');
+    if (!term) return;
+    
     const productData = {
-      name: 'New Product',
-      rate: 6.5,
-      term: 30
+      name: name,
+      rate: parseFloat(rate),
+      term: parseInt(term)
     };
+    
     try {
       await api.createProduct(lenderId, productData);
+      alert('Product created successfully!');
       loadProducts();
     } catch (error) {
       console.error('Failed to create product:', error);
+      alert('Failed to create product. Backend endpoint may not be ready.');
     }
   };
 

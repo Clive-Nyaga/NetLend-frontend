@@ -56,7 +56,18 @@ const Messages = ({ lenderId }) => {
             <div className="message-content">
               <p>{selectedMessage.preview}</p>
             </div>
-            <button className="btn">Reply</button>
+            <button 
+              className="btn" 
+              onClick={() => {
+                const reply = prompt(`Reply to ${selectedMessage.from}:`);
+                if (reply) {
+                  alert(`Message sent to ${selectedMessage.from}: "${reply}"`);
+                  setSelectedMessage(null);
+                }
+              }}
+            >
+              Reply
+            </button>
           </div>
         )}
       </div>

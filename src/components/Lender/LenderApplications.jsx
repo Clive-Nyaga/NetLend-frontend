@@ -121,7 +121,17 @@ const LenderApplications = ({ lenderId }) => {
                 >
                   Reject
                 </button>
-                <button className="btn secondary">Request More Info</button>
+                <button 
+                  className="btn secondary" 
+                  onClick={() => {
+                    const message = prompt('What additional information do you need from the applicant?');
+                    if (message) {
+                      alert(`Information request sent to ${app.applicantName || app.applicant}: "${message}"`);
+                    }
+                  }}
+                >
+                  Request More Info
+                </button>
               </div>
             </div>
           ))
