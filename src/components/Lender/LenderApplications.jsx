@@ -14,7 +14,19 @@ const LenderApplications = ({ lenderId }) => {
       console.log('Loading applications for lender:', lenderId);
       const response = await api.getLenderApplications(lenderId);
       console.log('Applications response:', response);
-      setApplications(Array.isArray(response) ? response : response.applications || []);
+      const apps = Array.isArray(response) ? response : response.applications || [];
+      if (apps.length > 0) {
+        console.log('First application structure:', apps[0]);
+        console.log('Application fields:', Object.keys(apps[0]));
+        console.log('Full application data:', JSON.stringify(apps[0], null, 2));
+        if (apps[0].buyer) {
+          console.log('Buyer object:', apps[0].buyer);
+          console.log('Buyer fields:', Object.keys(apps[0].buyer));
+        } else {
+          console.log('No buyer object found in application');
+        }
+      }
+      setApplications(apps);
     } catch (error) {
       console.error('Failed to load applications:', error);
     } finally {
@@ -54,27 +66,22 @@ const LenderApplications = ({ lenderId }) => {
                 <h4>Buyer Information</h4>
                 <div className="buyer-info-grid">
                   <div className="info-section">
-                    <h5>Personal Details</h5>
-                    <p><strong>Name:</strong> {app.applicantName || app.buyer?.name || 'N/A'}</p>
-                    <p><strong>Email:</strong> {app.buyer?.email || 'N/A'}</p>
-                    <p><strong>Phone:</strong> {app.buyer?.phone || 'N/A'}</p>
-                    <p><strong>ID Number:</strong> {app.buyer?.idNumber || 'N/A'}</p>
+                    <h5>Applicant Details</h5>
+                    <p><strong>Name:</strong> {app.applicantName || app.applicant || app.buyerName || app.name || 'N/A'}</p>
+                    <p><strong>Property:</strong> {app.property || 'N/A'}</p>
+                    <p><strong>Notes:</strong> {app.notes || 'No additional notes'}</p>
                   </div>
                   
                   <div className="info-section">
-                    <h5>Financial Profile</h5>
-                    <p><strong>Monthly Income:</strong> KSH {app.buyer?.monthlyIncome?.toLocaleString() || 'N/A'}</p>
-                    <p><strong>Employment:</strong> {app.buyer?.employmentType || 'N/A'}</p>
-                    <p><strong>Employer:</strong> {app.buyer?.employer || 'N/A'}</p>
-                    <p><strong>Credit Score:</strong> {app.buyer?.creditScore || 'N/A'}</p>
+                    <h5>Application Details</h5>
+                    <p><strong>Loan Amount:</strong> KSH {app.amount?.toLocaleString() || 'N/A'}</p>
+                    <p><strong>Application Date:</strong> {app.submittedAt || 'N/A'}</p>
+                    <p><strong>Status:</strong> <span className={`status ${app.status}`}>{app.status || 'pending'}</span></p>
                   </div>
                   
                   <div className="info-section">
-                    <h5>Loan Details</h5>
-                    <p><strong>Requested Amount:</strong> KSH {app.amount?.toLocaleString() || 'N/A'}</p>
-                    <p><strong>Property Value:</strong> KSH {app.propertyValue?.toLocaleString() || 'N/A'}</p>
-                    <p><strong>Down Payment:</strong> KSH {app.downPayment?.toLocaleString() || 'N/A'}</p>
-                    <p><strong>Loan Term:</strong> {app.loanTerm || 'N/A'} years</p>
+                    <h5>Additional Information</h5>
+                    <p><em>Complete buyer profile information will be available once the buyer completes their full application with financial details.</em></p>
                   </div>
                 </div>
                 
