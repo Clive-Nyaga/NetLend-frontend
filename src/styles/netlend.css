@@ -1657,30 +1657,78 @@ textarea {
 /* Partners Section */
 .partners-section {
     padding: 2.5rem 2rem;
-    background: white;
+    background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
 }
 
 .partners-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    gap: 1.5rem;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
     margin-top: 3rem;
+    max-width: 1000px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .partner-card {
-    background: var(--secondary);
-    padding: 2rem;
+    background: white;
+    padding: 2.5rem 2rem;
     border-radius: var(--radius-lg);
     text-align: center;
     font-family: 'Poppins', sans-serif;
-    font-weight: 600;
-    color: var(--primary);
     transition: all 0.3s ease;
+    border: 2px solid var(--border);
+    position: relative;
+    overflow: hidden;
+}
+
+.partner-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--primary), var(--accent));
+    transform: scaleX(0);
+    transition: transform 0.3s ease;
+}
+
+.partner-card:hover::before {
+    transform: scaleX(1);
 }
 
 .partner-card:hover {
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 87, 183, 0.15);
+    transform: translateY(-8px);
+    border-color: var(--primary);
+}
+
+.partner-name {
+    font-weight: 600;
+    color: var(--primary);
+    font-size: 1.125rem;
+    margin: 0.75rem 0 0.5rem;
+}
+
+.partner-desc {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    font-weight: 400;
+    font-family: 'Inter', sans-serif;
+}
+
+@media (max-width: 768px) {
+    .partners-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .partners-grid {
+        grid-template-columns: 1fr;
+    }
 }
 
 /* CTA Section */
@@ -1775,8 +1823,15 @@ textarea {
 
 /* Partner Logo Styling */
 .partner-logo {
-    font-size: 3rem;
+    font-size: 3.5rem;
     margin-bottom: 0.5rem;
+    filter: grayscale(0.3);
+    transition: all 0.3s ease;
+}
+
+.partner-card:hover .partner-logo {
+    filter: grayscale(0);
+    transform: scale(1.1);
 }
 
 /* About Page Sections */
