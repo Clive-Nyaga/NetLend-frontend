@@ -159,7 +159,7 @@ const PropertyListings = () => {
       </div>
 
       {loading ? (
-        <p>Loading properties...</p>
+        <div className="loading-properties">Loading properties...</div>
       ) : (
         <>
           <div className="properties-grid">
