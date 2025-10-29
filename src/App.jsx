@@ -14,6 +14,7 @@ import Footer from './components/Layout/Footer';
 import MortgageCalculator from './components/Calculator/MortgageCalculator';
 import AffordabilityCalculator from './components/Calculator/AffordabilityCalculator';
 import LoanComparison from './components/Calculator/LoanComparison';
+import EligibilityCalculator from './components/Calculator/EligibilityCalculator';
 import './styles/netlend.css';
 import './index.css';
 
@@ -270,6 +271,7 @@ function App() {
       {currentSection === 'mortgage-calculator' && <MortgageCalculator />}
       {currentSection === 'affordability-calculator' && <AffordabilityCalculator />}
       {currentSection === 'loan-comparison' && <LoanComparison />}
+      {currentSection === 'eligibility-calculator' && <EligibilityCalculator user={user} />}
       
       <LoginModal 
         isOpen={showLoginModal}

@@ -5,6 +5,49 @@ const LenderApplications = ({ lenderId }) => {
   const [applications, setApplications] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  const calculateEligibilityScore = (app) => {
+    const monthlyIncome = app.monthly_income || 0;
+    const existingDebts = app.existing_debts || 0;
+    const creditScore = app.creditworthiness_score || 0;
+    const employmentYears = app.employment_years || 0;
+    const downPayment = app.down_payment || 0;
+    const loanAmount = app.amount || 0;
+
+    let score = 0;
+    
+    // Credit score (40% weight)
+    if (creditScore >= 80) score += 40;
+    else if (creditScore >= 70) score += 30;
+    else if (creditScore >= 60) score += 20;
+    else score += 10;
+    
+    // DTI ratio (30% weight)
+    const dtiRatio = existingDebts / monthlyIncome;
+    if (dtiRatio <= 0.28) score += 30;
+    else if (dtiRatio <= 0.36) score += 20;
+    else score += 10;
+    
+    // Employment (20% weight)
+    if (employmentYears >= 3) score += 20;
+    else if (employmentYears >= 1) score += 15;
+    else score += 5;
+    
+    // Down payment ratio (10% weight)
+    const downPaymentRatio = downPayment / (loanAmount + downPayment);
+    if (downPaymentRatio >= 0.20) score += 10;
+    else if (downPaymentRatio >= 0.10) score += 7;
+    else score += 3;
+
+    return Math.min(score, 100);
+  };
+
+  const getEligibilityStatus = (score) => {
+    if (score >= 80) return { status: 'Highly Eligible', color: '#10b981' };
+    if (score >= 60) return { status: 'Eligible', color: '#3b82f6' };
+    if (score >= 40) return { status: 'Conditionally Eligible', color: '#f59e0b' };
+    return { status: 'Not Eligible', color: '#ef4444' };
+  };
+
   useEffect(() => {
     loadApplications();
   }, [lenderId]);
@@ -83,6 +126,24 @@ const LenderApplications = ({ lenderId }) => {
                   
                   <div className="info-section">
                     <h5>Assessment & Status</h5>
+                    {(() => {
+                      const eligibilityScore = calculateEligibilityScore(app);
+                      const eligibilityInfo = getEligibilityStatus(eligibilityScore);
+                      return (
+                        <div className="eligibility-display">
+                          <p><strong>Eligibility Score:</strong> 
+                            <span style={{color: eligibilityInfo.color, fontWeight: 'bold'}}>
+                              {eligibilityScore}/100
+                            </span>
+                          </p>
+                          <p><strong>Eligibility Status:</strong> 
+                            <span style={{color: eligibilityInfo.color, fontWeight: 'bold'}}>
+                              {eligibilityInfo.status}
+                            </span>
+                          </p>
+                        </div>
+                      );
+                    })()}
                     {app.creditworthiness_score && (
                       <p><strong>Credit Score:</strong> <span style={{color: app.creditworthiness_score >= 70 ? '#10b981' : app.creditworthiness_score >= 50 ? '#f59e0b' : '#ef4444'}}>{app.creditworthiness_score}/100</span></p>
                     )}

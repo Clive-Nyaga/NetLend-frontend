@@ -38,18 +38,12 @@ const PropertyListings = () => {
 
   const loadProperties = async () => {
     try {
-      console.log('Loading properties for buyer dashboard...');
       const response = await api.getProperties();
-      console.log('Properties response:', response);
       const propertiesArray = Array.isArray(response) ? response : [];
-      const availableProperties = propertiesArray.filter(property => 
-        property.status === 'active' || property.status === 'Active' || !property.status
-      );
-      if (availableProperties.length > 0) {
-        console.log('First property structure:', availableProperties[0]);
-        console.log('Property fields:', Object.keys(availableProperties[0]));
-      }
-      console.log('Setting available properties:', availableProperties);
+      const availableProperties = propertiesArray.filter(property => {
+        const status = property.status?.toLowerCase();
+        return status === 'active' || !property.status;
+      });
       setProperties(availableProperties);
     } catch (error) {
       console.error('Failed to load properties:', error);
