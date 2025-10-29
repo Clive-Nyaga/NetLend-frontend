@@ -142,6 +142,10 @@ const MyListings = ({ lenderId }) => {
   };
 
   const handleEditListing = (listing) => {
+    if (listing.editable === false || listing.status === 'acquired' || listing.status === 'sold') {
+      alert('Cannot edit this property as it has already been acquired or sold. You can view it in the "Sold Mortgages" section.');
+      return;
+    }
     setEditingListing(listing);
     setFormData({
       title: listing.title || '',
@@ -235,11 +239,11 @@ const MyListings = ({ lenderId }) => {
                 <p><strong>Bedrooms:</strong> {listing.bedrooms || listing.rooms || 'Not specified'}</p>
                 <p><strong>Status:</strong> 
                   <span className={`status-badge ${listing.status?.toLowerCase() || 'active'}`}>
-                    {listing.status === 'ACQUIRED' ? 'Under Contract' : 
-                     listing.status === 'SOLD' ? 'Sold' : 'Available'}
+                    {listing.status === 'acquired' ? 'Under Contract' : 
+                     listing.status === 'sold' ? 'Sold' : 'Available'}
                   </span>
                 </p>
-                {(listing.status === 'ACQUIRED' || listing.status === 'SOLD') && (
+                {listing.amount_paid > 0 && (
                   <p><strong>Payment Progress:</strong> 
                     KSH {(listing.amount_paid || 0).toLocaleString()} / KSH {(listing.price || listing.price_range || 0).toLocaleString()}
                     ({Math.round(((listing.amount_paid || 0) / (listing.price || listing.price_range || 1)) * 100)}%)
@@ -247,11 +251,9 @@ const MyListings = ({ lenderId }) => {
                 )}
                 <p><strong>Created:</strong> {listing.createdAt}</p>
                 <div className="listing-actions">
-                  {(listing.status !== 'ACQUIRED' && listing.status !== 'SOLD') ? (
-                    <button className="btn" onClick={() => handleEditListing(listing)}>Edit</button>
-                  ) : (
-                    <button className="btn" disabled title="Cannot edit properties with payments">Edit (Locked)</button>
-                  )}
+                  <button className="btn" onClick={() => handleEditListing(listing)}>
+                    {listing.editable !== false ? 'Edit' : 'Edit (Locked)'}
+                  </button>
                   <button className="btn danger" onClick={() => handleDeleteListing(listing.id)}>Remove</button>
                 </div>
               </div>
