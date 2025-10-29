@@ -88,7 +88,7 @@ const BuyerProfile = () => {
       const profile = await api.getBuyerProfile();
       setProfileData(profile);
     } catch (error) {
-      console.log('No existing profile found');
+      console.log('No existing profile found or backend endpoint not ready:', error.message);
     }
   };
 
@@ -98,7 +98,7 @@ const BuyerProfile = () => {
       setCreditScore(assessment.score);
       setRiskLevel(assessment.riskLevel);
     } catch (error) {
-      console.log('Creditworthiness not available yet');
+      console.log('Creditworthiness not available yet or backend endpoint not ready:', error.message);
     }
   };
 
@@ -131,6 +131,7 @@ const BuyerProfile = () => {
       await loadCreditworthiness();
       alert('Profile updated successfully!');
     } catch (error) {
+      console.error('Profile update error:', error);
       alert('Failed to update profile: ' + error.message);
     } finally {
       setLoading(false);

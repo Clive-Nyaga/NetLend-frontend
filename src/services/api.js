@@ -241,10 +241,18 @@ const api = {
       headers,
       body: JSON.stringify(profileData)
     });
-    const result = await response.json();
+    
     if (!response.ok) {
-      throw new Error(result.message || result.error || 'Failed to update profile');
+      const contentType = response.headers.get('content-type');
+      if (contentType && contentType.includes('application/json')) {
+        const result = await response.json();
+        throw new Error(result.message || result.error || 'Failed to update profile');
+      } else {
+        throw new Error(`Backend endpoint not implemented (HTTP ${response.status})`);
+      }
     }
+    
+    const result = await response.json();
     return result;
   },
 
@@ -257,10 +265,18 @@ const api = {
     const response = await fetch(`${API_BASE_URL}/homebuyer/profile`, {
       headers
     });
-    const result = await response.json();
+    
     if (!response.ok) {
-      throw new Error(result.message || result.error || 'Failed to get profile');
+      const contentType = response.headers.get('content-type');
+      if (contentType && contentType.includes('application/json')) {
+        const result = await response.json();
+        throw new Error(result.message || result.error || 'Failed to get profile');
+      } else {
+        throw new Error(`Backend endpoint not implemented (HTTP ${response.status})`);
+      }
     }
+    
+    const result = await response.json();
     return result;
   },
 
@@ -296,10 +312,18 @@ const api = {
     const response = await fetch(`${API_BASE_URL}/homebuyer/creditworthiness`, {
       headers
     });
-    const result = await response.json();
+    
     if (!response.ok) {
-      throw new Error(result.message || result.error || 'Failed to get creditworthiness');
+      const contentType = response.headers.get('content-type');
+      if (contentType && contentType.includes('application/json')) {
+        const result = await response.json();
+        throw new Error(result.message || result.error || 'Failed to get creditworthiness');
+      } else {
+        throw new Error(`Backend endpoint not implemented (HTTP ${response.status})`);
+      }
     }
+    
+    const result = await response.json();
     return result;
   },
 

@@ -47,6 +47,19 @@ const PropertyListings = () => {
       setProperties(availableProperties);
     } catch (error) {
       console.error('Failed to load properties:', error);
+      // Use fallback to getAllMortgages if homebuyer endpoint not available
+      try {
+        const fallbackResponse = await api.getAllMortgages();
+        const fallbackArray = Array.isArray(fallbackResponse) ? fallbackResponse : [];
+        const availableProperties = fallbackArray.filter(property => {
+          const status = property.status?.toLowerCase();
+          return status === 'active' || !property.status;
+        });
+        setProperties(availableProperties);
+      } catch (fallbackError) {
+        console.error('Fallback also failed:', fallbackError);
+        setProperties([]);
+      }
     } finally {
       setLoading(false);
     }
