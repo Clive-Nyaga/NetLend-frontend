@@ -66,9 +66,9 @@ const PropertyListings = () => {
   };
 
   const filteredProperties = properties.filter(property => {
-    const price = property.price_range || property.price || 0;
-    const location = property.location || property.address || '';
-    const propertyType = property.property_type || property.type || '';
+    const price = property.price || 0;
+    const location = property.location || '';
+    const propertyType = property.type || '';
     
     return (
       (!filters.county || location.toLowerCase().includes(filters.county.toLowerCase())) &&
@@ -109,7 +109,6 @@ const PropertyListings = () => {
         property_type: selectedProperty.type,
         property_price: selectedProperty.price,
         bedrooms: selectedProperty.bedrooms,
-        bathrooms: selectedProperty.bathrooms,
         interest_rate: selectedProperty.rate,
         repayment_period: selectedProperty.term,
         lender_name: selectedProperty.lender
@@ -193,20 +192,17 @@ const PropertyListings = () => {
                   alt={property.title} 
                 />
                 <div className="property-info">
-                  <h3>{property.title || `Property ${property.id}`}</h3>
-                  <div className="price">KSH {(property.price_range || property.price)?.toLocaleString()}</div>
+                  <h3>{property.title || property.subject || 'Property Listing'}</h3>
+                  <div className="price">KSH {property.price?.toLocaleString()}</div>
                   {property.description && (
                     <p className="property-description">{property.description.length > 100 ? property.description.substring(0, 100) + '...' : property.description}</p>
                   )}
-                  <p><strong>📍</strong> {property.address || property.location}</p>
+                  <p><strong>📍</strong> {property.location}</p>
                   <p><strong>🏦</strong> Lender: {property.lender}</p>
-                  <p><strong>🏠</strong> Type: {property.property_type || property.type}</p>
-                  <p><strong>🛏️</strong> Bedrooms: {property.bedrooms || 'N/A'}</p>
-                  <p><strong>🚿</strong> Bathrooms: {property.bathrooms || 'N/A'}</p>
-                  <p><strong>📐</strong> Size: {property.size || 'N/A'} sq ft</p>
-                  <p><strong>📊</strong> Interest Rate: {property.interest_rate}% per annum</p>
-                  <p><strong>⏰</strong> Repayment: {property.repayment_period} years</p>
-                  <p><strong>💰</strong> Down Payment: KSH {((property.price_range || property.price) * 0.2)?.toLocaleString()}</p>
+                  <p><strong>🏠</strong> Type: {property.type}</p>
+                  <p><strong>🛏️</strong> Bedrooms: {property.bedrooms}</p>
+                  <p><strong>📊</strong> Interest Rate: {property.rate}% per annum</p>
+                  <p><strong>⏰</strong> Repayment: {property.term} years</p>
                   <button className="btn btn-primary" onClick={() => handleApply(property)}>
                     Apply for Mortgage
                   </button>
@@ -237,8 +233,7 @@ const PropertyListings = () => {
               <p><strong>Location:</strong> {selectedProperty.location}</p>
               <p><strong>Lender:</strong> {selectedProperty.lender}</p>
               <p><strong>Property Type:</strong> {selectedProperty.type}</p>
-              <p><strong>Bedrooms:</strong> {selectedProperty.bedrooms || 'N/A'}</p>
-              <p><strong>Bathrooms:</strong> {selectedProperty.bathrooms || 'N/A'}</p>
+              <p><strong>Bedrooms:</strong> {selectedProperty.bedrooms}</p>
               <p><strong>Interest Rate:</strong> {selectedProperty.rate}% per annum</p>
               <p><strong>Repayment Period:</strong> {selectedProperty.term} years</p>
               

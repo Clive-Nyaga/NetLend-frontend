@@ -79,7 +79,6 @@ const Properties = ({ user, onShowRegister, onShowLogin, onShowContact }) => {
         property_type: selectedProperty.type,
         property_price: selectedProperty.price,
         bedrooms: selectedProperty.bedrooms,
-        bathrooms: selectedProperty.bathrooms,
         interest_rate: selectedProperty.rate,
         repayment_period: selectedProperty.term,
         lender_name: selectedProperty.lender
@@ -454,8 +453,7 @@ const Properties = ({ user, onShowRegister, onShowLogin, onShowContact }) => {
               <p><strong>Location:</strong> {selectedProperty.location}</p>
               <p><strong>Lender:</strong> {selectedProperty.lender}</p>
               <p><strong>Property Type:</strong> {selectedProperty.type}</p>
-              <p><strong>Bedrooms:</strong> {selectedProperty.bedrooms || 'N/A'}</p>
-              <p><strong>Bathrooms:</strong> {selectedProperty.bathrooms || 'N/A'}</p>
+              <p><strong>Bedrooms:</strong> {selectedProperty.bedrooms}</p>
               <p><strong>Interest Rate:</strong> {selectedProperty.rate}% per annum</p>
               <p><strong>Repayment Period:</strong> {selectedProperty.term} years</p>
               
