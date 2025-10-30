@@ -14,25 +14,22 @@ const Properties = ({ onShowRegister, onShowLogin, onShowContact }) => {
   const loadProperties = async () => {
     try {
       const response = await api.getProperties();
-      const mortgages = Array.isArray(response) ? response : [];
+      
+      // Handle both array and object responses
+      let mortgages = [];
+      if (Array.isArray(response)) {
+        mortgages = response;
+      } else if (response && response.mortgages) {
+        mortgages = response.mortgages;
+      }
+      
       const availableProperties = mortgages.filter(property => 
         property.status === 'active' || property.status === 'ACTIVE' || !property.status
       );
       setProperties(availableProperties.slice(0, 6));
     } catch (error) {
       console.error('Failed to load properties:', error);
-      // Use fallback to getAllMortgages if homebuyer endpoint not available
-      try {
-        const fallbackResponse = await api.getAllMortgages();
-        const fallbackArray = Array.isArray(fallbackResponse) ? fallbackResponse : [];
-        const availableProperties = fallbackArray.filter(property => 
-          property.status === 'active' || property.status === 'ACTIVE' || !property.status
-        );
-        setProperties(availableProperties.slice(0, 6));
-      } catch (fallbackError) {
-        console.error('Fallback also failed:', fallbackError);
-        setProperties([]);
-      }
+      setProperties([]);
     } finally {
       setLoading(false);
     }
