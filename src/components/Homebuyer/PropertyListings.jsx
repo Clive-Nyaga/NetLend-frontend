@@ -81,9 +81,10 @@ const PropertyListings = () => {
   });
 
   const handleApply = (property) => {
+    console.log('Selected property data:', property);
     setSelectedProperty(property);
     setApplicationData({
-      loanAmount: property.price_range * 0.8,
+      loanAmount: property.price * 0.8,
       monthlyIncome: '',
       employmentStatus: 'employed'
     });
@@ -102,7 +103,16 @@ const PropertyListings = () => {
         property_id: selectedProperty.id,
         loan_amount: applicationData.loanAmount,
         monthly_income: applicationData.monthlyIncome,
-        employment_status: applicationData.employmentStatus
+        employment_status: applicationData.employmentStatus,
+        // Include house data from mortgage_listings table
+        property_location: selectedProperty.location,
+        property_type: selectedProperty.type,
+        property_price: selectedProperty.price,
+        bedrooms: selectedProperty.bedrooms,
+        bathrooms: selectedProperty.bathrooms,
+        interest_rate: selectedProperty.rate,
+        repayment_period: selectedProperty.term,
+        lender_name: selectedProperty.lender
       });
       alert('Application submitted successfully!');
       setShowModal(false);
@@ -222,16 +232,15 @@ const PropertyListings = () => {
               <button className="close-btn" onClick={() => setShowModal(false)}>×</button>
             </div>
             <div className="modal-body">
-              <h4>{selectedProperty.title || `Property ${selectedProperty.id}`}</h4>
-              <p><strong>Price:</strong> KSH {(selectedProperty.price_range || selectedProperty.price)?.toLocaleString()}</p>
-              <p><strong>Location:</strong> {selectedProperty.address || selectedProperty.location}</p>
+              <h4>{selectedProperty.title || selectedProperty.subject || 'Property Listing'}</h4>
+              <p><strong>Price:</strong> KSH {selectedProperty.price?.toLocaleString()}</p>
+              <p><strong>Location:</strong> {selectedProperty.location}</p>
               <p><strong>Lender:</strong> {selectedProperty.lender}</p>
-              <p><strong>Property Type:</strong> {selectedProperty.property_type || selectedProperty.type}</p>
+              <p><strong>Property Type:</strong> {selectedProperty.type}</p>
               <p><strong>Bedrooms:</strong> {selectedProperty.bedrooms || 'N/A'}</p>
               <p><strong>Bathrooms:</strong> {selectedProperty.bathrooms || 'N/A'}</p>
-              <p><strong>Size:</strong> {selectedProperty.size || 'N/A'} sq ft</p>
-              <p><strong>Interest Rate:</strong> {selectedProperty.interest_rate}% per annum</p>
-              <p><strong>Repayment Period:</strong> {selectedProperty.repayment_period} years</p>
+              <p><strong>Interest Rate:</strong> {selectedProperty.rate}% per annum</p>
+              <p><strong>Repayment Period:</strong> {selectedProperty.term} years</p>
               
               <div className="form-group">
                 <label>Loan Amount (KSH)</label>
