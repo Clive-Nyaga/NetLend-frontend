@@ -16,6 +16,7 @@ const BuyerProfile = () => {
   const [profileData, setProfileData] = useState({
     // Personal Information
     fullName: '',
+    email: '',
     nationalId: '',
     dateOfBirth: '',
     gender: '',
@@ -86,7 +87,10 @@ const BuyerProfile = () => {
   const loadProfile = async () => {
     try {
       const profile = await api.getBuyerProfile();
-      setProfileData(profile);
+      setProfileData({
+        ...profileData,
+        ...profile
+      });
     } catch (error) {
       console.log('No existing profile found or backend endpoint not ready:', error.message);
     }
@@ -103,7 +107,7 @@ const BuyerProfile = () => {
   };
 
   const calculateCompletion = () => {
-    const requiredFields = ['fullName', 'nationalId', 'employmentStatus', 'monthlyNetIncome', 'monthlyExpenses', 'preferredPropertyType', 'bankName', 'accountNumber'];
+    const requiredFields = ['fullName', 'email', 'nationalId', 'employmentStatus', 'monthlyNetIncome', 'monthlyExpenses', 'preferredPropertyType', 'bankName', 'accountNumber'];
     const completedFields = requiredFields.filter(field => profileData[field]);
     const documentCount = Object.values(documents).filter(doc => doc).length;
     const percentage = Math.round(((completedFields.length + documentCount) / (requiredFields.length + 4)) * 100);
@@ -148,6 +152,10 @@ const BuyerProfile = () => {
         <div className="form-group">
           <label>Full Name *</label>
           <input type="text" name="fullName" value={profileData.fullName} onChange={handleChange} required />
+        </div>
+        <div className="form-group">
+          <label>Email Address *</label>
+          <input type="email" name="email" value={profileData.email} onChange={handleChange} required />
         </div>
         <div className="form-group">
           <label>National ID Number *</label>

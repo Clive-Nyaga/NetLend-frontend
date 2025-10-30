@@ -13,6 +13,8 @@ const Properties = ({ user, onShowRegister, onShowLogin, onShowContact }) => {
     employmentStatus: 'employed'
   });
   const [submitting, setSubmitting] = useState(false);
+  const [userProfile, setUserProfile] = useState(null);
+  const [loadingProfile, setLoadingProfile] = useState(false);
 
   useEffect(() => {
     loadProperties();
@@ -42,18 +44,34 @@ const Properties = ({ user, onShowRegister, onShowLogin, onShowContact }) => {
     }
   };
 
-  const handleApplyForMortgage = (property) => {
+  const handleApplyForMortgage = async (property) => {
     console.log('Selected property data:', property);
     if (user && user.user_type === 'homebuyer') {
-      // User is logged in as homebuyer, show application form
+      // User is logged in as homebuyer, load profile and show application form
       setSelectedProperty(property);
-      setApplicationData({
-        loanAmount: property.price * 0.8,
-        monthlyIncome: '',
-        employmentStatus: 'employed'
-      });
-      setShowPropertyModal(false);
-      setShowApplicationModal(true);
+      setLoadingProfile(true);
+      
+      try {
+        const profile = await api.getBuyerProfile();
+        setUserProfile(profile);
+        setApplicationData({
+          loanAmount: property.price * 0.8,
+          monthlyIncome: profile.monthlyNetIncome || profile.monthlyGrossIncome || '',
+          employmentStatus: profile.employmentStatus || 'employed'
+        });
+      } catch (error) {
+        console.error('Failed to load profile:', error);
+        setUserProfile(null);
+        setApplicationData({
+          loanAmount: property.price * 0.8,
+          monthlyIncome: '',
+          employmentStatus: 'employed'
+        });
+      } finally {
+        setLoadingProfile(false);
+        setShowPropertyModal(false);
+        setShowApplicationModal(true);
+      }
     } else {
       // User not logged in or not a homebuyer, prompt to login
       setShowPropertyModal(false);
@@ -448,56 +466,56 @@ const Properties = ({ user, onShowRegister, onShowLogin, onShowContact }) => {
               <button className="close-btn" onClick={() => setShowApplicationModal(false)}>×</button>
             </div>
             <div className="modal-body">
-              <h4>{selectedProperty.title || selectedProperty.subject || 'Property Listing'}</h4>
-              <p><strong>Price:</strong> KSH {selectedProperty.price?.toLocaleString()}</p>
-              <p><strong>Location:</strong> {selectedProperty.location}</p>
-              <p><strong>Lender:</strong> {selectedProperty.lender}</p>
-              <p><strong>Property Type:</strong> {selectedProperty.type}</p>
-              <p><strong>Bedrooms:</strong> {selectedProperty.bedrooms}</p>
-              <p><strong>Interest Rate:</strong> {selectedProperty.rate}% per annum</p>
-              <p><strong>Repayment Period:</strong> {selectedProperty.term} years</p>
-              
-              <div className="form-group">
-                <label>Loan Amount (KSH)</label>
-                <input 
-                  type="number" 
-                  value={applicationData.loanAmount}
-                  onChange={(e) => setApplicationData({...applicationData, loanAmount: e.target.value})}
-                />
-              </div>
-              
-              <div className="form-group">
-                <label>Monthly Income (KSH)</label>
-                <input 
-                  type="number" 
-                  placeholder="Enter your monthly income"
-                  value={applicationData.monthlyIncome}
-                  onChange={(e) => setApplicationData({...applicationData, monthlyIncome: e.target.value})}
-                />
-              </div>
-              
-              <div className="form-group">
-                <label>Employment Status</label>
-                <select 
-                  value={applicationData.employmentStatus}
-                  onChange={(e) => setApplicationData({...applicationData, employmentStatus: e.target.value})}
-                >
-                  <option value="employed">Employed</option>
-                  <option value="self-employed">Self Employed</option>
-                  <option value="business">Business Owner</option>
-                </select>
-              </div>
-              
-              <div className="form-actions">
-                <button 
-                  className="btn btn-primary" 
-                  onClick={handleSubmitApplication}
-                  disabled={submitting}
-                >
-                  {submitting ? 'Submitting...' : 'Submit Application'}
-                </button>
-                <button className="btn btn-secondary" onClick={() => setShowApplicationModal(false)}>Cancel</button>
-              </div>
+              {loadingProfile ? (
+                <p>Loading your profile...</p>
+              ) : (
+                <>
+                  <h4>Confirm Mortgage Application</h4>
+                  
+                  <div className="application-summary">
+                    <h5>Property Details</h5>
+                    <p><strong>Property:</strong> {selectedProperty.title || selectedProperty.subject || 'Property Listing'}</p>
+                    <p><strong>Price:</strong> KSH {selectedProperty.price?.toLocaleString()}</p>
+                    <p><strong>Location:</strong> {selectedProperty.location}</p>
+                    <p><strong>Lender:</strong> {selectedProperty.lender}</p>
+                    <p><strong>Property Type:</strong> {selectedProperty.type}</p>
+                    <p><strong>Bedrooms:</strong> {selectedProperty.bedrooms}</p>
+                    <p><strong>Interest Rate:</strong> {selectedProperty.rate}% per annum</p>
+                    <p><strong>Repayment Period:</strong> {selectedProperty.term} years</p>
+                  </div>
+                  
+                  <div className="applicant-summary">
+                    <h5>Your Application Details</h5>
+                    <p><strong>Loan Amount:</strong> KSH {applicationData.loanAmount?.toLocaleString()}</p>
+                    <p><strong>Your Monthly Income:</strong> KSH {applicationData.monthlyIncome?.toLocaleString()}</p>
+                    <p><strong>Employment Status:</strong> {applicationData.employmentStatus}</p>
+                    {userProfile && (
+                      <>
+                        <p><strong>Full Name:</strong> {userProfile.fullName || userProfile.full_name || 'Not provided'}</p>
+                        <p><strong>Email:</strong> {userProfile.email || 'Not provided'}</p>
+                        <p><strong>Phone:</strong> {userProfile.mpesaNumber || userProfile.phone || 'Not provided'}</p>
+                      </>
+                    )}
+                  </div>
+                  
+                  {!userProfile && (
+                    <div className="profile-warning">
+                      <p style={{color: '#f59e0b'}}>⚠️ Complete your profile to auto-fill application details</p>
+                    </div>
+                  )}
+                  
+                  <div className="form-actions">
+                    <button 
+                      className="btn btn-primary" 
+                      onClick={handleSubmitApplication}
+                      disabled={submitting || !applicationData.monthlyIncome}
+                    >
+                      {submitting ? 'Submitting...' : 'Confirm Application'}
+                    </button>
+                    <button className="btn btn-secondary" onClick={() => setShowApplicationModal(false)}>Cancel</button>
+                  </div>
+                </>
+              )}
             </div>
           </div>
         </div>

@@ -3,6 +3,7 @@ import { useState } from 'react';
 import PropertyListings from './PropertyListings';
 import BuyerProfile from './BuyerProfile';
 import MyMortgages from './MyMortgages';
+import DTICalculator from '../Calculator/DTICalculator';
 import '../../styles/netlend.css';
 
 const HomebuyerDashboard = ({ user, onLogout }) => {
@@ -15,7 +16,7 @@ const HomebuyerDashboard = ({ user, onLogout }) => {
         <ul>
           <li><a onClick={() => setActiveSection('overview')} className={activeSection === 'overview' ? 'active' : ''}>Overview</a></li>
           <li><a onClick={() => setActiveSection('properties')} className={activeSection === 'properties' ? 'active' : ''}>Browse Properties</a></li>
-
+          <li><a onClick={() => setActiveSection('dti-calculator')} className={activeSection === 'dti-calculator' ? 'active' : ''}>DTI Calculator</a></li>
           <li><a onClick={() => setActiveSection('applications')} className={activeSection === 'applications' ? 'active' : ''}>My Applications</a></li>
           <li><a onClick={() => setActiveSection('mortgages')} className={activeSection === 'mortgages' ? 'active' : ''}>My Mortgages</a></li>
           <li><a onClick={() => setActiveSection('profile')} className={activeSection === 'profile' ? 'active' : ''}>Profile</a></li>
@@ -48,7 +49,8 @@ const HomebuyerDashboard = ({ user, onLogout }) => {
         )}
         
         {activeSection === 'properties' && <PropertyListings />}
-
+        
+        {activeSection === 'dti-calculator' && <DTICalculator user={user} />}
         
         {activeSection === 'applications' && (
           <div className="section">
