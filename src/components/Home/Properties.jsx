@@ -15,10 +15,27 @@ const Properties = ({ user, onShowRegister, onShowLogin, onShowContact }) => {
   const [submitting, setSubmitting] = useState(false);
   const [userProfile, setUserProfile] = useState(null);
   const [loadingProfile, setLoadingProfile] = useState(false);
+  const [existingApplications, setExistingApplications] = useState([]);
 
   useEffect(() => {
     loadProperties();
-  }, []);
+    if (user && user.user_type === 'homebuyer') {
+      loadExistingApplications();
+    }
+  }, [user]);
+
+  const loadExistingApplications = async () => {
+    try {
+      const apps = await api.getBuyerApplications();
+      setExistingApplications(apps);
+    } catch (error) {
+      console.error('Failed to load existing applications:', error);
+    }
+  };
+
+  const hasAppliedForProperty = (propertyId) => {
+    return existingApplications.some(app => app.property_id === propertyId);
+  };
 
   const loadProperties = async () => {
     try {
@@ -103,6 +120,7 @@ const Properties = ({ user, onShowRegister, onShowLogin, onShowContact }) => {
       });
       alert('Application submitted successfully!');
       setShowApplicationModal(false);
+      loadExistingApplications(); // Refresh applications list
     } catch (error) {
       alert('Failed to submit application: ' + error.message);
     } finally {
@@ -248,10 +266,16 @@ const Properties = ({ user, onShowRegister, onShowLogin, onShowContact }) => {
                     <p><strong>🏠 Type:</strong> {property.property_type || property.type}</p>
                     <p><strong>📊 Interest Rate:</strong> {property.interest_rate || property.rate}% per annum</p>
                     <p><strong>⏰ Repayment:</strong> {property.repayment_period || property.term} years</p>
-                    <button className="btn btn-primary property-btn" onClick={() => {
-                      setSelectedProperty(property);
-                      setShowPropertyModal(true);
-                    }}>View Details</button>
+                    {user && user.user_type === 'homebuyer' && hasAppliedForProperty(property.id) ? (
+                      <button className="btn btn-primary property-btn" disabled>
+                        Already Applied
+                      </button>
+                    ) : (
+                      <button className="btn btn-primary property-btn" onClick={() => {
+                        setSelectedProperty(property);
+                        setShowPropertyModal(true);
+                      }}>View Details</button>
+                    )}
                   </div>
                 </div>
               );

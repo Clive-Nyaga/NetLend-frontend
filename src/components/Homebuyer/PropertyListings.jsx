@@ -25,6 +25,7 @@ const PropertyListings = () => {
   const [submitting, setSubmitting] = useState(false);
   const [userProfile, setUserProfile] = useState(null);
   const [loadingProfile, setLoadingProfile] = useState(false);
+  const [existingApplications, setExistingApplications] = useState([]);
 
   const counties = [
     'Baringo', 'Bomet', 'Bungoma', 'Busia', 'Elgeyo-Marakwet', 'Embu', 'Garissa', 'Homa Bay',
@@ -52,7 +53,21 @@ const PropertyListings = () => {
 
   useEffect(() => {
     loadProperties();
+    loadExistingApplications();
   }, []);
+
+  const loadExistingApplications = async () => {
+    try {
+      const apps = await api.getBuyerApplications();
+      setExistingApplications(apps);
+    } catch (error) {
+      console.error('Failed to load existing applications:', error);
+    }
+  };
+
+  const hasAppliedForProperty = (propertyId) => {
+    return existingApplications.some(app => app.property_id === propertyId);
+  };
 
   const loadProperties = async () => {
     try {
@@ -152,6 +167,7 @@ const PropertyListings = () => {
       });
       alert('Application submitted successfully!');
       setShowModal(false);
+      loadExistingApplications(); // Refresh applications list
     } catch (error) {
       alert('Failed to submit application: ' + error.message);
     } finally {
@@ -255,9 +271,15 @@ const PropertyListings = () => {
                   <p><strong>📊</strong> Interest Rate: {property.rate}% per annum</p>
                   <p><strong>⏰</strong> Repayment: {property.term} years</p>
                   <p><strong>💳</strong> Monthly Payment: KSH {calculateMonthlyPayment(property.price, property.rate, property.term).toLocaleString('en-US', {maximumFractionDigits: 0})}</p>
-                  <button className="btn btn-primary" onClick={() => handleApply(property)}>
-                    Apply for Mortgage
-                  </button>
+                  {hasAppliedForProperty(property.id) ? (
+                    <button className="btn btn-primary" disabled>
+                      Already Applied
+                    </button>
+                  ) : (
+                    <button className="btn btn-primary" onClick={() => handleApply(property)}>
+                      Apply for Mortgage
+                    </button>
+                  )}
                 </div>
               </div>
             ))}

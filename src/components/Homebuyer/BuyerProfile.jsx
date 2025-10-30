@@ -87,9 +87,12 @@ const BuyerProfile = () => {
   const loadProfile = async () => {
     try {
       const profile = await api.getBuyerProfile();
+      console.log('Loaded profile data:', profile);
+      console.log('Profile user ID:', profile.id || profile.user_id);
+      console.log('Profile full name:', profile.full_name || profile.fullName);
       setProfileData({
         ...profileData,
-        fullName: profile.full_name || profile.fullName || '',
+        fullName: profile.full_name || profile.fullName || profile.buyerName || '',
         email: profile.email || '',
         nationalId: profile.national_id || profile.nationalId || '',
         dateOfBirth: profile.date_of_birth || profile.dateOfBirth || '',

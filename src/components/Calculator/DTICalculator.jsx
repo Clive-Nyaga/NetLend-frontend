@@ -216,7 +216,7 @@ const DTICalculator = ({ user }) => {
                 <div className={`guideline-modern ${dtiResults.dtiRatio > 43 ? 'active' : ''}`}>
                   <div className="guideline-indicator poor"></div>
                   <div className="guideline-content">
-                    <div className="guideline-range">> 43%</div>
+                    <div className="guideline-range">&gt; 43%</div>
                     <div className="guideline-label">Needs Work</div>
                     <div className="guideline-desc">Difficult to qualify</div>
                   </div>

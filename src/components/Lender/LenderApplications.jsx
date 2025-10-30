@@ -4,6 +4,7 @@ import api from '../../services/api';
 const LenderApplications = ({ lenderId }) => {
   const [applications, setApplications] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [statusFilter, setStatusFilter] = useState('all');
 
   const calculateEligibilityScore = (app) => {
     const monthlyIncome = app.monthly_income || 0;
@@ -63,10 +64,14 @@ const LenderApplications = ({ lenderId }) => {
         console.log('Application fields:', Object.keys(apps[0]));
         console.log('Full application data:', JSON.stringify(apps[0], null, 2));
         if (apps[0].buyer) {
-          console.log('Buyer object:', apps[0].buyer);
+          console.log('Buyer object found:', apps[0].buyer);
           console.log('Buyer fields:', Object.keys(apps[0].buyer));
         } else {
-          console.log('No buyer object found in application');
+          console.log('WARNING: No buyer object found in application - backend may not be joining buyer data');
+        }
+        // Check for buyer_id to fetch buyer data separately if needed
+        if (apps[0].buyer_id && !apps[0].buyer) {
+          console.log('Found buyer_id but no buyer object:', apps[0].buyer_id);
         }
       }
       setApplications(apps);
@@ -86,19 +91,34 @@ const LenderApplications = ({ lenderId }) => {
     }
   };
 
+  const filteredApplications = applications.filter(app => {
+    if (statusFilter === 'all') return true;
+    return app.status?.toLowerCase() === statusFilter;
+  });
+
   return (
     <div id="lenderApplications" className="section">
-      <h2>Mortgage Applications</h2>
+      <div className="section-header">
+        <h2>Mortgage Applications</h2>
+        <div className="filter-controls">
+          <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
+            <option value="all">All Applications</option>
+            <option value="pending">Pending</option>
+            <option value="approved">Approved</option>
+            <option value="rejected">Rejected</option>
+          </select>
+        </div>
+      </div>
       <div id="lenderAppsList">
         {loading ? (
           <p>Loading applications...</p>
-        ) : applications.length === 0 ? (
+        ) : filteredApplications.length === 0 ? (
           <div>
-            <p>No applications received yet.</p>
-            <p>Debug: Loaded {applications.length} applications</p>
+            <p>{statusFilter === 'all' ? 'No applications received yet.' : `No ${statusFilter} applications found.`}</p>
+            <p>Debug: Loaded {applications.length} applications, showing {filteredApplications.length}</p>
           </div>
         ) : (
-          applications.map((app, index) => (
+          filteredApplications.map((app, index) => (
             <div key={index} className="app-card">
               <div className="app-header">
                 <h3>Application #{app.id}</h3>
@@ -110,48 +130,25 @@ const LenderApplications = ({ lenderId }) => {
                 <div className="buyer-info-grid">
                   <div className="info-section">
                     <h5>Applicant Details</h5>
-                    <p><strong>Name:</strong> {app.applicantName || app.applicant || app.buyerName || app.name || 'N/A'}</p>
-                    <p><strong>Property:</strong> {app.property || 'N/A'}</p>
-                    <p><strong>Email:</strong> {app.buyer_email || 'N/A'}</p>
-                    <p><strong>Phone:</strong> {app.buyer_phone || 'N/A'}</p>
+                    <p><strong>Full Name:</strong> {app.buyer?.full_name || app.buyer?.fullName || app.buyer?.name || app.applicant || 'N/A'}</p>
+                    <p><strong>Email:</strong> {app.buyer?.email || 'N/A'}</p>
+                    <p><strong>Phone:</strong> {app.buyer?.mpesa_number || app.buyer?.phone || 'N/A'}</p>
                   </div>
                   
                   <div className="info-section">
-                    <h5>Financial Profile</h5>
-                    <p><strong>Monthly Income:</strong> KSH {(app.monthly_income || 0).toLocaleString()}</p>
-                    <p><strong>Employment:</strong> {app.employment_status || 'N/A'}</p>
-                    <p><strong>Loan Amount:</strong> KSH {app.amount?.toLocaleString() || 'N/A'}</p>
-                    <p><strong>Down Payment:</strong> KSH {app.down_payment?.toLocaleString() || 'N/A'}</p>
+                    <h5>Financial Details</h5>
+                    <p><strong>Loan Amount:</strong> KSH {(app.loan_amount || app.amount)?.toLocaleString() || 'N/A'}</p>
+                    <p><strong>Monthly Income:</strong> KSH {(app.monthly_income || app.buyer?.monthly_net_income || app.buyer?.monthlyNetIncome)?.toLocaleString() || 'N/A'}</p>
+                    <p><strong>Employment Status:</strong> {app.employment_status || app.buyer?.employment_status || app.buyer?.employmentStatus || 'N/A'}</p>
                   </div>
                   
                   <div className="info-section">
-                    <h5>Assessment & Status</h5>
-                    {(() => {
-                      const eligibilityScore = calculateEligibilityScore(app);
-                      const eligibilityInfo = getEligibilityStatus(eligibilityScore);
-                      return (
-                        <div className="eligibility-display">
-                          <p><strong>Eligibility Score:</strong> 
-                            <span style={{color: eligibilityInfo.color, fontWeight: 'bold'}}>
-                              {eligibilityScore}/100
-                            </span>
-                          </p>
-                          <p><strong>Eligibility Status:</strong> 
-                            <span style={{color: eligibilityInfo.color, fontWeight: 'bold'}}>
-                              {eligibilityInfo.status}
-                            </span>
-                          </p>
-                        </div>
-                      );
-                    })()}
-                    {app.creditworthiness_score && (
-                      <p><strong>Credit Score:</strong> <span style={{color: app.creditworthiness_score >= 70 ? '#10b981' : app.creditworthiness_score >= 50 ? '#f59e0b' : '#ef4444'}}>{app.creditworthiness_score}/100</span></p>
-                    )}
-                    {app.risk_level && (
-                      <p><strong>Risk Level:</strong> <span style={{color: app.risk_level === 'Low' ? '#10b981' : app.risk_level === 'Medium' ? '#f59e0b' : '#ef4444'}}>{app.risk_level} Risk</span></p>
-                    )}
-                    <p><strong>Application Date:</strong> {app.submittedAt || 'N/A'}</p>
-                    <p><strong>Status:</strong> <span className={`status ${app.status}`}>{app.status || 'pending'}</span></p>
+                    <h5>Property & Status</h5>
+                    <p><strong>Property:</strong> {app.property_location || app.property || 'N/A'}</p>
+                    <p><strong>Application Date:</strong> {app.created_at ? new Date(app.created_at).toLocaleDateString() : app.submittedAt || 'N/A'}</p>
+                    <p><strong>Status:</strong> <span className={`status ${app.status?.toLowerCase() || 'pending'}`}>{app.status || 'Pending'}</span></p>
+                    <p><strong>Notes:</strong> {app.notes || 'N/A'}</p>
+
                   </div>
                 </div>
                 
