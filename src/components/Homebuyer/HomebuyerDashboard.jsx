@@ -21,6 +21,11 @@ const HomebuyerDashboard = ({ user, onLogout }) => {
     setLoadingApplications(true);
     try {
       const apps = await api.getBuyerApplications();
+      console.log('Buyer applications response:', apps);
+      if (apps.length > 0) {
+        console.log('First application structure:', apps[0]);
+        console.log('Available fields:', Object.keys(apps[0]));
+      }
       setApplications(apps);
     } catch (error) {
       console.error('Failed to load applications:', error);
@@ -87,11 +92,11 @@ const HomebuyerDashboard = ({ user, onLogout }) => {
                 {applications.map((app, index) => (
                   <div key={app.id || index} className="app-card">
                     <h3>Application #{app.id || index + 1}</h3>
-                    <p><strong>Property:</strong> {app.property_location || 'N/A'}</p>
-                    <p><strong>Amount:</strong> KSH {app.loan_amount?.toLocaleString() || 'N/A'}</p>
+                    <p><strong>Property:</strong> {app.property || 'N/A'}</p>
+                    <p><strong>Amount:</strong> KSH {app.amount?.toLocaleString() || 'N/A'}</p>
                     <p><strong>Status:</strong> <span className={`status ${app.status?.toLowerCase() || 'pending'}`}>{app.status || 'Pending'}</span></p>
-                    <p><strong>Lender:</strong> {app.lender_name || 'N/A'}</p>
-                    <p><strong>Applied:</strong> {app.created_at ? new Date(app.created_at).toLocaleDateString() : 'N/A'}</p>
+                    <p><strong>Lender:</strong> {app.lender || 'N/A'}</p>
+                    <p><strong>Applied:</strong> {app.submittedAt ? new Date(app.submittedAt).toLocaleDateString() : 'N/A'}</p>
                     <div className="app-actions">
                       <button className="btn">View Details</button>
                       <button className="btn btn-secondary">Contact Lender</button>
