@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import api from '../../services/api';
 
-const MyMortgages = () => {
+const MyMortgages = ({ user }) => {
   const [mortgages, setMortgages] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -119,9 +119,9 @@ const MyMortgages = () => {
               </div>
               
               <div className="mortgage-actions">
-                <button className="btn btn-primary">Make Payment</button>
-                <button className="btn btn-secondary">View Statement</button>
-                <button className="btn btn-secondary">Contact Lender</button>
+                <button className="btn btn-primary" onClick={() => alert(`Payment Portal:\n\nMortgage: ${mortgage.property_details || `#${mortgage.id}`}\nAmount Due: KSH ${(mortgage.monthly_payment || calculateMonthlyPayment(mortgage.principal_amount, mortgage.interest_rate, 25)).toLocaleString()}\nDue Date: ${mortgage.next_payment_date ? new Date(mortgage.next_payment_date).toLocaleDateString() : 'N/A'}\n\nRedirecting to payment gateway...`)}>Make Payment</button>
+                <button className="btn btn-secondary" onClick={() => alert(`Statement for ${mortgage.property_details || `Mortgage #${mortgage.id}`}:\n\nPrincipal: KSH ${(mortgage.principal_amount || 0).toLocaleString()}\nRemaining: KSH ${(mortgage.remaining_balance || 0).toLocaleString()}\nPayments Made: ${mortgage.payments_made || 0}\nNext Payment: ${mortgage.next_payment_date ? new Date(mortgage.next_payment_date).toLocaleDateString() : 'N/A'}\n\nFull statement will be downloaded.`)}>View Statement</button>
+                <button className="btn btn-secondary" onClick={() => alert(`Contact ${mortgage.lender_name || 'Lender'}:\n\nFor mortgage #${mortgage.id}\n\nThis will open a direct communication channel with your lender.`)}>Contact Lender</button>
               </div>
             </div>
           ))}

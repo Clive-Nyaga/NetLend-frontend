@@ -52,10 +52,10 @@ const LenderDashboard = ({ user, onLogout }) => {
           </div>
         )}
         
-        {activeSection === 'listings' && <MyListings lenderId={user?.id} />}
-        {activeSection === 'applications' && <LenderApplications lenderId={user?.id} />}
-        {activeSection === 'sold' && <SoldMortgages lenderId={user?.id} />}
-        {activeSection === 'analytics' && <Analytics lenderId={user?.id} />}
+        {activeSection === 'listings' && <MyListings lenderId={user?.id} user={user} />}
+        {activeSection === 'applications' && <LenderApplications lenderId={user?.id} user={user} />}
+        {activeSection === 'sold' && <SoldMortgages lenderId={user?.id} user={user} />}
+        {activeSection === 'analytics' && <Analytics lenderId={user?.id} user={user} />}
         {activeSection === 'profile' && <LenderProfile user={user} />}
       </div>
     </div>

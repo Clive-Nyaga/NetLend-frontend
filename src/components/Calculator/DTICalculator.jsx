@@ -91,7 +91,7 @@ const DTICalculator = ({ user }) => {
         </div>
         <div className="no-profile-message">
           <p>Please complete your buyer profile first to calculate your debt-to-income ratio.</p>
-          <button className="btn btn-primary">Complete Profile</button>
+          <button className="btn btn-primary" onClick={() => alert('Complete Profile:\n\nThis will redirect you to the profile section where you can enter your financial information.')}>Complete Profile</button>
         </div>
       </div>
     );
@@ -242,12 +242,12 @@ const DTICalculator = ({ user }) => {
                 <div className="action-card primary">
                   <h4>🏠 Browse Properties</h4>
                   <p>Find homes within your budget</p>
-                  <button className="btn btn-primary">View Properties</button>
+                  <button className="btn btn-primary" onClick={() => window.location.href = '#properties'}>View Properties</button>
                 </div>
                 <div className="action-card">
                   <h4>📝 Improve Profile</h4>
                   <p>Update your financial information</p>
-                  <button className="btn btn-secondary">Update Profile</button>
+                  <button className="btn btn-secondary" onClick={() => alert('Profile Update:\n\nThis will redirect you to your profile page where you can update your financial information to improve your DTI ratio.')}>Update Profile</button>
                 </div>
                 <div className="action-card">
                   <h4>🔄 Recalculate</h4>

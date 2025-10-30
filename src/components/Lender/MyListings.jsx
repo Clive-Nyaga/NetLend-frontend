@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import api from '../../services/api';
 import ImageUpload from '../ImageUpload';
 
-const MyListings = ({ lenderId }) => {
+const MyListings = ({ lenderId, user }) => {
   const [listings, setListings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showAddForm, setShowAddForm] = useState(false);
@@ -254,6 +254,7 @@ const MyListings = ({ lenderId }) => {
                   <button className="btn" onClick={() => handleEditListing(listing)}>
                     {listing.editable !== false ? 'Edit' : 'Edit (Locked)'}
                   </button>
+                  <button className="btn btn-secondary" onClick={() => alert(`Property Analytics:\n\nViews: ${listing.views || 0}\nApplications: ${listing.applications || 0}\nInterest Level: ${listing.interest_level || 'Medium'}\n\nDetailed analytics coming soon!`)}>View Analytics</button>
                   <button className="btn danger" onClick={() => handleDeleteListing(listing.id)}>Remove</button>
                 </div>
               </div>

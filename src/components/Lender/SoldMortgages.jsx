@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import api from '../../services/api';
 
-const SoldMortgages = ({ lenderId }) => {
+const SoldMortgages = ({ lenderId, user }) => {
   const [soldMortgages, setSoldMortgages] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -11,15 +11,12 @@ const SoldMortgages = ({ lenderId }) => {
 
   const loadSoldMortgages = async () => {
     try {
-      console.log('Loading sold mortgages for lender:', lenderId);
-      const response = await api.getLenderApplications(lenderId);
-      console.log('Sold mortgages response:', response);
-      const apps = Array.isArray(response) ? response : response.applications || [];
-      const soldApps = apps.filter(app => app.status === 'approved');
-      console.log('Filtered sold mortgages:', soldApps);
-      setSoldMortgages(soldApps);
+      const response = await api.getSoldMortgages();
+      const mortgages = Array.isArray(response) ? response : response.mortgages || [];
+      setSoldMortgages(mortgages);
     } catch (error) {
       console.error('Failed to load sold mortgages:', error);
+      setSoldMortgages([]);
     } finally {
       setLoading(false);
     }
@@ -37,10 +34,10 @@ const SoldMortgages = ({ lenderId }) => {
           </div>
           <div className="stat-item">
             <h4>Total Value</h4>
-            <span>KSH {soldMortgages.reduce((sum, m) => sum + (m.amount || 0), 0).toLocaleString()}</span>
+            <span>KSH {soldMortgages.reduce((sum, m) => sum + (m.loan_amount || m.amount || 0), 0).toLocaleString()}</span>
           </div>
           <div className="stat-item">
-            <h4>Approved Applications</h4>
+            <h4>Active Mortgages</h4>
             <span>{soldMortgages.length}</span>
           </div>
         </div>
@@ -58,34 +55,38 @@ const SoldMortgages = ({ lenderId }) => {
           soldMortgages.map(mortgage => (
             <div key={mortgage.id} className="sold-mortgage-card">
               <div className="mortgage-header">
-                <h3>{mortgage.property || `Application #${mortgage.id}`}</h3>
-                <span className="status completed">Approved</span>
+                <h3>{mortgage.property_address || mortgage.property || `Mortgage #${mortgage.id}`}</h3>
+                <span className="status completed">✅ Active Mortgage</span>
               </div>
               
               <div className="mortgage-details">
                 <div className="detail-row">
                   <span className="label">Borrower:</span>
-                  <span className="value">{mortgage.applicantName || mortgage.applicant || mortgage.buyerName || mortgage.name}</span>
+                  <span className="value">{mortgage.buyer_name || mortgage.buyer?.full_name || 'N/A'}</span>
+                </div>
+                <div className="detail-row">
+                  <span className="label">Contact:</span>
+                  <span className="value">{mortgage.buyer_email || 'N/A'} | {mortgage.buyer_phone || 'N/A'}</span>
                 </div>
                 <div className="detail-row">
                   <span className="label">Loan Amount:</span>
-                  <span className="value">KSH {mortgage.amount?.toLocaleString()}</span>
+                  <span className="value">KSH {(mortgage.loan_amount || mortgage.amount || 0).toLocaleString()}</span>
                 </div>
                 <div className="detail-row">
                   <span className="label">Property:</span>
-                  <span className="value">{mortgage.property}</span>
+                  <span className="value">{mortgage.property_address || mortgage.property || 'N/A'}</span>
                 </div>
                 <div className="detail-row">
-                  <span className="label">Notes:</span>
-                  <span className="value">{mortgage.notes || 'No additional notes'}</span>
+                  <span className="label">Interest Rate:</span>
+                  <span className="value">{mortgage.interest_rate || 'N/A'}% per annum</span>
                 </div>
                 <div className="detail-row">
-                  <span className="label">Status:</span>
-                  <span className="value">{mortgage.status}</span>
+                  <span className="label">Monthly Payment:</span>
+                  <span className="value">KSH {(mortgage.monthly_payment || 0).toLocaleString()}</span>
                 </div>
                 <div className="detail-row">
-                  <span className="label">Application Date:</span>
-                  <span className="value">{mortgage.submittedAt}</span>
+                  <span className="label">Start Date:</span>
+                  <span className="value">{mortgage.start_date ? new Date(mortgage.start_date).toLocaleDateString() : 'N/A'}</span>
                 </div>
               </div>
               
@@ -93,7 +94,7 @@ const SoldMortgages = ({ lenderId }) => {
                 <button 
                   className="btn secondary" 
                   onClick={() => {
-                    alert(`Viewing details for ${mortgage.property || `Application #${mortgage.id}`}:\n\nBorrower: ${mortgage.applicantName || mortgage.applicant}\nAmount: KSH ${mortgage.amount?.toLocaleString()}\nStatus: ${mortgage.status}\nDate: ${mortgage.submittedAt}`);
+                    alert(`Active Mortgage Details:\n\nProperty: ${mortgage.property_address || 'N/A'}\nBorrower: ${mortgage.buyer_name || 'N/A'}\nEmail: ${mortgage.buyer_email || 'N/A'}\nPhone: ${mortgage.buyer_phone || 'N/A'}\nLoan Amount: KSH ${(mortgage.loan_amount || 0).toLocaleString()}\nInterest Rate: ${mortgage.interest_rate || 'N/A'}%\nMonthly Payment: KSH ${(mortgage.monthly_payment || 0).toLocaleString()}\nStart Date: ${mortgage.start_date ? new Date(mortgage.start_date).toLocaleDateString() : 'N/A'}`);
                   }}
                 >
                   View Details
@@ -101,10 +102,18 @@ const SoldMortgages = ({ lenderId }) => {
                 <button 
                   className="btn" 
                   onClick={() => {
-                    alert(`Downloading contract for ${mortgage.property || `Application #${mortgage.id}`}...\n\nContract would be generated and downloaded here.`);
+                    alert(`Contract Generation:\n\nGenerating mortgage contract for:\nProperty: ${mortgage.property_address || 'N/A'}\nBorrower: ${mortgage.buyer_name || 'N/A'}\nAmount: KSH ${(mortgage.loan_amount || 0).toLocaleString()}\nRate: ${mortgage.interest_rate || 'N/A'}%\n\nContract will be downloaded shortly...`);
                   }}
                 >
                   Download Contract
+                </button>
+                <button 
+                  className="btn btn-primary" 
+                  onClick={() => {
+                    alert(`Contact Borrower:\n\nBorrower: ${mortgage.buyer_name || 'N/A'}\nEmail: ${mortgage.buyer_email || 'N/A'}\nPhone: ${mortgage.buyer_phone || 'N/A'}\n\nDirect messaging feature coming soon!`);
+                  }}
+                >
+                  Contact Borrower
                 </button>
               </div>
             </div>

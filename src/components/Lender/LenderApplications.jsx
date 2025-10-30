@@ -55,25 +55,8 @@ const LenderApplications = ({ lenderId }) => {
 
   const loadApplications = async () => {
     try {
-      console.log('Loading applications for lender:', lenderId);
       const response = await api.getLenderApplications(lenderId);
-      console.log('Applications response:', response);
       const apps = Array.isArray(response) ? response : response.applications || [];
-      if (apps.length > 0) {
-        console.log('First application structure:', apps[0]);
-        console.log('Application fields:', Object.keys(apps[0]));
-        console.log('Full application data:', JSON.stringify(apps[0], null, 2));
-        if (apps[0].buyer) {
-          console.log('Buyer object found:', apps[0].buyer);
-          console.log('Buyer fields:', Object.keys(apps[0].buyer));
-        } else {
-          console.log('WARNING: No buyer object found in application - backend may not be joining buyer data');
-        }
-        // Check for buyer_id to fetch buyer data separately if needed
-        if (apps[0].buyer_id && !apps[0].buyer) {
-          console.log('Found buyer_id but no buyer object:', apps[0].buyer_id);
-        }
-      }
       setApplications(apps);
     } catch (error) {
       console.error('Failed to load applications:', error);
@@ -82,13 +65,44 @@ const LenderApplications = ({ lenderId }) => {
     }
   };
 
-  const updateStatus = async (applicationId, status) => {
-    try {
-      await api.updateApplicationStatus(applicationId, status);
-      loadApplications();
-    } catch (error) {
-      console.error('Failed to update status:', error);
+  const updateStatus = async (applicationId, status, app) => {
+    if (status === 'approved') {
+      const confirmed = window.confirm(
+        `Approve Application #${applicationId}?\n\n` +
+        `Property: ${app.property || 'N/A'}\n` +
+        `Applicant: ${app.buyer?.full_name || app.applicant || 'N/A'}\n` +
+        `Amount: KSH ${app.amount?.toLocaleString() || 'N/A'}\n\n` +
+        `WARNING: This will automatically:\n` +
+        `• Reject all other applications for this property\n` +
+        `• Mark property as "acquired"\n` +
+        `• Create active mortgage record\n\n` +
+        `Do you want to proceed?`
+      );
+      if (!confirmed) return;
+      
+      try {
+        await api.approveApplication(applicationId);
+        alert(
+          `Application #${applicationId} approved successfully!\n\n` +
+          `• All other applications for this property have been auto-rejected\n` +
+          `• Property status changed to "acquired"\n` +
+          `• Active mortgage created and visible in "Sold Mortgages"\n` +
+          `• Buyer can now see mortgage in "My Mortgages" section`
+        );
+      } catch (error) {
+        console.error('Failed to approve application:', error);
+        alert('Failed to approve application: ' + error.message);
+      }
+    } else {
+      try {
+        await api.updateApplicationStatus(applicationId, status);
+      } catch (error) {
+        console.error('Failed to update status:', error);
+        alert('Failed to update application status: ' + error.message);
+      }
     }
+    
+    loadApplications();
   };
 
   const filteredApplications = applications.filter(app => {
@@ -131,22 +145,27 @@ const LenderApplications = ({ lenderId }) => {
                   <div className="info-section">
                     <h5>Applicant Details</h5>
                     <p><strong>Full Name:</strong> {app.buyer?.full_name || app.buyer?.fullName || app.buyer?.name || app.applicant || 'N/A'}</p>
-                    <p><strong>Email:</strong> {app.buyer?.email || 'N/A'}</p>
-                    <p><strong>Phone:</strong> {app.buyer?.mpesa_number || app.buyer?.phone || 'N/A'}</p>
+                    <p><strong>Email:</strong> {app.email || app.buyer?.email || 'N/A'}</p>
+                    <p><strong>Phone:</strong> {app.phone || app.buyer?.phone || app.buyer?.mpesa_number || 'N/A'}</p>
                   </div>
                   
                   <div className="info-section">
                     <h5>Financial Details</h5>
-                    <p><strong>Loan Amount:</strong> KSH {(app.loan_amount || app.amount)?.toLocaleString() || 'N/A'}</p>
-                    <p><strong>Monthly Income:</strong> KSH {(app.monthly_income || app.buyer?.monthly_net_income || app.buyer?.monthlyNetIncome)?.toLocaleString() || 'N/A'}</p>
-                    <p><strong>Employment Status:</strong> {app.employment_status || app.buyer?.employment_status || app.buyer?.employmentStatus || 'N/A'}</p>
+                    <p><strong>Loan Amount:</strong> KSH {app.amount?.toLocaleString() || 'N/A'}</p>
+                    <p><strong>Monthly Income:</strong> KSH {(app.monthlyIncome || app.monthly_income || app.buyer?.monthly_net_income || app.buyer?.monthlyNetIncome)?.toLocaleString() || 'N/A'}</p>
+                    <p><strong>Employment Status:</strong> {app.employmentStatus || app.employment_status || app.buyer?.employment_status || app.buyer?.employmentStatus || 'N/A'}</p>
                   </div>
                   
                   <div className="info-section">
                     <h5>Property & Status</h5>
-                    <p><strong>Property:</strong> {app.property_location || app.property || 'N/A'}</p>
-                    <p><strong>Application Date:</strong> {app.created_at ? new Date(app.created_at).toLocaleDateString() : app.submittedAt || 'N/A'}</p>
-                    <p><strong>Status:</strong> <span className={`status ${app.status?.toLowerCase() || 'pending'}`}>{app.status || 'Pending'}</span></p>
+                    <p><strong>Property:</strong> {app.property || 'N/A'}</p>
+                    <p><strong>Application Date:</strong> {app.submittedAt ? new Date(app.submittedAt).toLocaleDateString() : 'N/A'}</p>
+                    <p><strong>Status:</strong> <span className={`status ${app.status?.toLowerCase() || 'pending'}`}>
+                      {app.status === 'approved' ? '✅ Approved' : 
+                       app.status === 'rejected' ? '❌ Rejected' : 
+                       app.status === 'auto_rejected' ? '🚫 Auto-Rejected (Another application approved)' :
+                       '⏳ Pending'}
+                    </span></p>
                     <p><strong>Notes:</strong> {app.notes || 'N/A'}</p>
 
                   </div>
@@ -167,17 +186,17 @@ const LenderApplications = ({ lenderId }) => {
               <div className="app-actions">
                 <button 
                   className="btn success" 
-                  onClick={() => updateStatus(app.id, 'approved')}
-                  disabled={app.status === 'approved'}
+                  onClick={() => updateStatus(app.id, 'approved', app)}
+                  disabled={app.status === 'approved' || app.status === 'rejected' || app.status === 'auto_rejected'}
                 >
-                  Approve
+                  {app.status === 'approved' ? '✅ Approved' : 'Approve & Create Mortgage'}
                 </button>
                 <button 
                   className="btn danger" 
-                  onClick={() => updateStatus(app.id, 'rejected')}
-                  disabled={app.status === 'rejected'}
+                  onClick={() => updateStatus(app.id, 'rejected', app)}
+                  disabled={app.status === 'approved' || app.status === 'rejected' || app.status === 'auto_rejected'}
                 >
-                  Reject
+                  {app.status === 'rejected' ? '❌ Rejected' : app.status === 'auto_rejected' ? '🚫 Auto-Rejected' : 'Reject'}
                 </button>
                 <button 
                   className="btn secondary" 

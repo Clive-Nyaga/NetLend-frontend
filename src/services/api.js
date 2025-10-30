@@ -93,20 +93,16 @@ const api = {
       if (token) {
         headers['Authorization'] = `Bearer ${token}`;
       }
-      console.log('Fetching listings for lender:', lenderId);
-      const response = await fetch(`${API_BASE_URL}/lender/${lenderId}/mortgages`, {
+      const response = await fetch(`${API_BASE_URL}/lender/mortgages`, {
         headers
       });
-      console.log('Response status:', response.status);
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}`);
       }
       const data = await response.json();
-      console.log('Backend response data:', data);
       return data;
     } catch (error) {
       console.error('API Error:', error);
-      // Return mock data for testing
       return { 
         listings: [
           {
@@ -145,13 +141,72 @@ const api = {
     return result;
   },
 
+  approveApplication: async (applicationId) => {
+    const token = localStorage.getItem('access_token');
+    const headers = {
+      'Content-Type': 'application/json'
+    };
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+    
+    const response = await fetch(`${API_BASE_URL}/lender/applications/${applicationId}/approve`, {
+      method: 'POST',
+      headers
+    });
+    
+    if (!response.ok) {
+      const result = await response.json();
+      throw new Error(result.message || result.error || 'Failed to approve application');
+    }
+    
+    return response.json();
+  },
+
   updateApplicationStatus: async (applicationId, status) => {
-    const response = await fetch(`${API_BASE_URL}/applications/${applicationId}/status`, {
+    const token = localStorage.getItem('access_token');
+    const headers = {
+      'Content-Type': 'application/json'
+    };
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+    
+    const response = await fetch(`${API_BASE_URL}/lender/applications/${applicationId}/status`, {
       method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
+      headers,
       body: JSON.stringify({ status })
     });
+    
+    if (!response.ok) {
+      const result = await response.json();
+      throw new Error(result.message || result.error || 'Failed to update status');
+    }
+    
     return response.json();
+  },
+
+  getSoldMortgages: async () => {
+    const token = localStorage.getItem('access_token');
+    const headers = {};
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+    
+    try {
+      const response = await fetch(`${API_BASE_URL}/lender/sold-mortgages`, {
+        headers
+      });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+      
+      return await response.json();
+    } catch (error) {
+      console.error('Failed to load sold mortgages:', error);
+      return [];
+    }
   },
 
   register: async (userData) => {
@@ -389,14 +444,21 @@ const api = {
     if (token) {
       headers['Authorization'] = `Bearer ${token}`;
     }
-    const response = await fetch(`${API_BASE_URL}/homebuyer/my-mortgages`, {
-      headers
-    });
-    const result = await response.json();
-    if (!response.ok) {
-      throw new Error(result.message || result.error || 'Failed to get mortgages');
+    
+    try {
+      const response = await fetch(`${API_BASE_URL}/homebuyer/my-mortgages`, {
+        headers
+      });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+      
+      return await response.json();
+    } catch (error) {
+      console.error('Failed to load buyer mortgages:', error);
+      return [];
     }
-    return result;
   },
 
   getBuyerApplications: async () => {

@@ -158,7 +158,7 @@ const EligibilityCalculator = ({ user }) => {
         </div>
         <div className="no-profile-message">
           <p>Please complete your buyer profile first to calculate your mortgage eligibility.</p>
-          <button className="btn btn-primary">Complete Profile</button>
+          <button className="btn btn-primary" onClick={() => alert('Complete Profile:\n\nTo calculate eligibility, we need:\n- Monthly income\n- Existing debts\n- Employment history\n- Down payment savings\n\nRedirecting to profile page...')}>Complete Profile</button>
         </div>
       </div>
     );
@@ -250,8 +250,8 @@ const EligibilityCalculator = ({ user }) => {
             <div className="next-steps">
               <h4>Next Steps</h4>
               <div className="action-buttons">
-                <button className="btn btn-primary">View Matching Properties</button>
-                <button className="btn btn-secondary">Improve Profile</button>
+                <button className="btn btn-primary" onClick={() => alert(`Matching Properties:\n\nBased on your eligibility, you can afford properties up to KSH ${parseFloat(eligibilityResults.maxHomePrice).toLocaleString()}.\n\nRedirecting to property listings...`)}>View Matching Properties</button>
+                <button className="btn btn-secondary" onClick={() => alert('Improve Profile:\n\nTo increase your eligibility score:\n- Improve credit score\n- Reduce existing debt\n- Increase savings\n- Maintain stable employment\n\nRedirecting to profile page...')}>Improve Profile</button>
                 <button className="btn btn-secondary" onClick={() => calculateEligibility(buyerProfile)}>
                   Recalculate
                 </button>

@@ -67,7 +67,7 @@ const HomebuyerDashboard = ({ user, onLogout }) => {
               <div className="overview-card">
                 <h3>📊 Track Progress</h3>
                 <p>Monitor your mortgage applications and stay updated on their status.</p>
-                <button className="btn" onClick={() => setActiveSection('profile')}>Update Profile</button>
+                <button className="btn" onClick={() => setActiveSection('applications')}>View Applications</button>
               </div>
             </div>
           </div>
@@ -94,12 +94,21 @@ const HomebuyerDashboard = ({ user, onLogout }) => {
                     <h3>Application #{app.id || index + 1}</h3>
                     <p><strong>Property:</strong> {app.property || 'N/A'}</p>
                     <p><strong>Amount:</strong> KSH {app.amount?.toLocaleString() || 'N/A'}</p>
-                    <p><strong>Status:</strong> <span className={`status ${app.status?.toLowerCase() || 'pending'}`}>{app.status || 'Pending'}</span></p>
+                    <p><strong>Status:</strong> <span className={`status ${app.status?.toLowerCase() || 'pending'}`}>
+                      {app.status === 'approved' ? '✅ Approved - Congratulations!' : 
+                       app.status === 'rejected' ? '❌ Rejected' : 
+                       app.status === 'auto_rejected' ? '🚫 Auto-Rejected (Another application was approved)' :
+                       '⏳ Pending Review'}
+                    </span></p>
                     <p><strong>Lender:</strong> {app.lender || 'N/A'}</p>
                     <p><strong>Applied:</strong> {app.submittedAt ? new Date(app.submittedAt).toLocaleDateString() : 'N/A'}</p>
                     <div className="app-actions">
-                      <button className="btn">View Details</button>
-                      <button className="btn btn-secondary">Contact Lender</button>
+                      <button className="btn" onClick={() => alert(`Application Details:\n\nProperty: ${app.property || 'N/A'}\nAmount: KSH ${app.amount?.toLocaleString() || 'N/A'}\nStatus: ${app.status === 'approved' ? 'Approved - Mortgage Active' : app.status === 'rejected' ? 'Rejected by Lender' : app.status === 'auto_rejected' ? 'Auto-Rejected (Another application approved)' : 'Pending Review'}\nLender: ${app.lender || 'N/A'}\nDate: ${app.submittedAt ? new Date(app.submittedAt).toLocaleDateString() : 'N/A'}`)}>View Details</button>
+                      {app.status === 'approved' ? (
+                        <button className="btn btn-primary" onClick={() => alert(`Mortgage Activated!\n\nYour application has been approved. Check the "My Mortgages" section for payment details and mortgage management.`)}>View Mortgage</button>
+                      ) : (
+                        <button className="btn btn-secondary" onClick={() => alert(`Contact ${app.lender || 'Lender'}:\n\nYou can reach out to discuss your application #${app.id || index + 1}.\n\nThis feature will be enhanced to include direct messaging.`)}>Contact Lender</button>
+                      )}
                     </div>
                   </div>
                 ))}
@@ -108,7 +117,7 @@ const HomebuyerDashboard = ({ user, onLogout }) => {
           </div>
         )}
         
-        {activeSection === 'mortgages' && <MyMortgages />}
+        {activeSection === 'mortgages' && <MyMortgages user={user} />}
         
         {activeSection === 'profile' && <BuyerProfile />}
       </div>
