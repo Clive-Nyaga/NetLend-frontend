@@ -89,7 +89,34 @@ const BuyerProfile = () => {
       const profile = await api.getBuyerProfile();
       setProfileData({
         ...profileData,
-        ...profile
+        fullName: profile.full_name || profile.fullName || '',
+        email: profile.email || '',
+        nationalId: profile.national_id || profile.nationalId || '',
+        dateOfBirth: profile.date_of_birth || profile.dateOfBirth || '',
+        gender: profile.gender || '',
+        county: profile.county || '',
+        maritalStatus: profile.marital_status || profile.maritalStatus || '',
+        dependents: profile.dependents || '',
+        employmentStatus: profile.employment_status || profile.employmentStatus || '',
+        employerName: profile.employer_name || profile.employerName || '',
+        occupation: profile.occupation || '',
+        employmentDuration: profile.employment_duration || profile.employmentDuration || '',
+        monthlyGrossIncome: profile.monthly_gross_income || profile.monthlyGrossIncome || '',
+        monthlyNetIncome: profile.monthly_net_income || profile.monthlyNetIncome || '',
+        otherIncome: profile.other_income || profile.otherIncome || '',
+        existingLoans: profile.existing_loans || profile.existingLoans || false,
+        loanTypes: profile.loan_types || profile.loanTypes || '',
+        monthlyLoanRepayments: profile.monthly_loan_repayments || profile.monthlyLoanRepayments || '',
+        monthlyExpenses: profile.monthly_expenses || profile.monthlyExpenses || '',
+        preferredPropertyType: profile.preferred_property_type || profile.preferredPropertyType || '',
+        targetCounty: profile.target_county || profile.targetCounty || '',
+        estimatedPropertyValue: profile.estimated_property_value || profile.estimatedPropertyValue || '',
+        desiredLoanAmount: profile.desired_loan_amount || profile.desiredLoanAmount || '',
+        repaymentPeriod: profile.repayment_period || profile.repaymentPeriod || '',
+        downPaymentAmount: profile.down_payment_amount || profile.downPaymentAmount || '',
+        bankName: profile.bank_name || profile.bankName || '',
+        accountNumber: profile.account_number || profile.accountNumber || '',
+        mpesaNumber: profile.mpesa_number || profile.mpesaNumber || ''
       });
     } catch (error) {
       console.log('No existing profile found or backend endpoint not ready:', error.message);
