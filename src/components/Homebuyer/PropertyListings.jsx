@@ -10,7 +10,9 @@ const PropertyListings = () => {
     minPrice: '',
     maxPrice: '',
     bedrooms: '',
-    maxDownPayment: ''
+    maxDownPayment: '',
+    minMonthlyPayment: '',
+    maxMonthlyPayment: ''
   });
   const [selectedProperty, setSelectedProperty] = useState(null);
   const [showModal, setShowModal] = useState(false);
@@ -31,6 +33,20 @@ const PropertyListings = () => {
     'Tharaka-Nithi', 'Trans Nzoia', 'Turkana', 'Uasin Gishu', 'Vihiga', 'Wajir', 'West Pokot'
   ];
   const propertyTypes = ['apartment', 'bungalow', 'villa', 'townhouse', 'house', 'flat'];
+
+  const calculateMonthlyPayment = (price, rate, term, downPaymentPercent = 0.2) => {
+    const downPayment = price * downPaymentPercent;
+    const loanAmount = price - downPayment;
+    const monthlyRate = rate / 100 / 12;
+    const numPayments = term * 12;
+    
+    if (monthlyRate === 0) {
+      return loanAmount / numPayments;
+    }
+    
+    const monthlyPayment = loanAmount * (monthlyRate * Math.pow(1 + monthlyRate, numPayments)) / (Math.pow(1 + monthlyRate, numPayments) - 1);
+    return monthlyPayment;
+  };
 
   useEffect(() => {
     loadProperties();
@@ -69,6 +85,7 @@ const PropertyListings = () => {
     const price = property.price || 0;
     const location = property.location || '';
     const propertyType = property.type || '';
+    const monthlyPayment = calculateMonthlyPayment(property.price, property.rate, property.term);
     
     return (
       (!filters.county || location.toLowerCase().includes(filters.county.toLowerCase())) &&
@@ -76,7 +93,9 @@ const PropertyListings = () => {
       (!filters.minPrice || price >= parseInt(filters.minPrice)) &&
       (!filters.maxPrice || price <= parseInt(filters.maxPrice)) &&
       (!filters.bedrooms || (property.bedrooms && property.bedrooms >= parseInt(filters.bedrooms))) &&
-      (!filters.maxDownPayment || (price * 0.2) <= parseInt(filters.maxDownPayment))
+      (!filters.maxDownPayment || (price * 0.2) <= parseInt(filters.maxDownPayment)) &&
+      (!filters.minMonthlyPayment || monthlyPayment >= parseInt(filters.minMonthlyPayment)) &&
+      (!filters.maxMonthlyPayment || monthlyPayment <= parseInt(filters.maxMonthlyPayment))
     );
   });
 
@@ -166,11 +185,25 @@ const PropertyListings = () => {
             value={filters.maxDownPayment}
             onChange={(e) => setFilters({...filters, maxDownPayment: e.target.value})}
           />
+          
+          <input
+            type="number"
+            placeholder="Min Monthly Payment (KSH)"
+            value={filters.minMonthlyPayment}
+            onChange={(e) => setFilters({...filters, minMonthlyPayment: e.target.value})}
+          />
+          
+          <input
+            type="number"
+            placeholder="Max Monthly Payment (KSH)"
+            value={filters.maxMonthlyPayment}
+            onChange={(e) => setFilters({...filters, maxMonthlyPayment: e.target.value})}
+          />
         </div>
         
         <button 
           className="btn btn-secondary" 
-          onClick={() => setFilters({county: '', propertyType: '', minPrice: '', maxPrice: '', bedrooms: '', maxDownPayment: ''})}
+          onClick={() => setFilters({county: '', propertyType: '', minPrice: '', maxPrice: '', bedrooms: '', maxDownPayment: '', minMonthlyPayment: '', maxMonthlyPayment: ''})}
         >
           Clear Filters
         </button>
@@ -203,6 +236,7 @@ const PropertyListings = () => {
                   <p><strong>🛏️</strong> Bedrooms: {property.bedrooms}</p>
                   <p><strong>📊</strong> Interest Rate: {property.rate}% per annum</p>
                   <p><strong>⏰</strong> Repayment: {property.term} years</p>
+                  <p><strong>💳</strong> Monthly Payment: KSH {calculateMonthlyPayment(property.price, property.rate, property.term).toLocaleString('en-US', {maximumFractionDigits: 0})}</p>
                   <button className="btn btn-primary" onClick={() => handleApply(property)}>
                     Apply for Mortgage
                   </button>
