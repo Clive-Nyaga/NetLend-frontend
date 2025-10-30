@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import api from '../../services/api';
 import ImageUpload from '../ImageUpload';
+import NotificationModal from '../Modals/NotificationModal';
+import ConfirmationModal from '../Modals/ConfirmationModal';
 
 const MyListings = ({ lenderId, user }) => {
   const [listings, setListings] = useState([]);
@@ -26,6 +28,8 @@ const MyListings = ({ lenderId, user }) => {
   const [formMessage, setFormMessage] = useState('');
   const [editingListing, setEditingListing] = useState(null);
   const [showAll, setShowAll] = useState(false);
+  const [notification, setNotification] = useState({ isOpen: false, type: 'info', title: '', message: '' });
+  const [confirmation, setConfirmation] = useState({ isOpen: false, title: '', message: '', onConfirm: null });
 
   useEffect(() => {
     loadListings();
@@ -143,40 +147,70 @@ const MyListings = ({ lenderId, user }) => {
 
   const handleEditListing = (listing) => {
     if (listing.editable === false || listing.status === 'acquired' || listing.status === 'sold') {
-      alert('Cannot edit this property as it has already been acquired or sold. You can view it in the "Sold Mortgages" section.');
+      setNotification({
+        isOpen: true,
+        type: 'warning',
+        title: 'Cannot Edit Property',
+        message: 'This property has already been acquired or sold and cannot be edited.\n\nYou can view it in the "Sold Mortgages" section.'
+      });
       return;
     }
     setEditingListing(listing);
     setFormData({
-      title: listing.title || '',
+      title: listing.subject || listing.title || '',
       property_type: listing.property_type || 'apartment',
       address: listing.address || '',
       county: listing.county || '',
-      price_range: listing.price_range || '',
-      interest_rate: listing.interest_rate || '',
-      repayment_period: listing.repayment_period || '30',
+      price_range: listing.price_range || listing.price || '',
+      interest_rate: listing.interest_rate || listing.rate || '',
+      repayment_period: listing.repayment_period || listing.term || '30',
       minimum_income: listing.minimum_income || '',
       down_payment: listing.down_payment || '',
       bedrooms: listing.bedrooms || '2',
       description: listing.description || '',
-      images: []
+      images: [],
+      imageUrls: listing.images || []
     });
     setShowAddForm(true);
   };
 
-  const handleDeleteListing = async (listingId) => {
-    if (window.confirm('Are you sure you want to delete this listing?')) {
-      try {
-        await api.deleteMortgageListing(listingId);
-        setFormMessage('Listing deleted successfully!');
-        setTimeout(() => setFormMessage(''), 3000);
-        loadListings();
-      } catch (error) {
-        console.error('Failed to delete listing:', error);
-        setFormError('Failed to update status: ' + error.message);
-        setTimeout(() => setFormError(''), 3000);
-      }
+  const handleDeleteListing = (listingId) => {
+    setConfirmation({
+      isOpen: true,
+      title: 'Delete Listing',
+      message: 'Are you sure you want to delete this listing?\n\nThis action cannot be undone.',
+      onConfirm: () => deleteListing(listingId)
+    });
+  };
+
+  const deleteListing = async (listingId) => {
+    try {
+      await api.deleteMortgageListing(listingId);
+      setNotification({
+        isOpen: true,
+        type: 'success',
+        title: 'Success',
+        message: 'Listing deleted successfully!'
+      });
+      loadListings();
+    } catch (error) {
+      console.error('Failed to delete listing:', error);
+      setNotification({
+        isOpen: true,
+        type: 'error',
+        title: 'Error',
+        message: 'Failed to delete listing: ' + error.message
+      });
     }
+  };
+
+  const showPropertyAnalytics = (listing) => {
+    setNotification({
+      isOpen: true,
+      type: 'info',
+      title: 'Property Analytics',
+      message: `Views: ${listing.views || 0}\nApplications: ${listing.applications || 0}\nInterest Level: ${listing.interest_level || 'Medium'}\n\nDetailed analytics coming soon!`
+    });
   };
 
   const handleCloseForm = () => {
@@ -219,10 +253,10 @@ const MyListings = ({ lenderId, user }) => {
               console.log('Available fields:', Object.keys(listing));
               console.log('Listing images field:', listing.images);
               return (
-              <div key={index} className="listing-card">
+              <div key={listing.id || index} className="listing-card">
               <img 
                 src={listing.images && listing.images.length > 0 ? listing.images[0] : `https://picsum.photos/400/200?random=${index}`} 
-                alt={listing.title || 'Property'}
+                alt={listing.subject || listing.title || 'Property'}
                 className="property-image"
                 onError={(e) => {
                   console.log('Image failed to load:', e.target.src);
@@ -230,13 +264,16 @@ const MyListings = ({ lenderId, user }) => {
                 }}
               />
               <div className="listing-content">
-                <h3>{listing.title || 'Property Listing'}</h3>
-                <p><strong>Location:</strong> {listing.location}</p>
-                <p><strong>Price:</strong> KSH {listing.price?.toLocaleString()}</p>
-                <p><strong>Interest Rate:</strong> {listing.rate}%</p>
-                <p><strong>Term:</strong> {listing.term} years</p>
-                <p><strong>Type:</strong> {listing.type}</p>
+                <h3>{listing.subject || listing.title || 'Property Listing'}</h3>
+                <p><strong>Address:</strong> {listing.address || 'Not specified'}</p>
+                <p><strong>County:</strong> {listing.county || 'Not specified'}</p>
+                <p><strong>Property Type:</strong> {listing.property_type || 'Not specified'}</p>
+                <p><strong>Price Range:</strong> KSH {(listing.price_range || listing.price || 0).toLocaleString()}</p>
+                <p><strong>Interest Rate:</strong> {listing.interest_rate || listing.rate || 0}%</p>
+                <p><strong>Repayment Period:</strong> {listing.repayment_period || listing.term || 0} years</p>
                 <p><strong>Bedrooms:</strong> {listing.bedrooms || listing.rooms || 'Not specified'}</p>
+                <p><strong>Down Payment:</strong> {listing.down_payment || 0}%</p>
+                <p><strong>Minimum Income:</strong> KSH {(listing.minimum_income || 0).toLocaleString()}</p>
                 <p><strong>Status:</strong> 
                   <span className={`status-badge ${listing.status?.toLowerCase() || 'active'}`}>
                     {listing.status === 'acquired' ? 'Under Contract' : 
@@ -245,16 +282,19 @@ const MyListings = ({ lenderId, user }) => {
                 </p>
                 {listing.amount_paid > 0 && (
                   <p><strong>Payment Progress:</strong> 
-                    KSH {(listing.amount_paid || 0).toLocaleString()} / KSH {(listing.price || listing.price_range || 0).toLocaleString()}
-                    ({Math.round(((listing.amount_paid || 0) / (listing.price || listing.price_range || 1)) * 100)}%)
+                    KSH {(listing.amount_paid || 0).toLocaleString()} / KSH {(listing.price_range || listing.price || 0).toLocaleString()}
+                    ({Math.round(((listing.amount_paid || 0) / (listing.price_range || listing.price || 1)) * 100)}%)
                   </p>
                 )}
-                <p><strong>Created:</strong> {listing.createdAt}</p>
+                {listing.description && (
+                  <p><strong>Description:</strong> {listing.description.substring(0, 100)}{listing.description.length > 100 ? '...' : ''}</p>
+                )}
+                <p><strong>Created:</strong> {listing.created_at ? new Date(listing.created_at).toLocaleDateString() : listing.createdAt || 'N/A'}</p>
                 <div className="listing-actions">
                   <button className="btn" onClick={() => handleEditListing(listing)}>
                     {listing.editable !== false ? 'Edit' : 'Edit (Locked)'}
                   </button>
-                  <button className="btn btn-secondary" onClick={() => alert(`Property Analytics:\n\nViews: ${listing.views || 0}\nApplications: ${listing.applications || 0}\nInterest Level: ${listing.interest_level || 'Medium'}\n\nDetailed analytics coming soon!`)}>View Analytics</button>
+                  <button className="btn btn-secondary" onClick={() => showPropertyAnalytics(listing)}>View Analytics</button>
                   <button className="btn danger" onClick={() => handleDeleteListing(listing.id)}>Remove</button>
                 </div>
               </div>
@@ -509,6 +549,25 @@ const MyListings = ({ lenderId, user }) => {
           </div>
         </div>
       )}
+      
+      <NotificationModal
+        isOpen={notification.isOpen}
+        onClose={() => setNotification({ ...notification, isOpen: false })}
+        type={notification.type}
+        title={notification.title}
+        message={notification.message}
+      />
+      
+      <ConfirmationModal
+        isOpen={confirmation.isOpen}
+        onClose={() => setConfirmation({ ...confirmation, isOpen: false })}
+        onConfirm={confirmation.onConfirm}
+        title={confirmation.title}
+        message={confirmation.message}
+        type="danger"
+        confirmText="Delete"
+        cancelText="Cancel"
+      />
     </div>
   );
 };

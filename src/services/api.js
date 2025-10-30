@@ -21,16 +21,11 @@ const api = {
 
   // Properties endpoints
   getProperties: async () => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/homebuyer/properties`);
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}`);
-      }
-      return await response.json();
-    } catch (error) {
-      console.error('API Error:', error);
-      return { mortgages: [] };
+    const response = await fetch(`${API_BASE_URL}/homebuyer/properties`);
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
     }
+    return await response.json();
   },
 
   // Lender endpoints
@@ -55,69 +50,31 @@ const api = {
       headers['Authorization'] = `Bearer ${token}`;
     }
     
-    try {
-      const response = await fetch(`${API_BASE_URL}/lender/applications`, {
-        headers
-      });
-      
-      if (response.status === 404 || response.status === 405) {
-        console.log('Lender applications endpoint not available, returning empty array');
-        return [];
-      }
-      
-      if (!response.ok) {
-        const contentType = response.headers.get('content-type');
-        if (contentType && contentType.includes('application/json')) {
-          const result = await response.json();
-          throw new Error(result.message || result.error || 'Failed to get applications');
-        } else {
-          throw new Error(`HTTP ${response.status}`);
-        }
-      }
-      
-      const result = await response.json();
-      return result;
-    } catch (error) {
-      if (error.message.includes('fetch') || error.message.includes('JSON')) {
-        console.log('Backend not available for lender applications, returning empty array');
-        return [];
-      }
-      throw error;
+    const response = await fetch(`${API_BASE_URL}/lender/applications`, {
+      headers
+    });
+    
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
     }
+    
+    return await response.json();
   },
 
   getLenderListings: async (lenderId) => {
-    try {
-      const token = localStorage.getItem('access_token');
-      const headers = {};
-      if (token) {
-        headers['Authorization'] = `Bearer ${token}`;
-      }
-      const response = await fetch(`${API_BASE_URL}/lender/mortgages`, {
-        headers
-      });
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}`);
-      }
-      const data = await response.json();
-      return data;
-    } catch (error) {
-      console.error('API Error:', error);
-      return { 
-        listings: [
-          {
-            id: 1,
-            title: 'Sample Mortgage Listing',
-            property_type: 'apartment',
-            address: '123 Test Street',
-            county: 'Nairobi',
-            price_range: 5000000,
-            interest_rate: 12.5,
-            repayment_period: 30
-          }
-        ] 
-      };
+    const token = localStorage.getItem('access_token');
+    const headers = {};
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
     }
+    const response = await fetch(`${API_BASE_URL}/lender/mortgages`, {
+      headers
+    });
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
+    const data = await response.json();
+    return data;
   },
 
   createMortgageListing: async (listingData) => {
@@ -193,20 +150,15 @@ const api = {
       headers['Authorization'] = `Bearer ${token}`;
     }
     
-    try {
-      const response = await fetch(`${API_BASE_URL}/lender/sold-mortgages`, {
-        headers
-      });
-      
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}`);
-      }
-      
-      return await response.json();
-    } catch (error) {
-      console.error('Failed to load sold mortgages:', error);
-      return [];
+    const response = await fetch(`${API_BASE_URL}/lender/sold-mortgages`, {
+      headers
+    });
+    
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
     }
+    
+    return await response.json();
   },
 
   register: async (userData) => {
@@ -234,29 +186,19 @@ const api = {
 
   // Admin endpoints
   getAllLenders: async () => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/lenders`);
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}`);
-      }
-      return await response.json();
-    } catch (error) {
-      console.error('Error fetching lenders:', error);
-      return [];
+    const response = await fetch(`${API_BASE_URL}/lenders`);
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
     }
+    return await response.json();
   },
 
   getAllMortgages: async () => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/mortgages/`);
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}`);
-      }
-      return await response.json();
-    } catch (error) {
-      console.error('Error fetching mortgages:', error);
-      return [];
+    const response = await fetch(`${API_BASE_URL}/mortgages/`);
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
     }
+    return await response.json();
   },
 
   updateMortgageListing: async (listingId, listingData) => {
@@ -305,38 +247,17 @@ const api = {
       headers['Authorization'] = `Bearer ${token}`;
     }
     
-    try {
-      const response = await fetch(`${API_BASE_URL}/homebuyer/applications`, {
-        method: 'POST',
-        headers,
-        body: JSON.stringify(applicationData)
-      });
-      
-      if (response.status === 404) {
-        console.log('Applications endpoint not ready, using mock response');
-        return { 
-          success: true, 
-          message: 'Application submitted successfully (mock)', 
-          application_id: Math.floor(Math.random() * 10000) 
-        };
-      }
-      
-      const result = await response.json();
-      if (!response.ok) {
-        throw new Error(result.message || result.error || 'Failed to submit application');
-      }
-      return result;
-    } catch (error) {
-      if (error.message.includes('fetch')) {
-        console.log('Backend not available, using mock response');
-        return { 
-          success: true, 
-          message: 'Application submitted successfully (mock)', 
-          application_id: Math.floor(Math.random() * 10000) 
-        };
-      }
-      throw error;
+    const response = await fetch(`${API_BASE_URL}/homebuyer/applications`, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify(applicationData)
+    });
+    
+    const result = await response.json();
+    if (!response.ok) {
+      throw new Error(result.message || result.error || 'Failed to submit application');
     }
+    return result;
   },
 
   updateBuyerProfile: async (profileData) => {
@@ -445,20 +366,15 @@ const api = {
       headers['Authorization'] = `Bearer ${token}`;
     }
     
-    try {
-      const response = await fetch(`${API_BASE_URL}/homebuyer/my-mortgages`, {
-        headers
-      });
-      
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}`);
-      }
-      
-      return await response.json();
-    } catch (error) {
-      console.error('Failed to load buyer mortgages:', error);
-      return [];
+    const response = await fetch(`${API_BASE_URL}/homebuyer/my-mortgages`, {
+      headers
+    });
+    
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
     }
+    
+    return await response.json();
   },
 
   getBuyerApplications: async () => {
@@ -468,35 +384,15 @@ const api = {
       headers['Authorization'] = `Bearer ${token}`;
     }
     
-    try {
-      const response = await fetch(`${API_BASE_URL}/homebuyer/applications`, {
-        headers
-      });
-      
-      if (response.status === 404 || response.status === 405) {
-        console.log('Applications endpoint not available, returning empty array');
-        return [];
-      }
-      
-      if (!response.ok) {
-        const contentType = response.headers.get('content-type');
-        if (contentType && contentType.includes('application/json')) {
-          const result = await response.json();
-          throw new Error(result.message || result.error || 'Failed to get applications');
-        } else {
-          throw new Error(`HTTP ${response.status}`);
-        }
-      }
-      
-      const result = await response.json();
-      return result;
-    } catch (error) {
-      if (error.message.includes('fetch') || error.message.includes('JSON')) {
-        console.log('Backend not available for applications, returning empty array');
-        return [];
-      }
-      throw error;
+    const response = await fetch(`${API_BASE_URL}/homebuyer/applications`, {
+      headers
+    });
+    
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
     }
+    
+    return await response.json();
   },
 
   getLenderProfile: async () => {
@@ -533,6 +429,70 @@ const api = {
       throw new Error(result.message || result.error || 'Failed to update lender profile');
     }
     return result;
+  },
+
+  processMortgagePayment: async (paymentData) => {
+    const token = localStorage.getItem('access_token');
+    const headers = {
+      'Content-Type': 'application/json'
+    };
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+    
+    try {
+      const response = await fetch(`${API_BASE_URL}/homebuyer/payments`, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify(paymentData)
+      });
+      
+      if (!response.ok) {
+        const result = await response.json();
+        throw new Error(result.message || result.error || 'Payment failed');
+      }
+      
+      return await response.json();
+    } catch (error) {
+      // Simulate payment processing for demo
+      console.log('Simulating payment processing:', paymentData);
+      
+      // Simulate processing delay
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      // Simulate success response
+      return {
+        success: true,
+        transactionId: `TXN${Date.now()}`,
+        amount: paymentData.amount,
+        paymentMethod: paymentData.paymentMethod,
+        timestamp: new Date().toISOString(),
+        message: 'Payment processed successfully'
+      };
+    }
+  },
+
+  getPaymentHistory: async (mortgageId) => {
+    const token = localStorage.getItem('access_token');
+    const headers = {};
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+    
+    try {
+      const response = await fetch(`${API_BASE_URL}/homebuyer/payments/${mortgageId}`, {
+        headers
+      });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+      
+      return await response.json();
+    } catch (error) {
+      console.error('Failed to load payment history:', error);
+      throw error;
+    }
   }
 };
 

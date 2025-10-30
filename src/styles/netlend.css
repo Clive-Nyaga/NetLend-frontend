@@ -3578,6 +3578,8 @@ textarea {
     flex-direction: column;
   }
 }
+
+
 /* Enhanced Mortgage Confirmation Modal Styles */
 .application-summary, .applicant-summary {
   background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
@@ -3796,6 +3798,27 @@ textarea {
   padding: 2rem;
 }
 
+
+
+/* Button Variants */
+.btn.warning {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  color: white;
+}
+
+.btn.warning:hover {
+  background: linear-gradient(135deg, #d97706, #b45309);
+}
+
+.btn.danger {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  color: white;
+}
+
+.btn.danger:hover {
+  background: linear-gradient(135deg, #dc2626, #b91c1c);
+}
+
 /* Responsive Modal */
 @media (max-width: 768px) {
   .modal-content {
@@ -3826,4 +3849,6 @@ textarea {
   .form-actions .btn {
     width: 100%;
   }
+  
+
 }

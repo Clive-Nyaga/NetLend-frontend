@@ -4,12 +4,14 @@ import PropertyListings from './PropertyListings';
 import BuyerProfile from './BuyerProfile';
 import MyMortgages from './MyMortgages';
 import DTICalculator from '../Calculator/DTICalculator';
+import NotificationModal from '../Modals/NotificationModal';
 import '../../styles/netlend.css';
 
 const HomebuyerDashboard = ({ user, onLogout }) => {
   const [activeSection, setActiveSection] = useState('overview');
   const [applications, setApplications] = useState([]);
   const [loadingApplications, setLoadingApplications] = useState(false);
+  const [notification, setNotification] = useState({ isOpen: false, type: 'info', title: '', message: '' });
 
   useEffect(() => {
     if (activeSection === 'applications') {
@@ -32,6 +34,33 @@ const HomebuyerDashboard = ({ user, onLogout }) => {
     } finally {
       setLoadingApplications(false);
     }
+  };
+
+  const showApplicationDetails = (app) => {
+    setNotification({
+      isOpen: true,
+      type: 'info',
+      title: 'Application Details',
+      message: `Property: ${app.property || 'N/A'}\nAmount: KSH ${app.amount?.toLocaleString() || 'N/A'}\nStatus: ${app.status === 'approved' ? 'Approved - Mortgage Active' : app.status === 'rejected' ? 'Rejected by Lender' : app.status === 'auto_rejected' ? 'Auto-Rejected (Another application approved)' : 'Pending Review'}\nLender: ${app.lender || 'N/A'}\nDate: ${app.submittedAt ? new Date(app.submittedAt).toLocaleDateString() : 'N/A'}`
+    });
+  };
+
+  const showMortgageActivated = () => {
+    setNotification({
+      isOpen: true,
+      type: 'success',
+      title: 'Mortgage Activated!',
+      message: 'Your application has been approved. Check the "My Mortgages" section for payment details and mortgage management.'
+    });
+  };
+
+  const showContactLender = (app, index) => {
+    setNotification({
+      isOpen: true,
+      type: 'info',
+      title: 'Contact Lender',
+      message: `Contact ${app.lender || 'Lender'}:\n\nYou can reach out to discuss your application #${app.id || index + 1}.\n\nThis feature will be enhanced to include direct messaging.`
+    });
   };
 
   return (
@@ -103,11 +132,11 @@ const HomebuyerDashboard = ({ user, onLogout }) => {
                     <p><strong>Lender:</strong> {app.lender || 'N/A'}</p>
                     <p><strong>Applied:</strong> {app.submittedAt ? new Date(app.submittedAt).toLocaleDateString() : 'N/A'}</p>
                     <div className="app-actions">
-                      <button className="btn" onClick={() => alert(`Application Details:\n\nProperty: ${app.property || 'N/A'}\nAmount: KSH ${app.amount?.toLocaleString() || 'N/A'}\nStatus: ${app.status === 'approved' ? 'Approved - Mortgage Active' : app.status === 'rejected' ? 'Rejected by Lender' : app.status === 'auto_rejected' ? 'Auto-Rejected (Another application approved)' : 'Pending Review'}\nLender: ${app.lender || 'N/A'}\nDate: ${app.submittedAt ? new Date(app.submittedAt).toLocaleDateString() : 'N/A'}`)}>View Details</button>
+                      <button className="btn" onClick={() => showApplicationDetails(app)}>View Details</button>
                       {app.status === 'approved' ? (
-                        <button className="btn btn-primary" onClick={() => alert(`Mortgage Activated!\n\nYour application has been approved. Check the "My Mortgages" section for payment details and mortgage management.`)}>View Mortgage</button>
+                        <button className="btn btn-primary" onClick={() => showMortgageActivated()}>View Mortgage</button>
                       ) : (
-                        <button className="btn btn-secondary" onClick={() => alert(`Contact ${app.lender || 'Lender'}:\n\nYou can reach out to discuss your application #${app.id || index + 1}.\n\nThis feature will be enhanced to include direct messaging.`)}>Contact Lender</button>
+                        <button className="btn btn-secondary" onClick={() => showContactLender(app, index)}>Contact Lender</button>
                       )}
                     </div>
                   </div>
@@ -121,6 +150,14 @@ const HomebuyerDashboard = ({ user, onLogout }) => {
         
         {activeSection === 'profile' && <BuyerProfile />}
       </div>
+      
+      <NotificationModal
+        isOpen={notification.isOpen}
+        onClose={() => setNotification({ ...notification, isOpen: false })}
+        type={notification.type}
+        title={notification.title}
+        message={notification.message}
+      />
     </div>
   );
 };

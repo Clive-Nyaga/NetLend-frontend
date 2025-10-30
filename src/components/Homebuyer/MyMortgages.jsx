@@ -1,9 +1,15 @@
 import { useState, useEffect } from 'react';
 import api from '../../services/api';
+import PaymentModal from '../Modals/PaymentModal';
+import NotificationModal from '../Modals/NotificationModal';
 
 const MyMortgages = ({ user }) => {
   const [mortgages, setMortgages] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [selectedMortgage, setSelectedMortgage] = useState(null);
+  const [paymentHistory, setPaymentHistory] = useState({});
+  const [notification, setNotification] = useState({ isOpen: false, type: 'info', title: '', message: '' });
 
   useEffect(() => {
     loadMyMortgages();
@@ -46,6 +52,68 @@ const MyMortgages = ({ user }) => {
       case 'overdue': return '#ef4444';
       case 'completed': return '#6b7280';
       default: return '#f59e0b';
+    }
+  };
+
+  const handleMakePayment = (mortgage) => {
+    setSelectedMortgage({
+      ...mortgage,
+      monthly_payment: mortgage.monthly_payment || calculateMonthlyPayment(mortgage.principal_amount, mortgage.interest_rate, 25)
+    });
+    setShowPaymentModal(true);
+  };
+
+  const handlePaymentSuccess = async (paymentResult) => {
+    console.log('Payment successful:', paymentResult);
+    // Refresh mortgages data
+    await loadMyMortgages();
+    // Update payment history
+    if (selectedMortgage) {
+      loadPaymentHistory(selectedMortgage.id);
+    }
+  };
+
+  const handleViewStatement = (mortgage) => {
+    setNotification({
+      isOpen: true,
+      type: 'info',
+      title: 'Mortgage Statement',
+      message: `Statement for ${mortgage.property_details || `Mortgage #${mortgage.id}`}:\n\nPrincipal: KSH ${(mortgage.principal_amount || 0).toLocaleString()}\nRemaining: KSH ${(mortgage.remaining_balance || 0).toLocaleString()}\nPayments Made: ${mortgage.payments_made || 0}\nNext Payment: ${mortgage.next_payment_date ? new Date(mortgage.next_payment_date).toLocaleDateString() : 'N/A'}\n\nFull statement will be downloaded.`
+    });
+  };
+
+  const handleViewPaymentHistory = async (mortgage) => {
+    try {
+      const history = await api.getPaymentHistory(mortgage.id);
+      setPaymentHistory(prev => ({ ...prev, [mortgage.id]: history }));
+      
+      const historyText = history.map(payment => 
+        `${payment.date}: KSH ${payment.amount.toLocaleString()} via ${payment.method} (${payment.status})`
+      ).join('\n');
+      
+      setNotification({
+        isOpen: true,
+        type: 'info',
+        title: 'Payment History',
+        message: `Payment History for ${mortgage.property_details || `Mortgage #${mortgage.id}`}:\n\n${historyText || 'No payment history available'}`
+      });
+    } catch (error) {
+      console.error('Failed to load payment history:', error);
+      setNotification({
+        isOpen: true,
+        type: 'error',
+        title: 'Error',
+        message: 'Failed to load payment history. Please try again.'
+      });
+    }
+  };
+
+  const loadPaymentHistory = async (mortgageId) => {
+    try {
+      const history = await api.getPaymentHistory(mortgageId);
+      setPaymentHistory(prev => ({ ...prev, [mortgageId]: history }));
+    } catch (error) {
+      console.error('Failed to load payment history:', error);
     }
   };
 
@@ -119,14 +187,30 @@ const MyMortgages = ({ user }) => {
               </div>
               
               <div className="mortgage-actions">
-                <button className="btn btn-primary" onClick={() => alert(`Payment Portal:\n\nMortgage: ${mortgage.property_details || `#${mortgage.id}`}\nAmount Due: KSH ${(mortgage.monthly_payment || calculateMonthlyPayment(mortgage.principal_amount, mortgage.interest_rate, 25)).toLocaleString()}\nDue Date: ${mortgage.next_payment_date ? new Date(mortgage.next_payment_date).toLocaleDateString() : 'N/A'}\n\nRedirecting to payment gateway...`)}>Make Payment</button>
-                <button className="btn btn-secondary" onClick={() => alert(`Statement for ${mortgage.property_details || `Mortgage #${mortgage.id}`}:\n\nPrincipal: KSH ${(mortgage.principal_amount || 0).toLocaleString()}\nRemaining: KSH ${(mortgage.remaining_balance || 0).toLocaleString()}\nPayments Made: ${mortgage.payments_made || 0}\nNext Payment: ${mortgage.next_payment_date ? new Date(mortgage.next_payment_date).toLocaleDateString() : 'N/A'}\n\nFull statement will be downloaded.`)}>View Statement</button>
-                <button className="btn btn-secondary" onClick={() => alert(`Contact ${mortgage.lender_name || 'Lender'}:\n\nFor mortgage #${mortgage.id}\n\nThis will open a direct communication channel with your lender.`)}>Contact Lender</button>
+                <button className="btn btn-primary" onClick={() => handleMakePayment(mortgage)}>Make Payment</button>
+                <button className="btn btn-secondary" onClick={() => handleViewStatement(mortgage)}>View Statement</button>
+                <button className="btn btn-secondary" onClick={() => handleViewPaymentHistory(mortgage)}>Payment History</button>
+                <button className="btn btn-secondary" onClick={() => setNotification({isOpen: true, type: 'info', title: 'Contact Lender', message: `Contact ${mortgage.lender_name || 'Lender'}:\n\nFor mortgage #${mortgage.id}\n\nThis will open a direct communication channel with your lender.`})}>Contact Lender</button>
               </div>
             </div>
           ))}
         </div>
       )}
+      
+      <PaymentModal
+        isOpen={showPaymentModal}
+        onClose={() => setShowPaymentModal(false)}
+        mortgage={selectedMortgage}
+        onPaymentSuccess={handlePaymentSuccess}
+      />
+      
+      <NotificationModal
+        isOpen={notification.isOpen}
+        onClose={() => setNotification({ ...notification, isOpen: false })}
+        type={notification.type}
+        title={notification.title}
+        message={notification.message}
+      />
     </div>
   );
 };

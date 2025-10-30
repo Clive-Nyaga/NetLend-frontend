@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import api from '../../services/api';
+import NotificationModal from '../Modals/NotificationModal';
 
 const PropertyListings = () => {
   const [properties, setProperties] = useState([]);
@@ -26,6 +27,7 @@ const PropertyListings = () => {
   const [userProfile, setUserProfile] = useState(null);
   const [loadingProfile, setLoadingProfile] = useState(false);
   const [existingApplications, setExistingApplications] = useState([]);
+  const [notification, setNotification] = useState({ isOpen: false, type: 'info', title: '', message: '' });
 
   const counties = [
     'Baringo', 'Bomet', 'Bungoma', 'Busia', 'Elgeyo-Marakwet', 'Embu', 'Garissa', 'Homa Bay',
@@ -145,7 +147,12 @@ const PropertyListings = () => {
 
   const handleSubmitApplication = async () => {
     if (!applicationData.monthlyIncome) {
-      alert('Please enter your monthly income');
+      setNotification({
+        isOpen: true,
+        type: 'warning',
+        title: 'Missing Information',
+        message: 'Please enter your monthly income to proceed with the application.'
+      });
       return;
     }
     
@@ -165,11 +172,21 @@ const PropertyListings = () => {
         repayment_period: selectedProperty.term,
         lender_name: selectedProperty.lender
       });
-      alert('Application submitted successfully!');
+      setNotification({
+        isOpen: true,
+        type: 'success',
+        title: 'Application Submitted',
+        message: 'Your mortgage application has been submitted successfully! You will be notified once the lender reviews your application.'
+      });
       setShowModal(false);
       loadExistingApplications(); // Refresh applications list
     } catch (error) {
-      alert('Failed to submit application: ' + error.message);
+      setNotification({
+        isOpen: true,
+        type: 'error',
+        title: 'Application Failed',
+        message: 'Failed to submit application: ' + error.message
+      });
     } finally {
       setSubmitting(false);
     }
@@ -357,6 +374,14 @@ const PropertyListings = () => {
           </div>
         </div>
       )}
+      
+      <NotificationModal
+        isOpen={notification.isOpen}
+        onClose={() => setNotification({ ...notification, isOpen: false })}
+        type={notification.type}
+        title={notification.title}
+        message={notification.message}
+      />
     </div>
   );
 };
