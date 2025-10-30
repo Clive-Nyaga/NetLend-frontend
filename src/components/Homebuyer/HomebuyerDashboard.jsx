@@ -1,7 +1,5 @@
 import { useState } from 'react';
-import MortgageCalculator from '../Calculator/MortgageCalculator';
-import AffordabilityCalculator from '../Calculator/AffordabilityCalculator';
-import LoanComparison from '../Calculator/LoanComparison';
+
 import PropertyListings from './PropertyListings';
 import BuyerProfile from './BuyerProfile';
 import MyMortgages from './MyMortgages';
@@ -17,9 +15,7 @@ const HomebuyerDashboard = ({ user, onLogout }) => {
         <ul>
           <li><a onClick={() => setActiveSection('overview')} className={activeSection === 'overview' ? 'active' : ''}>Overview</a></li>
           <li><a onClick={() => setActiveSection('properties')} className={activeSection === 'properties' ? 'active' : ''}>Browse Properties</a></li>
-          <li><a onClick={() => setActiveSection('mortgage-calculator')} className={activeSection === 'mortgage-calculator' ? 'active' : ''}>Mortgage Calculator</a></li>
-          <li><a onClick={() => setActiveSection('affordability-calculator')} className={activeSection === 'affordability-calculator' ? 'active' : ''}>Affordability Calculator</a></li>
-          <li><a onClick={() => setActiveSection('loan-comparison')} className={activeSection === 'loan-comparison' ? 'active' : ''}>Loan Comparison</a></li>
+
           <li><a onClick={() => setActiveSection('applications')} className={activeSection === 'applications' ? 'active' : ''}>My Applications</a></li>
           <li><a onClick={() => setActiveSection('mortgages')} className={activeSection === 'mortgages' ? 'active' : ''}>My Mortgages</a></li>
           <li><a onClick={() => setActiveSection('profile')} className={activeSection === 'profile' ? 'active' : ''}>Profile</a></li>
@@ -38,9 +34,9 @@ const HomebuyerDashboard = ({ user, onLogout }) => {
                 <button className="btn" onClick={() => setActiveSection('properties')}>Browse Properties</button>
               </div>
               <div className="overview-card">
-                <h3>🧮 Calculate Affordability</h3>
-                <p>Use our tools to determine how much house you can afford and compare loan options.</p>
-                <button className="btn" onClick={() => setActiveSection('mortgage-calculator')}>Start Calculating</button>
+                <h3>📋 Complete Profile</h3>
+                <p>Complete your buyer profile to get personalized mortgage recommendations and eligibility assessment.</p>
+                <button className="btn" onClick={() => setActiveSection('profile')}>Complete Profile</button>
               </div>
               <div className="overview-card">
                 <h3>📊 Track Progress</h3>
@@ -52,9 +48,7 @@ const HomebuyerDashboard = ({ user, onLogout }) => {
         )}
         
         {activeSection === 'properties' && <PropertyListings />}
-        {activeSection === 'mortgage-calculator' && <MortgageCalculator />}
-        {activeSection === 'affordability-calculator' && <AffordabilityCalculator />}
-        {activeSection === 'loan-comparison' && <LoanComparison />}
+
         
         {activeSection === 'applications' && (
           <div className="section">
