@@ -1,5 +1,5 @@
-import { useState } from 'react';
-
+import { useState, useEffect } from 'react';
+import api from '../../services/api';
 import PropertyListings from './PropertyListings';
 import BuyerProfile from './BuyerProfile';
 import MyMortgages from './MyMortgages';
@@ -8,6 +8,26 @@ import '../../styles/netlend.css';
 
 const HomebuyerDashboard = ({ user, onLogout }) => {
   const [activeSection, setActiveSection] = useState('overview');
+  const [applications, setApplications] = useState([]);
+  const [loadingApplications, setLoadingApplications] = useState(false);
+
+  useEffect(() => {
+    if (activeSection === 'applications') {
+      loadApplications();
+    }
+  }, [activeSection]);
+
+  const loadApplications = async () => {
+    setLoadingApplications(true);
+    try {
+      const apps = await api.getBuyerApplications();
+      setApplications(apps);
+    } catch (error) {
+      console.error('Failed to load applications:', error);
+    } finally {
+      setLoadingApplications(false);
+    }
+  };
 
   return (
     <div className="dashboard">
@@ -55,19 +75,31 @@ const HomebuyerDashboard = ({ user, onLogout }) => {
         {activeSection === 'applications' && (
           <div className="section">
             <h2>My Mortgage Applications</h2>
-            <div className="applications-list">
-              <div className="app-card">
-                <h3>Application #001</h3>
-                <p><strong>Property:</strong> 3BR Apartment, Westlands</p>
-                <p><strong>Amount:</strong> KSH 8,500,000</p>
-                <p><strong>Status:</strong> <span className="status pending">Under Review</span></p>
-                <p><strong>Lender:</strong> Kenya Commercial Bank</p>
-                <div className="app-actions">
-                  <button className="btn">View Details</button>
-                  <button className="btn btn-secondary">Contact Lender</button>
-                </div>
+            {loadingApplications ? (
+              <p>Loading applications...</p>
+            ) : applications.length === 0 ? (
+              <div className="no-applications">
+                <p>No applications submitted yet.</p>
+                <button className="btn" onClick={() => setActiveSection('properties')}>Browse Properties</button>
               </div>
-            </div>
+            ) : (
+              <div className="applications-list">
+                {applications.map((app, index) => (
+                  <div key={app.id || index} className="app-card">
+                    <h3>Application #{app.id || index + 1}</h3>
+                    <p><strong>Property:</strong> {app.property_location || 'N/A'}</p>
+                    <p><strong>Amount:</strong> KSH {app.loan_amount?.toLocaleString() || 'N/A'}</p>
+                    <p><strong>Status:</strong> <span className={`status ${app.status?.toLowerCase() || 'pending'}`}>{app.status || 'Pending'}</span></p>
+                    <p><strong>Lender:</strong> {app.lender_name || 'N/A'}</p>
+                    <p><strong>Applied:</strong> {app.created_at ? new Date(app.created_at).toLocaleDateString() : 'N/A'}</p>
+                    <div className="app-actions">
+                      <button className="btn">View Details</button>
+                      <button className="btn btn-secondary">Contact Lender</button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         )}
         
