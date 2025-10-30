@@ -1,11 +1,18 @@
 import { useState, useEffect } from 'react';
 import api from '../../services/api';
 
-const Properties = ({ onShowRegister, onShowLogin, onShowContact }) => {
+const Properties = ({ user, onShowRegister, onShowLogin, onShowContact }) => {
   const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedProperty, setSelectedProperty] = useState(null);
   const [showPropertyModal, setShowPropertyModal] = useState(false);
+  const [showApplicationModal, setShowApplicationModal] = useState(false);
+  const [applicationData, setApplicationData] = useState({
+    loanAmount: '',
+    monthlyIncome: '',
+    employmentStatus: 'employed'
+  });
+  const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
     loadProperties();
@@ -32,6 +39,47 @@ const Properties = ({ onShowRegister, onShowLogin, onShowContact }) => {
       setProperties([]);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleApplyForMortgage = (property) => {
+    if (user && user.user_type === 'homebuyer') {
+      // User is logged in as homebuyer, show application form
+      setSelectedProperty(property);
+      setApplicationData({
+        loanAmount: property.price_range * 0.8,
+        monthlyIncome: '',
+        employmentStatus: 'employed'
+      });
+      setShowPropertyModal(false);
+      setShowApplicationModal(true);
+    } else {
+      // User not logged in or not a homebuyer, prompt to login
+      setShowPropertyModal(false);
+      onShowLogin();
+    }
+  };
+
+  const handleSubmitApplication = async () => {
+    if (!applicationData.monthlyIncome) {
+      alert('Please enter your monthly income');
+      return;
+    }
+    
+    setSubmitting(true);
+    try {
+      await api.submitMortgageApplication({
+        property_id: selectedProperty.id,
+        loan_amount: applicationData.loanAmount,
+        monthly_income: applicationData.monthlyIncome,
+        employment_status: applicationData.employmentStatus
+      });
+      alert('Application submitted successfully!');
+      setShowApplicationModal(false);
+    } catch (error) {
+      alert('Failed to submit application: ' + error.message);
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -369,16 +417,74 @@ const Properties = ({ onShowRegister, onShowLogin, onShowContact }) => {
                     <p><strong>📋 Description:</strong> {selectedProperty.description || 'Beautiful property in a prime location with modern amenities and excellent connectivity.'}</p>
                   </div>
                   <div className="property-actions">
-                    <button className="btn btn-primary" onClick={() => {
-                      setShowPropertyModal(false);
-                      onShowLogin();
-                    }}>Apply for Mortgage</button>
+                    <button className="btn btn-primary" onClick={() => handleApplyForMortgage(selectedProperty)}>Apply for Mortgage</button>
                     <button className="btn btn-secondary" onClick={() => {
                       setShowPropertyModal(false);
                       onShowContact();
                     }}>Contact Lender</button>
                   </div>
                 </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Mortgage Application Modal */}
+      {showApplicationModal && selectedProperty && (
+        <div className="modal-overlay" onClick={() => setShowApplicationModal(false)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3>Apply for Mortgage</h3>
+              <button className="close-btn" onClick={() => setShowApplicationModal(false)}>×</button>
+            </div>
+            <div className="modal-body">
+              <h4>{selectedProperty.title || `${selectedProperty.property_type} in ${selectedProperty.county}`}</h4>
+              <p><strong>Price:</strong> KSH {selectedProperty.price_range?.toLocaleString()}</p>
+              <p><strong>Location:</strong> {selectedProperty.address}</p>
+              <p><strong>Lender:</strong> {selectedProperty.lender_name || 'N/A'}</p>
+              <p><strong>Property Type:</strong> {selectedProperty.property_type}</p>
+              
+              <div className="form-group">
+                <label>Loan Amount (KSH)</label>
+                <input 
+                  type="number" 
+                  value={applicationData.loanAmount}
+                  onChange={(e) => setApplicationData({...applicationData, loanAmount: e.target.value})}
+                />
+              </div>
+              
+              <div className="form-group">
+                <label>Monthly Income (KSH)</label>
+                <input 
+                  type="number" 
+                  placeholder="Enter your monthly income"
+                  value={applicationData.monthlyIncome}
+                  onChange={(e) => setApplicationData({...applicationData, monthlyIncome: e.target.value})}
+                />
+              </div>
+              
+              <div className="form-group">
+                <label>Employment Status</label>
+                <select 
+                  value={applicationData.employmentStatus}
+                  onChange={(e) => setApplicationData({...applicationData, employmentStatus: e.target.value})}
+                >
+                  <option value="employed">Employed</option>
+                  <option value="self-employed">Self Employed</option>
+                  <option value="business">Business Owner</option>
+                </select>
+              </div>
+              
+              <div className="form-actions">
+                <button 
+                  className="btn btn-primary" 
+                  onClick={handleSubmitApplication}
+                  disabled={submitting}
+                >
+                  {submitting ? 'Submitting...' : 'Submit Application'}
+                </button>
+                <button className="btn btn-secondary" onClick={() => setShowApplicationModal(false)}>Cancel</button>
               </div>
             </div>
           </div>

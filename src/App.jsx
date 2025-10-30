@@ -254,6 +254,7 @@ function App() {
       
       {currentSection === 'home' && (
         <Properties 
+          user={user}
           onShowRegister={() => setShowRegisterModal(true)}
           onShowLogin={() => setShowLoginModal(true)}
           onShowContact={() => setCurrentSection('contact')}
