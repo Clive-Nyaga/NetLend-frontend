@@ -296,6 +296,15 @@ label {
     padding-left: calc(1.5rem - 3px);
 }
 
+.sidebar a.active {
+    background: var(--sidebar-accent);
+    color: var(--sidebar-accent-foreground);
+    opacity: 1;
+    border-left: 3px solid var(--accent);
+    padding-left: calc(1.5rem - 3px);
+    font-weight: 600;
+}
+
 .main-content {
     flex: 1;
     margin-left: 260px;
@@ -2526,6 +2535,30 @@ textarea {
     border-color: var(--primary);
 }
 
+.btn.btn-secondary {
+    background: linear-gradient(135deg, #f1f5f9, #e2e8f0);
+    color: #475569;
+    border: 2px solid #e2e8f0;
+}
+
+.btn.btn-secondary:hover {
+    background: linear-gradient(135deg, #e2e8f0, #cbd5e1);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+.btn.btn-primary {
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+    color: white;
+    border: none;
+}
+
+.btn.btn-primary:hover {
+    box-shadow: 0 4px 8px rgba(0, 87, 183, 0.3);
+    transform: translateY(-2px);
+    opacity: 0.95;
+}
+
 @media (max-width: 768px) {
     .buyer-info-grid {
         grid-template-columns: 1fr;
@@ -2661,6 +2694,74 @@ textarea {
         gap: 1rem;
         text-align: center;
     }
+}
+
+/* Chart Container Styles */
+.charts-section {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 2rem;
+    margin-top: 3rem;
+}
+
+.chart-card {
+    background: white;
+    padding: 2rem;
+    border-radius: var(--radius-lg);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    border: 1px solid var(--border);
+    position: relative;
+}
+
+.chart-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--primary), var(--accent));
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+}
+
+.chart-card h3 {
+    color: var(--text-primary);
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+@media (max-width: 768px) {
+    .charts-section {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Filter and Section Header Consistency */
+.filter-bar {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    align-items: center;
+    background: var(--secondary);
+    padding: 1rem;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border);
+}
+
+.filter-controls {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.filter-controls select {
+    padding: 0.5rem 1rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background: white;
+    font-size: 0.9rem;
 }
 
 .analytics-actions {

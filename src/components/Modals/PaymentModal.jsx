@@ -53,8 +53,11 @@ const PaymentModal = ({ isOpen, onClose, mortgage, onPaymentSuccess }) => {
   return (
     <div className="modal show">
       <div className="modal-content" style={{maxWidth: '500px'}}>
-        <span className="close" onClick={onClose}>&times;</span>
-        <h2>Make Payment</h2>
+        <div className="modal-header">
+          <h3>Make Payment</h3>
+          <button className="close-btn" onClick={onClose}>×</button>
+        </div>
+        <div className="modal-body">
         
         <div className="application-summary">
           <h5>Payment Details</h5>
@@ -170,10 +173,16 @@ const PaymentModal = ({ isOpen, onClose, mortgage, onPaymentSuccess }) => {
             </div>
           )}
 
-          <button type="submit" className="btn" disabled={loading}>
-            {loading ? 'Processing Payment...' : `Pay KSH ${paymentData.amount?.toLocaleString()}`}
-          </button>
+          <div className="form-actions">
+            <button type="submit" className="btn btn-primary" disabled={loading}>
+              {loading ? 'Processing Payment...' : `Pay KSH ${paymentData.amount?.toLocaleString()}`}
+            </button>
+            <button type="button" className="btn btn-secondary" onClick={onClose}>
+              Cancel
+            </button>
+          </div>
         </form>
+        </div>
       </div>
     </div>
   );
