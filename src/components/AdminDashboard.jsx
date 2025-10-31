@@ -29,7 +29,7 @@ ChartJS.register(
   Legend
 );
 
-const API_BASE = 'http://localhost:5000/api';
+const API_BASE = 'http://127.0.0.1:5000/api';
 
 function AdminDashboard({ user, onLogout, onShowSection }) {
   const [activeSection, setActiveSection] = useState('analytics');
@@ -57,12 +57,12 @@ function AdminDashboard({ user, onLogout, onShowSection }) {
   const loadData = async () => {
     try {
       const [usersRes, analyticsRes, propsRes, feedbackRes, productsRes, appsRes] = await Promise.all([
-        axios.get(`${API_BASE}/admin/users`),
-        axios.get(`${API_BASE}/admin/analytics`),
-        axios.get(`${API_BASE}/admin/properties`),
+        axios.get(`${API_BASE}/admin/users-bypass`),
+        axios.get(`${API_BASE}/admin/analytics-bypass`),
+        axios.get(`${API_BASE}/admin/properties-bypass`),
         axios.get(`${API_BASE}/admin/feedback`),
         axios.get(`${API_BASE}/admin/mortgage-products`),
-        axios.get(`${API_BASE}/admin/applications`)
+        axios.get(`${API_BASE}/admin/applications-bypass`)
       ]);
       setUsers(usersRes.data || []);
       setAnalytics(analyticsRes.data || {});
