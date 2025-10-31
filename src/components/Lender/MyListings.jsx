@@ -38,16 +38,16 @@ const MyListings = ({ lenderId, user }) => {
   const loadListings = async () => {
     try {
       const response = await api.getLenderListings(lenderId);
-      console.log('Received response in component:', response);
-      console.log('First listing structure:', response[0]);
-      // Handle both array format and object format
-      if (Array.isArray(response)) {
-        setListings(response);
-      } else {
-        setListings(response.listings || []);
+      console.log('API Response:', response);
+      if (response && response.length > 0) {
+        console.log('First listing fields:', Object.keys(response[0]));
+        console.log('Sample listing:', response[0]);
       }
+      const listings = Array.isArray(response) ? response : response.listings || [];
+      setListings(listings);
     } catch (error) {
       console.error('Failed to load listings:', error);
+      setListings([]);
     } finally {
       setLoading(false);
     }
@@ -249,9 +249,7 @@ const MyListings = ({ lenderId, user }) => {
         ) : (
           <>
             {(showAll ? listings : listings.slice(0, 3)).map((listing, index) => {
-              console.log('Listing data:', listing);
-              console.log('Available fields:', Object.keys(listing));
-              console.log('Listing images field:', listing.images);
+
               return (
               <div key={listing.id || index} className="listing-card">
               <img 
@@ -264,32 +262,22 @@ const MyListings = ({ lenderId, user }) => {
                 }}
               />
               <div className="listing-content">
-                <h3>{listing.subject || listing.title || 'Property Listing'}</h3>
-                <p><strong>Address:</strong> {listing.address || 'Not specified'}</p>
-                <p><strong>County:</strong> {listing.county || 'Not specified'}</p>
-                <p><strong>Property Type:</strong> {listing.property_type || 'Not specified'}</p>
-                <p><strong>Price Range:</strong> KSH {(listing.price_range || listing.price || 0).toLocaleString()}</p>
-                <p><strong>Interest Rate:</strong> {listing.interest_rate || listing.rate || 0}%</p>
-                <p><strong>Repayment Period:</strong> {listing.repayment_period || listing.term || 0} years</p>
-                <p><strong>Bedrooms:</strong> {listing.bedrooms || listing.rooms || 'Not specified'}</p>
-                <p><strong>Down Payment:</strong> {listing.down_payment || 0}%</p>
-                <p><strong>Minimum Income:</strong> KSH {(listing.minimum_income || 0).toLocaleString()}</p>
+                <h3>{listing.title || 'Property Listing'}</h3>
+                <p><strong>Location:</strong> {listing.location || 'Not specified'}</p>
+                <p><strong>Property Type:</strong> {listing.type || 'Not specified'}</p>
+                <p><strong>Price:</strong> KSH {(listing.price || 0).toLocaleString()}</p>
+                <p><strong>Interest Rate:</strong> {listing.rate || 0}%</p>
+                <p><strong>Repayment Period:</strong> {listing.term || 0} years</p>
+                <p><strong>Bedrooms:</strong> {listing.bedrooms || 'Not specified'}</p>
                 <p><strong>Status:</strong> 
                   <span className={`status-badge ${listing.status?.toLowerCase() || 'active'}`}>
                     {listing.status === 'acquired' ? 'Under Contract' : 
                      listing.status === 'sold' ? 'Sold' : 'Available'}
                   </span>
                 </p>
-                {listing.amount_paid > 0 && (
-                  <p><strong>Payment Progress:</strong> 
-                    KSH {(listing.amount_paid || 0).toLocaleString()} / KSH {(listing.price_range || listing.price || 0).toLocaleString()}
-                    ({Math.round(((listing.amount_paid || 0) / (listing.price_range || listing.price || 1)) * 100)}%)
-                  </p>
-                )}
-                {listing.description && (
-                  <p><strong>Description:</strong> {listing.description.substring(0, 100)}{listing.description.length > 100 ? '...' : ''}</p>
-                )}
-                <p><strong>Created:</strong> {listing.created_at ? new Date(listing.created_at).toLocaleDateString() : listing.createdAt || 'N/A'}</p>
+
+
+                <p><strong>Created:</strong> {listing.createdAt || 'N/A'}</p>
                 <div className="listing-actions">
                   <button className="btn" onClick={() => handleEditListing(listing)}>
                     {listing.editable !== false ? 'Edit' : 'Edit (Locked)'}
