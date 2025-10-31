@@ -56,6 +56,11 @@ const LenderApplications = ({ lenderId }) => {
   const loadApplications = async () => {
     try {
       const response = await api.getLenderApplications(lenderId);
+      console.log('Lender Applications API Response:', response);
+      if (response && response.length > 0) {
+        console.log('First application fields:', Object.keys(response[0]));
+        console.log('Sample application data:', JSON.stringify(response[0], null, 2));
+      }
       const apps = Array.isArray(response) ? response : response.applications || [];
       setApplications(apps);
     } catch (error) {
@@ -144,22 +149,22 @@ const LenderApplications = ({ lenderId }) => {
                 <div className="buyer-info-grid">
                   <div className="info-section">
                     <h5>Applicant Details</h5>
-                    <p><strong>Full Name:</strong> {app.buyer?.full_name || app.buyer?.fullName || app.buyer?.name || app.applicant || 'N/A'}</p>
-                    <p><strong>Email:</strong> {app.email || app.buyer?.email || 'N/A'}</p>
-                    <p><strong>Phone:</strong> {app.phone || app.buyer?.phone || app.buyer?.mpesa_number || 'N/A'}</p>
+                    <p><strong>Full Name:</strong> {app.applicant || 'N/A'}</p>
+                    <p><strong>Email:</strong> {app.email || 'N/A'}</p>
+                    <p><strong>Phone:</strong> {app.phone || 'N/A'}</p>
                   </div>
                   
                   <div className="info-section">
                     <h5>Financial Details</h5>
                     <p><strong>Loan Amount:</strong> KSH {app.amount?.toLocaleString() || 'N/A'}</p>
-                    <p><strong>Monthly Income:</strong> KSH {(app.monthlyIncome || app.monthly_income || app.buyer?.monthly_net_income || app.buyer?.monthlyNetIncome)?.toLocaleString() || 'N/A'}</p>
-                    <p><strong>Employment Status:</strong> {app.employmentStatus || app.employment_status || app.buyer?.employment_status || app.buyer?.employmentStatus || 'N/A'}</p>
+                    <p><strong>Monthly Income:</strong> {app.monthlyIncome || 'N/A'}</p>
+                    <p><strong>Employment Status:</strong> {app.employmentStatus || 'N/A'}</p>
                   </div>
                   
                   <div className="info-section">
                     <h5>Property & Status</h5>
                     <p><strong>Property:</strong> {app.property || 'N/A'}</p>
-                    <p><strong>Application Date:</strong> {app.submittedAt ? new Date(app.submittedAt).toLocaleDateString() : 'N/A'}</p>
+                    <p><strong>Application Date:</strong> {app.submittedAt || 'N/A'}</p>
                     <p><strong>Status:</strong> <span className={`status ${app.status?.toLowerCase() || 'pending'}`}>
                       {app.status === 'approved' ? '✅ Approved' : 
                        app.status === 'rejected' ? '❌ Rejected' : 

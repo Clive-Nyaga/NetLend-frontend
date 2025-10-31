@@ -34,7 +34,7 @@ const SoldMortgages = ({ lenderId, user }) => {
           </div>
           <div className="stat-item">
             <h4>Total Value</h4>
-            <span>KSH {soldMortgages.reduce((sum, m) => sum + (m.loan_amount || m.amount || 0), 0).toLocaleString()}</span>
+            <span>KSH {soldMortgages.reduce((sum, m) => sum + (m.principalAmount || 0), 0).toLocaleString()}</span>
           </div>
           <div className="stat-item">
             <h4>Active Mortgages</h4>
@@ -55,38 +55,38 @@ const SoldMortgages = ({ lenderId, user }) => {
           soldMortgages.map(mortgage => (
             <div key={mortgage.id} className="sold-mortgage-card">
               <div className="mortgage-header">
-                <h3>{mortgage.property_address || mortgage.property || `Mortgage #${mortgage.id}`}</h3>
+                <h3>{mortgage.property || `Mortgage #${mortgage.id}`}</h3>
                 <span className="status completed">✅ Active Mortgage</span>
               </div>
               
               <div className="mortgage-details">
                 <div className="detail-row">
                   <span className="label">Borrower:</span>
-                  <span className="value">{mortgage.buyer_name || mortgage.buyer?.full_name || 'N/A'}</span>
+                  <span className="value">{mortgage.buyer || 'N/A'}</span>
                 </div>
                 <div className="detail-row">
-                  <span className="label">Contact:</span>
-                  <span className="value">{mortgage.buyer_email || 'N/A'} | {mortgage.buyer_phone || 'N/A'}</span>
+                  <span className="label">Principal Amount:</span>
+                  <span className="value">KSH {(mortgage.principalAmount || 0).toLocaleString()}</span>
                 </div>
                 <div className="detail-row">
-                  <span className="label">Loan Amount:</span>
-                  <span className="value">KSH {(mortgage.loan_amount || mortgage.amount || 0).toLocaleString()}</span>
+                  <span className="label">Remaining Balance:</span>
+                  <span className="value">KSH {(mortgage.remainingBalance || 0).toLocaleString()}</span>
                 </div>
                 <div className="detail-row">
                   <span className="label">Property:</span>
-                  <span className="value">{mortgage.property_address || mortgage.property || 'N/A'}</span>
+                  <span className="value">{mortgage.property || 'N/A'}</span>
                 </div>
                 <div className="detail-row">
                   <span className="label">Interest Rate:</span>
-                  <span className="value">{mortgage.interest_rate || 'N/A'}% per annum</span>
+                  <span className="value">{mortgage.interestRate || 'N/A'}% per annum</span>
                 </div>
                 <div className="detail-row">
-                  <span className="label">Monthly Payment:</span>
-                  <span className="value">KSH {(mortgage.monthly_payment || 0).toLocaleString()}</span>
+                  <span className="label">Next Payment Due:</span>
+                  <span className="value">{mortgage.nextPaymentDue ? new Date(mortgage.nextPaymentDue).toLocaleDateString() : 'N/A'}</span>
                 </div>
                 <div className="detail-row">
                   <span className="label">Start Date:</span>
-                  <span className="value">{mortgage.start_date ? new Date(mortgage.start_date).toLocaleDateString() : 'N/A'}</span>
+                  <span className="value">{mortgage.startDate ? new Date(mortgage.startDate).toLocaleDateString() : 'N/A'}</span>
                 </div>
               </div>
               
@@ -94,7 +94,7 @@ const SoldMortgages = ({ lenderId, user }) => {
                 <button 
                   className="btn secondary" 
                   onClick={() => {
-                    alert(`Active Mortgage Details:\n\nProperty: ${mortgage.property_address || 'N/A'}\nBorrower: ${mortgage.buyer_name || 'N/A'}\nEmail: ${mortgage.buyer_email || 'N/A'}\nPhone: ${mortgage.buyer_phone || 'N/A'}\nLoan Amount: KSH ${(mortgage.loan_amount || 0).toLocaleString()}\nInterest Rate: ${mortgage.interest_rate || 'N/A'}%\nMonthly Payment: KSH ${(mortgage.monthly_payment || 0).toLocaleString()}\nStart Date: ${mortgage.start_date ? new Date(mortgage.start_date).toLocaleDateString() : 'N/A'}`);
+                    alert(`Active Mortgage Details:\n\nProperty: ${mortgage.property || 'N/A'}\nBorrower: ${mortgage.buyer || 'N/A'}\nPrincipal Amount: KSH ${(mortgage.principalAmount || 0).toLocaleString()}\nRemaining Balance: KSH ${(mortgage.remainingBalance || 0).toLocaleString()}\nInterest Rate: ${mortgage.interestRate || 'N/A'}%\nNext Payment Due: ${mortgage.nextPaymentDue ? new Date(mortgage.nextPaymentDue).toLocaleDateString() : 'N/A'}\nStart Date: ${mortgage.startDate ? new Date(mortgage.startDate).toLocaleDateString() : 'N/A'}`);
                   }}
                 >
                   View Details
@@ -102,7 +102,7 @@ const SoldMortgages = ({ lenderId, user }) => {
                 <button 
                   className="btn" 
                   onClick={() => {
-                    alert(`Contract Generation:\n\nGenerating mortgage contract for:\nProperty: ${mortgage.property_address || 'N/A'}\nBorrower: ${mortgage.buyer_name || 'N/A'}\nAmount: KSH ${(mortgage.loan_amount || 0).toLocaleString()}\nRate: ${mortgage.interest_rate || 'N/A'}%\n\nContract will be downloaded shortly...`);
+                    alert(`Contract Generation:\n\nGenerating mortgage contract for:\nProperty: ${mortgage.property || 'N/A'}\nBorrower: ${mortgage.buyer || 'N/A'}\nAmount: KSH ${(mortgage.principalAmount || 0).toLocaleString()}\nRate: ${mortgage.interestRate || 'N/A'}%\n\nContract will be downloaded shortly...`);
                   }}
                 >
                   Download Contract
@@ -110,7 +110,7 @@ const SoldMortgages = ({ lenderId, user }) => {
                 <button 
                   className="btn btn-primary" 
                   onClick={() => {
-                    alert(`Contact Borrower:\n\nBorrower: ${mortgage.buyer_name || 'N/A'}\nEmail: ${mortgage.buyer_email || 'N/A'}\nPhone: ${mortgage.buyer_phone || 'N/A'}\n\nDirect messaging feature coming soon!`);
+                    alert(`Contact Borrower:\n\nBorrower: ${mortgage.buyer || 'N/A'}\n\nNote: Contact information not available in current API response.\nDirect messaging feature coming soon!`);
                   }}
                 >
                   Contact Borrower
