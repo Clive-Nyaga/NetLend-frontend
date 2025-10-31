@@ -294,7 +294,7 @@ const MyListings = ({ lenderId, user }) => {
                   <button className="btn" onClick={() => handleEditListing(listing)}>
                     {listing.editable !== false ? 'Edit' : 'Edit (Locked)'}
                   </button>
-                  <button className="btn btn-secondary" onClick={() => showPropertyAnalytics(listing)}>View Analytics</button>
+
                   <button className="btn danger" onClick={() => handleDeleteListing(listing.id)}>Remove</button>
                 </div>
               </div>
