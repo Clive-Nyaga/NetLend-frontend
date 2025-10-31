@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react';
 import api from '../../services/api';
+import { useToast } from '../../contexts/ToastContext';
 
 const LenderApplications = ({ lenderId }) => {
   const [applications, setApplications] = useState([]);
   const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState('all');
+  const { showToast } = useToast();
 
   const calculateEligibilityScore = (app) => {
     const monthlyIncome = app.monthly_income || 0;
@@ -87,23 +89,18 @@ const LenderApplications = ({ lenderId }) => {
       
       try {
         await api.approveApplication(applicationId);
-        alert(
-          `Application #${applicationId} approved successfully!\n\n` +
-          `• All other applications for this property have been auto-rejected\n` +
-          `• Property status changed to "acquired"\n` +
-          `• Active mortgage created and visible in "Sold Mortgages"\n` +
-          `• Buyer can now see mortgage in "My Mortgages" section`
-        );
+        showToast(`Application #${applicationId} approved! Mortgage created and property marked as acquired.`, 'success', 5000);
       } catch (error) {
         console.error('Failed to approve application:', error);
-        alert('Failed to approve application: ' + error.message);
+        showToast('Failed to approve application: ' + error.message, 'error');
       }
     } else {
       try {
         await api.updateApplicationStatus(applicationId, status);
+        showToast(`Application status updated to ${status}`, 'success');
       } catch (error) {
         console.error('Failed to update status:', error);
-        alert('Failed to update application status: ' + error.message);
+        showToast('Failed to update application status: ' + error.message, 'error');
       }
     }
     
@@ -208,7 +205,7 @@ const LenderApplications = ({ lenderId }) => {
                   onClick={() => {
                     const message = prompt('What additional information do you need from the applicant?');
                     if (message) {
-                      alert(`Information request sent to ${app.applicantName || app.applicant}: "${message}"`);
+                      showToast(`Information request sent to ${app.applicantName || app.applicant}`, 'success');
                     }
                   }}
                 >

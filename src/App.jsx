@@ -13,10 +13,47 @@ import ContactUs from './components/Home/ContactUs';
 import Footer from './components/Layout/Footer';
 
 import EligibilityCalculator from './components/Calculator/EligibilityCalculator';
+import { ToastProvider, useToast } from './contexts/ToastContext';
 import './styles/netlend.css';
 import './index.css';
 
 const API_BASE = 'http://localhost:5000/api';
+
+const LoginPageWrapper = (props) => {
+  const { showToast } = useToast();
+  
+  const handleLoginWithToast = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await axios.post(`${API_BASE}/login`, props.loginData);
+      if (response.data.success) {
+        showToast('Login successful!', 'success');
+        props.handleLogin(e);
+      } else {
+        showToast('Login failed: ' + (response.data.error || 'Unknown error'), 'error');
+      }
+    } catch (error) {
+      showToast('Login failed: ' + (error.response?.data?.error || error.message), 'error');
+    }
+  };
+
+  const handleRegisterWithToast = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await axios.post(`${API_BASE}/register`, props.registerData);
+      if (response.data.success) {
+        showToast('Registration successful!', 'success');
+        props.handleRegister(e);
+      } else {
+        showToast('Registration failed: ' + (response.data.error || 'Unknown error'), 'error');
+      }
+    } catch (error) {
+      showToast('Registration failed: ' + (error.response?.data?.error || error.message), 'error');
+    }
+  };
+
+  return <LoginPage {...props} handleLogin={handleLoginWithToast} handleRegister={handleRegisterWithToast} />;
+};
 
 const LoginPage = React.memo(({ isLogin, setIsLogin, loginData, setLoginData, registerData, setRegisterData, handleLogin, handleRegister, user }) => {
   const navigate = useNavigate();
@@ -162,11 +199,11 @@ function App() {
         axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`;
         console.log('Login successful, user set:', response.data.user);
       } else {
-        alert('Login failed: ' + (response.data.error || 'Unknown error'));
+        // Will be handled by toast wrapper
       }
     } catch (error) {
       console.error('Login error:', error);
-      alert('Login failed: ' + (error.response?.data?.error || error.message));
+      // Will be handled by toast wrapper
     }
   };
 
@@ -182,11 +219,11 @@ function App() {
         axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`;
         console.log('Registration successful, user set:', response.data.user);
       } else {
-        alert('Registration failed: ' + (response.data.error || 'Unknown error'));
+        // Will be handled by toast wrapper
       }
     } catch (error) {
       console.error('Registration error:', error);
-      alert('Registration failed: ' + (error.response?.data?.error || error.message));
+      // Will be handled by toast wrapper
     }
   };
 
@@ -296,29 +333,31 @@ function App() {
   };
 
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<MainApp />} />
-        <Route path="/admin-login" element={<LoginPage isLogin={isLogin} setIsLogin={setIsLogin} loginData={loginData} setLoginData={setLoginData} registerData={registerData} setRegisterData={setRegisterData} handleLogin={handleLogin} handleRegister={handleRegister} user={user} />} />
-        <Route 
-          path="/admin" 
-          element={
-            user && user.userType === 'admin' 
-              ? <AdminNavigationWrapper user={user} onLogout={handleLogout} setCurrentSection={setCurrentSection} /> 
-              : <Navigate to="/admin-login" />
-          } 
-        />
-        <Route 
-          path="/lender" 
-          element={
-            user && user.userType === 'lender' 
-              ? <LenderDashboard user={user} onLogout={handleLogout} /> 
-              : <Navigate to="/" />
-          } 
-        />
-        <Route path="/*" element={<MainApp />} />
-      </Routes>
-    </BrowserRouter>
+    <ToastProvider>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<MainApp />} />
+          <Route path="/admin-login" element={<LoginPageWrapper isLogin={isLogin} setIsLogin={setIsLogin} loginData={loginData} setLoginData={setLoginData} registerData={registerData} setRegisterData={setRegisterData} handleLogin={handleLogin} handleRegister={handleRegister} user={user} />} />
+          <Route 
+            path="/admin" 
+            element={
+              user && user.userType === 'admin' 
+                ? <AdminNavigationWrapper user={user} onLogout={handleLogout} setCurrentSection={setCurrentSection} /> 
+                : <Navigate to="/admin-login" />
+            } 
+          />
+          <Route 
+            path="/lender" 
+            element={
+              user && user.userType === 'lender' 
+                ? <LenderDashboard user={user} onLogout={handleLogout} /> 
+                : <Navigate to="/" />
+            } 
+          />
+          <Route path="/*" element={<MainApp />} />
+        </Routes>
+      </BrowserRouter>
+    </ToastProvider>
   );
 }
 

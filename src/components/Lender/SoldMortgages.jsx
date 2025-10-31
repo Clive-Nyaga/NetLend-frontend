@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
 import api from '../../services/api';
+import { useToast } from '../../contexts/ToastContext';
 
 const SoldMortgages = ({ lenderId, user }) => {
   const [soldMortgages, setSoldMortgages] = useState([]);
   const [loading, setLoading] = useState(true);
+  const { showToast } = useToast();
 
   useEffect(() => {
     loadSoldMortgages();
@@ -94,7 +96,7 @@ const SoldMortgages = ({ lenderId, user }) => {
                 <button 
                   className="btn secondary" 
                   onClick={() => {
-                    alert(`Active Mortgage Details:\n\nProperty: ${mortgage.property || 'N/A'}\nBorrower: ${mortgage.buyer || 'N/A'}\nPrincipal Amount: KSH ${(mortgage.principalAmount || 0).toLocaleString()}\nRemaining Balance: KSH ${(mortgage.remainingBalance || 0).toLocaleString()}\nInterest Rate: ${mortgage.interestRate || 'N/A'}%\nNext Payment Due: ${mortgage.nextPaymentDue ? new Date(mortgage.nextPaymentDue).toLocaleDateString() : 'N/A'}\nStart Date: ${mortgage.startDate ? new Date(mortgage.startDate).toLocaleDateString() : 'N/A'}`);
+                    showToast(`Mortgage Details: ${mortgage.property || 'Property'} - ${mortgage.buyer || 'Borrower'}`, 'info');
                   }}
                 >
                   View Details
@@ -102,7 +104,7 @@ const SoldMortgages = ({ lenderId, user }) => {
                 <button 
                   className="btn" 
                   onClick={() => {
-                    alert(`Contract Generation:\n\nGenerating mortgage contract for:\nProperty: ${mortgage.property || 'N/A'}\nBorrower: ${mortgage.buyer || 'N/A'}\nAmount: KSH ${(mortgage.principalAmount || 0).toLocaleString()}\nRate: ${mortgage.interestRate || 'N/A'}%\n\nContract will be downloaded shortly...`);
+                    showToast('Contract generation started - download will begin shortly', 'success');
                   }}
                 >
                   Download Contract
@@ -110,7 +112,7 @@ const SoldMortgages = ({ lenderId, user }) => {
                 <button 
                   className="btn btn-primary" 
                   onClick={() => {
-                    alert(`Contact Borrower:\n\nBorrower: ${mortgage.buyer || 'N/A'}\n\nNote: Contact information not available in current API response.\nDirect messaging feature coming soon!`);
+                    showToast('Direct messaging feature coming soon!', 'info');
                   }}
                 >
                   Contact Borrower
