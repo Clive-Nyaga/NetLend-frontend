@@ -40,7 +40,7 @@ const MyMortgages = ({ user }) => {
             remainingPayments: mortgage.remainingPayments,
             remainingBalance: mortgage.remainingBalance,
             status: mortgage.status,
-            downPaymentMade: mortgage.downPaymentMade
+            downPaymentMade: mortgage.downPaymentMade || 'field missing'
           });
         });
       }
@@ -89,15 +89,28 @@ const MyMortgages = ({ user }) => {
    * - Monthly payment: Regular scheduled payments for active mortgages
    */
   const handleMakePayment = (mortgage) => {
-    // Determine if this is a down payment or monthly payment
+    // Check if down payment is required first
     const isDownPaymentNeeded = mortgage.status === 'approved' && !mortgage.downPaymentMade;
     
-    setSelectedMortgage({
-      ...mortgage,
-      monthlyPayment: mortgage.monthlyPayment || calculateMonthlyPayment(mortgage.principalAmount, mortgage.interestRate, 25),
-      downPaymentAmount: mortgage.downPaymentAmount || (mortgage.principalAmount * 0.2), // 20% down payment
-      paymentType: isDownPaymentNeeded ? 'down' : 'monthly'
-    });
+    if (isDownPaymentNeeded) {
+      // Force down payment first
+      setSelectedMortgage({
+        ...mortgage,
+        monthlyPayment: mortgage.monthlyPayment || calculateMonthlyPayment(mortgage.principalAmount, mortgage.interestRate, 25),
+        downPaymentAmount: mortgage.downPaymentAmount || (mortgage.principalAmount * 0.2),
+        paymentType: 'down'
+      });
+    } else if (mortgage.status === 'active') {
+      // Allow monthly payments for active mortgages (down payment assumed made)
+      setSelectedMortgage({
+        ...mortgage,
+        paymentType: 'monthly'
+      });
+    } else {
+      // Should not reach here, but handle gracefully
+      return;
+    }
+    
     setShowPaymentModal(true);
   };
 
@@ -117,19 +130,24 @@ const MyMortgages = ({ user }) => {
       isOpen: true,
       type: 'info',
       title: 'Mortgage Statement',
-      message: `Statement for ${mortgage.property_details || `Mortgage #${mortgage.id}`}:\n\nPrincipal: KSH ${(mortgage.principal_amount || 0).toLocaleString()}\nRemaining: KSH ${(mortgage.remaining_balance || 0).toLocaleString()}\nPayments Made: ${mortgage.payments_made || 0}\nNext Payment: ${mortgage.next_payment_date ? new Date(mortgage.next_payment_date).toLocaleDateString() : 'N/A'}\n\nFull statement will be downloaded.`
+      message: `Statement for ${mortgage.property || `Mortgage #${mortgage.id}`}:\n\nPrincipal: KSH ${(mortgage.principalAmount || 0).toLocaleString()}\nRemaining: KSH ${(mortgage.remainingBalance || 0).toLocaleString()}\nPayments Made: ${mortgage.paymentsMade || 0}\nNext Payment: ${mortgage.nextPaymentDue ? new Date(mortgage.nextPaymentDue).toLocaleDateString() : 'N/A'}\n\nFull statement will be downloaded.`
     });
   };
 
   const handleViewPaymentHistory = async (mortgage) => {
     try {
       const history = await api.getPaymentHistory(mortgage.id);
+      console.log('Payment history structure:', JSON.stringify(history.slice(0, 2), null, 2)); // Log first 2 payments
       setPaymentHistory(prev => ({ ...prev, [mortgage.id]: history }));
       
       const historyText = history.length > 0 
-        ? history.map(payment => 
-            `${payment.date}: KSH ${payment.amount.toLocaleString()} via ${payment.method} (${payment.status})`
-          ).join('\n')
+        ? history.map(payment => {
+            const amount = payment.amountPaid || 0;
+            const date = payment.date || 'N/A';
+            const status = payment.status || 'completed';
+            
+            return `${date}: KSH ${amount.toLocaleString()} (${status})`;
+          }).join('\n')
         : 'No payment history available yet.';
       
       setNotification({
@@ -140,7 +158,6 @@ const MyMortgages = ({ user }) => {
       });
     } catch (error) {
       console.error('Failed to load payment history:', error);
-      // Show sample history as fallback
       setNotification({
         isOpen: true,
         type: 'info',
@@ -270,13 +287,18 @@ const MyMortgages = ({ user }) => {
                     </button>
                     <button className="btn btn-secondary" onClick={() => setNotification({isOpen: true, type: 'info', title: 'Down Payment Info', message: `Down Payment Required:\n\nAmount: KSH ${((mortgage.downPaymentAmount || mortgage.principalAmount * 0.2) || 0).toLocaleString()}\n\nAfter payment:\n• Mortgage becomes active\n• Monthly payments of KSH ${(mortgage.monthlyPayment || 0).toLocaleString()} due last day of each month\n• Loan term: ${mortgage.loanTermYears || 25} years`})}>Payment Info</button>
                   </>
-                ) : (
+                ) : mortgage.status === 'active' ? (
                   <>
                     <button className="btn btn-primary" onClick={() => handleMakePayment(mortgage)}>Make Monthly Payment</button>
                     <button className="btn btn-secondary" onClick={() => handleViewStatement(mortgage)}>View Statement</button>
                     <button className="btn btn-secondary" onClick={() => handleViewPaymentHistory(mortgage)}>
                       Payment History ({paymentHistory[mortgage.id]?.length || 0})
                     </button>
+                  </>
+                ) : (
+                  <>
+                    <button className="btn btn-secondary" disabled style={{opacity: 0.5}}>Payment Not Available</button>
+                    <button className="btn btn-secondary" onClick={() => handleViewStatement(mortgage)}>View Statement</button>
                   </>
                 )}
                 <button className="btn btn-secondary" onClick={() => setNotification({isOpen: true, type: 'info', title: 'Contact Lender', message: `Contact ${mortgage.lender || 'Lender'}:\n\nFor mortgage #${mortgage.id}\n\nThis will open a direct communication channel with your lender.`})}>Contact Lender</button>
