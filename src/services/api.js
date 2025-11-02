@@ -431,6 +431,15 @@ const api = {
     return result;
   },
 
+  /**
+   * Process mortgage payment (down payment or monthly payment)
+   * 
+   * Handles:
+   * - Down payments: First payment that activates the mortgage
+   * - Monthly payments: Regular scheduled payments due on last day of month
+   * - Payment scheduling and balance updates
+   * - Payment method processing (M-Pesa, Card, Bank Transfer)
+   */
   processMortgagePayment: async (paymentData) => {
     const token = localStorage.getItem('access_token');
     const headers = {
@@ -440,36 +449,18 @@ const api = {
       headers['Authorization'] = `Bearer ${token}`;
     }
     
-    try {
-      const response = await fetch(`${API_BASE_URL}/homebuyer/payments`, {
-        method: 'POST',
-        headers,
-        body: JSON.stringify(paymentData)
-      });
-      
-      if (!response.ok) {
-        const result = await response.json();
-        throw new Error(result.message || result.error || 'Payment failed');
-      }
-      
-      return await response.json();
-    } catch (error) {
-      // Simulate payment processing for demo
-      console.log('Simulating payment processing:', paymentData);
-      
-      // Simulate processing delay
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      // Simulate success response
-      return {
-        success: true,
-        transactionId: `TXN${Date.now()}`,
-        amount: paymentData.amount,
-        paymentMethod: paymentData.paymentMethod,
-        timestamp: new Date().toISOString(),
-        message: 'Payment processed successfully'
-      };
+    const response = await fetch(`${API_BASE_URL}/homebuyer/payments`, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify(paymentData)
+    });
+    
+    if (!response.ok) {
+      const result = await response.json();
+      throw new Error(result.message || result.error || 'Payment failed');
     }
+    
+    return await response.json();
   },
 
   getPaymentHistory: async (mortgageId) => {
@@ -479,20 +470,15 @@ const api = {
       headers['Authorization'] = `Bearer ${token}`;
     }
     
-    try {
-      const response = await fetch(`${API_BASE_URL}/homebuyer/payments/${mortgageId}`, {
-        headers
-      });
-      
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}`);
-      }
-      
-      return await response.json();
-    } catch (error) {
-      console.error('Failed to load payment history:', error);
-      throw error;
+    const response = await fetch(`${API_BASE_URL}/homebuyer/payments/${mortgageId}`, {
+      headers
+    });
+    
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
     }
+    
+    return await response.json();
   }
 };
 

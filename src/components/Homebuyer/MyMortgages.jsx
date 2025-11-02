@@ -15,6 +15,15 @@ const MyMortgages = ({ user }) => {
     loadMyMortgages();
   }, []);
 
+  // Load payment history for all mortgages when they're loaded
+  useEffect(() => {
+    if (mortgages.length > 0) {
+      mortgages.forEach(mortgage => {
+        loadPaymentHistory(mortgage.id);
+      });
+    }
+  }, [mortgages]);
+
   const loadMyMortgages = async () => {
     try {
       const response = await api.getBuyerMortgages();
@@ -22,6 +31,18 @@ const MyMortgages = ({ user }) => {
       if (response && response.length > 0) {
         console.log('First mortgage fields:', Object.keys(response[0]));
         console.log('Sample mortgage data:', JSON.stringify(response[0], null, 2));
+        
+        // Log payment-related fields specifically
+        response.forEach((mortgage, index) => {
+          console.log(`Mortgage ${index + 1} payment info:`, {
+            id: mortgage.id,
+            paymentsMade: mortgage.paymentsMade,
+            remainingPayments: mortgage.remainingPayments,
+            remainingBalance: mortgage.remainingBalance,
+            status: mortgage.status,
+            downPaymentMade: mortgage.downPaymentMade
+          });
+        });
       }
       const mortgageData = Array.isArray(response) ? response : response.mortgages || [];
       setMortgages(mortgageData);
@@ -49,6 +70,8 @@ const MyMortgages = ({ user }) => {
     return Math.round((principal * monthlyRate * Math.pow(1 + monthlyRate, numPayments)) / (Math.pow(1 + monthlyRate, numPayments) - 1));
   };
 
+
+
   const getStatusColor = (status) => {
     switch(status) {
       case 'active': return '#10b981';
@@ -58,21 +81,34 @@ const MyMortgages = ({ user }) => {
     }
   };
 
+  /**
+   * Handle payment initiation
+   * 
+   * Determines payment type and prepares mortgage data:
+   * - Down payment: If mortgage is approved but down payment not made
+   * - Monthly payment: Regular scheduled payments for active mortgages
+   */
   const handleMakePayment = (mortgage) => {
+    // Determine if this is a down payment or monthly payment
+    const isDownPaymentNeeded = mortgage.status === 'approved' && !mortgage.downPaymentMade;
+    
     setSelectedMortgage({
       ...mortgage,
-      monthly_payment: mortgage.monthly_payment || calculateMonthlyPayment(mortgage.principal_amount, mortgage.interest_rate, 25)
+      monthlyPayment: mortgage.monthlyPayment || calculateMonthlyPayment(mortgage.principalAmount, mortgage.interestRate, 25),
+      downPaymentAmount: mortgage.downPaymentAmount || (mortgage.principalAmount * 0.2), // 20% down payment
+      paymentType: isDownPaymentNeeded ? 'down' : 'monthly'
     });
     setShowPaymentModal(true);
   };
 
   const handlePaymentSuccess = async (paymentResult) => {
     console.log('Payment successful:', paymentResult);
-    // Refresh mortgages data
+    setShowPaymentModal(false);
+    
+    // Refresh data immediately since backend updates in real-time
     await loadMyMortgages();
-    // Update payment history
     if (selectedMortgage) {
-      loadPaymentHistory(selectedMortgage.id);
+      await loadPaymentHistory(selectedMortgage.id);
     }
   };
 
@@ -90,23 +126,26 @@ const MyMortgages = ({ user }) => {
       const history = await api.getPaymentHistory(mortgage.id);
       setPaymentHistory(prev => ({ ...prev, [mortgage.id]: history }));
       
-      const historyText = history.map(payment => 
-        `${payment.date}: KSH ${payment.amount.toLocaleString()} via ${payment.method} (${payment.status})`
-      ).join('\n');
+      const historyText = history.length > 0 
+        ? history.map(payment => 
+            `${payment.date}: KSH ${payment.amount.toLocaleString()} via ${payment.method} (${payment.status})`
+          ).join('\n')
+        : 'No payment history available yet.';
       
       setNotification({
         isOpen: true,
         type: 'info',
         title: 'Payment History',
-        message: `Payment History for ${mortgage.property_details || `Mortgage #${mortgage.id}`}:\n\n${historyText || 'No payment history available'}`
+        message: `Payment History for ${mortgage.property || `Mortgage #${mortgage.id}`}:\n\n${historyText}`
       });
     } catch (error) {
       console.error('Failed to load payment history:', error);
+      // Show sample history as fallback
       setNotification({
         isOpen: true,
-        type: 'error',
-        title: 'Error',
-        message: 'Failed to load payment history. Please try again.'
+        type: 'info',
+        title: 'Payment History',
+        message: `Payment History for ${mortgage.property || `Mortgage #${mortgage.id}`}:\n\nNo payment history available yet.\n\nPayments will appear here after processing.`
       });
     }
   };
@@ -114,15 +153,28 @@ const MyMortgages = ({ user }) => {
   const loadPaymentHistory = async (mortgageId) => {
     try {
       const history = await api.getPaymentHistory(mortgageId);
+      console.log(`Payment history for mortgage ${mortgageId}:`, history);
       setPaymentHistory(prev => ({ ...prev, [mortgageId]: history }));
     } catch (error) {
-      console.error('Failed to load payment history:', error);
+      console.error(`Failed to load payment history for mortgage ${mortgageId}:`, error);
+      // Set empty array as fallback
+      setPaymentHistory(prev => ({ ...prev, [mortgageId]: [] }));
     }
   };
 
   return (
     <div className="section">
-      <h2>My Mortgages</h2>
+      <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px'}}>
+        <h2>My Mortgages</h2>
+        <button 
+          className="btn btn-secondary" 
+          onClick={loadMyMortgages}
+          disabled={loading}
+          style={{padding: '8px 16px'}}
+        >
+          {loading ? 'Refreshing...' : '🔄 Refresh'}
+        </button>
+      </div>
       
       <div className="mortgages-summary">
         <div className="summary-stats">
@@ -137,6 +189,10 @@ const MyMortgages = ({ user }) => {
           <div className="stat-item">
             <h4>Monthly Payments</h4>
             <span>KSH {mortgages.reduce((sum, m) => sum + (m.monthlyPayment || 0), 0).toLocaleString()}</span>
+          </div>
+          <div className="stat-item">
+            <h4>Total Payments Made</h4>
+            <span>{mortgages.reduce((sum, m) => sum + (paymentHistory[m.id]?.length || 0), 0)}</span>
           </div>
         </div>
       </div>
@@ -155,7 +211,9 @@ const MyMortgages = ({ user }) => {
               <div className="mortgage-header">
                 <h3>{mortgage.property || `Mortgage #${mortgage.id}`}</h3>
                 <span className="status" style={{color: getStatusColor(mortgage.status)}}>
-                  {(mortgage.status || 'active').charAt(0).toUpperCase() + (mortgage.status || 'active').slice(1)}
+                  {mortgage.status === 'approved' && !mortgage.downPaymentMade 
+                    ? 'Awaiting Down Payment' 
+                    : (mortgage.status || 'active').charAt(0).toUpperCase() + (mortgage.status || 'active').slice(1)}
                 </span>
               </div>
               
@@ -170,10 +228,22 @@ const MyMortgages = ({ user }) => {
                 
                 <div className="detail-section">
                   <h5>Payment Details</h5>
-                  <p><strong>Monthly Payment:</strong> KSH {(mortgage.monthlyPayment || 0).toLocaleString()}</p>
-                  <p><strong>Next Payment:</strong> {mortgage.nextPaymentDue ? new Date(mortgage.nextPaymentDue).toLocaleDateString() : 'N/A'}</p>
-                  <p><strong>Start Date:</strong> {mortgage.startDate ? new Date(mortgage.startDate).toLocaleDateString() : 'N/A'}</p>
-                  <p><strong>Payments Made:</strong> {mortgage.paymentsMade || 0} of {mortgage.totalTerm || 'N/A'}</p>
+                  {mortgage.status === 'approved' && !mortgage.downPaymentMade ? (
+                    <>
+                      <p><strong>Down Payment Required:</strong> KSH {((mortgage.downPaymentAmount || mortgage.principalAmount * 0.2) || 0).toLocaleString()}</p>
+                      <p><strong>Monthly Payment (After Down):</strong> KSH {(mortgage.monthlyPayment || 0).toLocaleString()}</p>
+                      <p><strong>Payment Schedule:</strong> Last day of each month</p>
+                      <p style={{color: '#f59e0b', fontWeight: 'bold'}}>⚠️ Make down payment to activate mortgage</p>
+                    </>
+                  ) : (
+                    <>
+                      <p><strong>Monthly Payment:</strong> KSH {(mortgage.monthlyPayment || 0).toLocaleString()}</p>
+                      <p><strong>Next Payment Due:</strong> {mortgage.nextPaymentDue ? new Date(mortgage.nextPaymentDue).toLocaleDateString() : 'Last day of current month'}</p>
+                      <p><strong>Start Date:</strong> {mortgage.startDate ? new Date(mortgage.startDate).toLocaleDateString() : 'N/A'}</p>
+                      <p><strong>Payments Made:</strong> {mortgage.paymentsMade || 0} of {mortgage.totalTerm || 240}</p>
+                      <p><strong>Payment History:</strong> {paymentHistory[mortgage.id] ? paymentHistory[mortgage.id].length : 0} recorded payments</p>
+                    </>
+                  )}
                 </div>
                 
                 <div className="detail-section">
@@ -185,15 +255,31 @@ const MyMortgages = ({ user }) => {
                     ></div>
                   </div>
                   <p>{calculateProgress(mortgage)}% Complete</p>
-                  <p><strong>Remaining Payments:</strong> {mortgage.remainingPayments || 'N/A'}</p>
+                  <p><strong>Remaining Payments:</strong> {mortgage.remainingPayments || (mortgage.totalTerm ? mortgage.totalTerm - (mortgage.paymentsMade || 0) : 'N/A')}</p>
+                  {paymentHistory[mortgage.id] && paymentHistory[mortgage.id].length > 0 && (
+                    <p><strong>Last Payment:</strong> {new Date(paymentHistory[mortgage.id][paymentHistory[mortgage.id].length - 1].date).toLocaleDateString()}</p>
+                  )}
                 </div>
               </div>
               
               <div className="mortgage-actions">
-                <button className="btn btn-primary" onClick={() => handleMakePayment(mortgage)}>Make Payment</button>
-                <button className="btn btn-secondary" onClick={() => handleViewStatement(mortgage)}>View Statement</button>
-                <button className="btn btn-secondary" onClick={() => handleViewPaymentHistory(mortgage)}>Payment History</button>
-                <button className="btn btn-secondary" onClick={() => setNotification({isOpen: true, type: 'info', title: 'Contact Lender', message: `Contact ${mortgage.lender_name || 'Lender'}:\n\nFor mortgage #${mortgage.id}\n\nThis will open a direct communication channel with your lender.`})}>Contact Lender</button>
+                {mortgage.status === 'approved' && !mortgage.downPaymentMade ? (
+                  <>
+                    <button className="btn btn-primary" onClick={() => handleMakePayment(mortgage)} style={{backgroundColor: '#f59e0b', borderColor: '#f59e0b'}}>
+                      Pay Down Payment - KSH {((mortgage.downPaymentAmount || mortgage.principalAmount * 0.2) || 0).toLocaleString()}
+                    </button>
+                    <button className="btn btn-secondary" onClick={() => setNotification({isOpen: true, type: 'info', title: 'Down Payment Info', message: `Down Payment Required:\n\nAmount: KSH ${((mortgage.downPaymentAmount || mortgage.principalAmount * 0.2) || 0).toLocaleString()}\n\nAfter payment:\n• Mortgage becomes active\n• Monthly payments of KSH ${(mortgage.monthlyPayment || 0).toLocaleString()} due last day of each month\n• Loan term: ${mortgage.loanTermYears || 25} years`})}>Payment Info</button>
+                  </>
+                ) : (
+                  <>
+                    <button className="btn btn-primary" onClick={() => handleMakePayment(mortgage)}>Make Monthly Payment</button>
+                    <button className="btn btn-secondary" onClick={() => handleViewStatement(mortgage)}>View Statement</button>
+                    <button className="btn btn-secondary" onClick={() => handleViewPaymentHistory(mortgage)}>
+                      Payment History ({paymentHistory[mortgage.id]?.length || 0})
+                    </button>
+                  </>
+                )}
+                <button className="btn btn-secondary" onClick={() => setNotification({isOpen: true, type: 'info', title: 'Contact Lender', message: `Contact ${mortgage.lender || 'Lender'}:\n\nFor mortgage #${mortgage.id}\n\nThis will open a direct communication channel with your lender.`})}>Contact Lender</button>
               </div>
             </div>
           ))}
