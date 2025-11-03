@@ -366,15 +366,19 @@ const api = {
       headers['Authorization'] = `Bearer ${token}`;
     }
     
+    console.log('Fetching mortgages from:', `${API_BASE_URL}/homebuyer/my-mortgages`);
     const response = await fetch(`${API_BASE_URL}/homebuyer/my-mortgages`, {
       headers
     });
     
+    console.log('Mortgages response status:', response.status);
     if (!response.ok) {
       throw new Error(`HTTP ${response.status}`);
     }
     
-    return await response.json();
+    const result = await response.json();
+    console.log('Raw mortgages response:', result);
+    return result;
   },
 
   getBuyerApplications: async () => {
@@ -457,6 +461,7 @@ const api = {
     
     if (!response.ok) {
       const result = await response.json();
+      console.error('Payment API error:', result);
       throw new Error(result.message || result.error || 'Payment failed');
     }
     

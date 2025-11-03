@@ -33,7 +33,8 @@ const PaymentModal = ({ isOpen, onClose, mortgage, onPaymentSuccess }) => {
    */
   useEffect(() => {
     if (mortgage) {
-      const isDownPayment = !mortgage.downPaymentMade && mortgage.status === 'approved';
+      // Use backend-provided downPaymentMade field for accurate detection
+      const isDownPayment = !mortgage.downPaymentMade;
       const paymentType = isDownPayment ? 'down' : 'monthly';
       const amount = isDownPayment ? mortgage.downPaymentAmount || (mortgage.principalAmount * 0.2) : mortgage.monthlyPayment || 0;
       
@@ -66,7 +67,7 @@ const PaymentModal = ({ isOpen, onClose, mortgage, onPaymentSuccess }) => {
       }
 
       // Process payment through API
-      const paymentResult = await api.processMortgagePayment({
+      const paymentPayload = {
         mortgageId: mortgage.id,
         amount: paymentData.amount,
         paymentType: paymentData.paymentType,
@@ -76,7 +77,10 @@ const PaymentModal = ({ isOpen, onClose, mortgage, onPaymentSuccess }) => {
         expiryDate: paymentData.expiryDate,
         cvv: paymentData.cvv,
         accountNumber: paymentData.accountNumber
-      });
+      };
+      
+      console.log('Sending payment data:', paymentPayload);
+      const paymentResult = await api.processMortgagePayment(paymentPayload);
 
       // Show success message based on payment type
       const successMessage = paymentData.paymentType === 'down' 
@@ -92,7 +96,20 @@ const PaymentModal = ({ isOpen, onClose, mortgage, onPaymentSuccess }) => {
         onClose();
       }, 2000);
     } catch (error) {
-      const errorMessage = error.message || 'Payment failed. Please try again.';
+      let errorMessage = error.message || 'Payment failed. Please try again.';
+      
+      // If down payment is required, suggest switching to down payment
+      if (errorMessage.includes('Down payment must be made first')) {
+        errorMessage = 'Down payment required first. Switching to down payment mode...';
+        
+        // Switch to down payment mode
+        setPaymentData(prev => ({
+          ...prev,
+          paymentType: 'down',
+          amount: mortgage.downPaymentAmount || (mortgage.principalAmount * 0.2)
+        }));
+      }
+      
       setError(errorMessage);
       showToast(errorMessage, 'error');
     } finally {

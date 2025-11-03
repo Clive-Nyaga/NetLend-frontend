@@ -28,6 +28,8 @@ const MyMortgages = ({ user }) => {
     try {
       const response = await api.getBuyerMortgages();
       console.log('My Mortgages API Response:', response);
+      console.log('Response type:', typeof response, 'Is array:', Array.isArray(response));
+      
       if (response && response.length > 0) {
         console.log('First mortgage fields:', Object.keys(response[0]));
         console.log('Sample mortgage data:', JSON.stringify(response[0], null, 2));
@@ -43,8 +45,12 @@ const MyMortgages = ({ user }) => {
             downPaymentMade: mortgage.downPaymentMade || 'field missing'
           });
         });
+      } else {
+        console.log('No mortgages found or empty response');
       }
+      
       const mortgageData = Array.isArray(response) ? response : response.mortgages || [];
+      console.log('Final mortgage data:', mortgageData);
       setMortgages(mortgageData);
     } catch (error) {
       console.error('Failed to load mortgages:', error);
@@ -89,27 +95,14 @@ const MyMortgages = ({ user }) => {
    * - Monthly payment: Regular scheduled payments for active mortgages
    */
   const handleMakePayment = (mortgage) => {
-    // Check if down payment is required first
-    const isDownPaymentNeeded = mortgage.status === 'approved' && !mortgage.downPaymentMade;
+    // Use backend-provided downPaymentMade field
+    const isDownPaymentNeeded = !mortgage.downPaymentMade;
     
-    if (isDownPaymentNeeded) {
-      // Force down payment first
-      setSelectedMortgage({
-        ...mortgage,
-        monthlyPayment: mortgage.monthlyPayment || calculateMonthlyPayment(mortgage.principalAmount, mortgage.interestRate, 25),
-        downPaymentAmount: mortgage.downPaymentAmount || (mortgage.principalAmount * 0.2),
-        paymentType: 'down'
-      });
-    } else if (mortgage.status === 'active') {
-      // Allow monthly payments for active mortgages (down payment assumed made)
-      setSelectedMortgage({
-        ...mortgage,
-        paymentType: 'monthly'
-      });
-    } else {
-      // Should not reach here, but handle gracefully
-      return;
-    }
+    setSelectedMortgage({
+      ...mortgage,
+      monthlyPayment: mortgage.monthlyPayment || calculateMonthlyPayment(mortgage.principalAmount, mortgage.interestRate, 25),
+      paymentType: isDownPaymentNeeded ? 'down' : 'monthly'
+    });
     
     setShowPaymentModal(true);
   };
@@ -280,14 +273,14 @@ const MyMortgages = ({ user }) => {
               </div>
               
               <div className="mortgage-actions">
-                {mortgage.status === 'approved' && !mortgage.downPaymentMade ? (
+                {!mortgage.downPaymentMade ? (
                   <>
                     <button className="btn btn-primary" onClick={() => handleMakePayment(mortgage)} style={{backgroundColor: '#f59e0b', borderColor: '#f59e0b'}}>
                       Pay Down Payment - KSH {((mortgage.downPaymentAmount || mortgage.principalAmount * 0.2) || 0).toLocaleString()}
                     </button>
                     <button className="btn btn-secondary" onClick={() => setNotification({isOpen: true, type: 'info', title: 'Down Payment Info', message: `Down Payment Required:\n\nAmount: KSH ${((mortgage.downPaymentAmount || mortgage.principalAmount * 0.2) || 0).toLocaleString()}\n\nAfter payment:\n• Mortgage becomes active\n• Monthly payments of KSH ${(mortgage.monthlyPayment || 0).toLocaleString()} due last day of each month\n• Loan term: ${mortgage.loanTermYears || 25} years`})}>Payment Info</button>
                   </>
-                ) : mortgage.status === 'active' ? (
+                ) : mortgage.downPaymentMade ? (
                   <>
                     <button className="btn btn-primary" onClick={() => handleMakePayment(mortgage)}>Make Monthly Payment</button>
                     <button className="btn btn-secondary" onClick={() => handleViewStatement(mortgage)}>View Statement</button>
