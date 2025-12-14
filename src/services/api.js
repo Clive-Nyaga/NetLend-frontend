@@ -1,7 +1,47 @@
+/**
+ * NetLend API Service Layer
+ * 
+ * NetLend is a digital mortgage platform for Kenya that connects homebuyers with lenders.
+ * This service layer handles all communication with the Flask backend API.
+ * 
+ * ARCHITECTURE OVERVIEW:
+ * - Frontend: React.js with Vite build tool
+ * - Backend: Flask API with SQLAlchemy ORM
+ * - Database: PostgreSQL for production, SQLite for development
+ * - Authentication: JWT tokens with Bearer authentication
+ * - Payment Processing: M-Pesa, Card, and Bank Transfer integration
+ * 
+ * USER ROLES:
+ * 1. Homebuyers: Browse properties, apply for mortgages, make payments
+ * 2. Lenders: List properties, review applications, approve/reject mortgages
+ * 3. Admins: Manage users, oversee platform operations
+ * 
+ * MORTGAGE WORKFLOW:
+ * 1. Lender creates mortgage listing with property details and terms
+ * 2. Homebuyer submits application with financial information
+ * 3. Lender reviews creditworthiness and approves/rejects application
+ * 4. Approved mortgages require down payment (typically 20% of principal)
+ * 5. After down payment, monthly payments due on last day of each month
+ * 6. System tracks payment history, remaining balance, and loan progress
+ * 
+ * PAYMENT SYSTEM:
+ * - Down payments activate the mortgage and start monthly payment schedule
+ * - Monthly payments calculated using standard amortization formula
+ * - Payments processed through M-Pesa, credit/debit cards, or bank transfers
+ * - Real-time balance updates and payment history tracking
+ */
 const API_BASE_URL = 'http://127.0.0.1:5000/api';
 
+/**
+ * Main API object containing all endpoint methods
+ * All methods return Promises and handle authentication automatically
+ * JWT tokens are retrieved from localStorage and included in Authorization headers
+ */
 const api = {
-  // Auth endpoints
+  // ============================================================================
+  // AUTHENTICATION ENDPOINTS
+  // ============================================================================
+  // Handle user login, registration, and session management
   login: async (credentials) => {
     const response = await fetch(`${API_BASE_URL}/auth/login`, {
       method: 'POST',
@@ -19,7 +59,10 @@ const api = {
     return result;
   },
 
-  // Properties endpoints
+  // ============================================================================
+  // PROPERTY ENDPOINTS
+  // ============================================================================
+  // Browse available mortgage properties for homebuyers
   getProperties: async () => {
     const response = await fetch(`${API_BASE_URL}/homebuyer/properties`);
     if (!response.ok) {
@@ -28,7 +71,10 @@ const api = {
     return await response.json();
   },
 
-  // Lender endpoints
+  // ============================================================================
+  // LENDER ENDPOINTS
+  // ============================================================================
+  // Lender-specific operations: listings, applications, approvals
   getLenderProducts: async (lenderId) => {
     const response = await fetch(`${API_BASE_URL}/lender/${lenderId}/products`);
     return response.json();
@@ -184,7 +230,10 @@ const api = {
     return result;
   },
 
-  // Admin endpoints
+  // ============================================================================
+  // ADMIN ENDPOINTS
+  // ============================================================================
+  // Administrative functions for platform management
   getAllLenders: async () => {
     const response = await fetch(`${API_BASE_URL}/lenders`);
     if (!response.ok) {
@@ -435,14 +484,35 @@ const api = {
     return result;
   },
 
+  // ============================================================================
+  // PAYMENT PROCESSING ENDPOINTS
+  // ============================================================================
+  
   /**
    * Process mortgage payment (down payment or monthly payment)
    * 
-   * Handles:
-   * - Down payments: First payment that activates the mortgage
-   * - Monthly payments: Regular scheduled payments due on last day of month
-   * - Payment scheduling and balance updates
-   * - Payment method processing (M-Pesa, Card, Bank Transfer)
+   * PAYMENT TYPES:
+   * - Down Payment: Initial payment (typically 20%) that activates mortgage
+   *   - Required before any monthly payments can be made
+   *   - Updates mortgage status from 'approved' to 'active'
+   *   - Starts the monthly payment schedule
+   * 
+   * - Monthly Payment: Regular scheduled payments
+   *   - Due on the last day of each month
+   *   - Calculated using amortization formula
+   *   - Updates remaining balance and payment count
+   * 
+   * PAYMENT METHODS:
+   * - M-Pesa: Mobile money (requires phone number)
+   * - Credit/Debit Card: (requires card details)
+   * - Bank Transfer: (requires account number)
+   * 
+   * @param {Object} paymentData - Payment information
+   * @param {number} paymentData.mortgageId - ID of the mortgage
+   * @param {number} paymentData.amount - Payment amount in KSH
+   * @param {string} paymentData.paymentType - 'down' or 'monthly'
+   * @param {string} paymentData.paymentMethod - 'mpesa', 'card', or 'bank'
+   * @returns {Promise<Object>} Payment result with transaction ID and updated balance
    */
   processMortgagePayment: async (paymentData) => {
     const token = localStorage.getItem('access_token');

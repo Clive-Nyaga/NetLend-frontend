@@ -1,29 +1,82 @@
+/**
+ * MyMortgages Component - Homebuyer Mortgage Management Dashboard
+ * 
+ * This component displays and manages all mortgages for a logged-in homebuyer.
+ * It handles the complete mortgage lifecycle from approval to completion.
+ * 
+ * KEY FEATURES:
+ * 1. Mortgage Overview: Shows all active mortgages with key details
+ * 2. Payment Processing: Handles down payments and monthly payments
+ * 3. Payment History: Tracks all payments made on each mortgage
+ * 4. Progress Tracking: Shows repayment progress and remaining balance
+ * 5. Statement Generation: Provides mortgage statements and history
+ * 
+ * MORTGAGE STATES:
+ * - 'approved': Mortgage approved but down payment not made
+ * - 'active': Down payment made, monthly payments in progress
+ * - 'completed': All payments made, mortgage fully paid
+ * - 'overdue': Payments are past due
+ * 
+ * PAYMENT WORKFLOW:
+ * 1. Approved mortgages require down payment first (typically 20%)
+ * 2. After down payment, monthly payments become available
+ * 3. Monthly payments are due on the last day of each month
+ * 4. System tracks payment history and updates balances in real-time
+ * 
+ * INTEGRATION:
+ * - Uses PaymentModal for processing payments
+ * - Connects to backend API for mortgage and payment data
+ * - Real-time updates after successful payments
+ * - Toast notifications for user feedback
+ */
 import { useState, useEffect } from 'react';
 import api from '../../services/api';
 import PaymentModal from '../Modals/PaymentModal';
 import NotificationModal from '../Modals/NotificationModal';
 
+/**
+ * MyMortgages Component
+ * @param {Object} user - Current logged-in user object
+ */
 const MyMortgages = ({ user }) => {
-  const [mortgages, setMortgages] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [showPaymentModal, setShowPaymentModal] = useState(false);
-  const [selectedMortgage, setSelectedMortgage] = useState(null);
-  const [paymentHistory, setPaymentHistory] = useState({});
-  const [notification, setNotification] = useState({ isOpen: false, type: 'info', title: '', message: '' });
+  // ============================================================================
+  // STATE MANAGEMENT
+  // ============================================================================
+  const [mortgages, setMortgages] = useState([]);              // Array of user's mortgages
+  const [loading, setLoading] = useState(true);                // Loading state for API calls
+  const [showPaymentModal, setShowPaymentModal] = useState(false); // Payment modal visibility
+  const [selectedMortgage, setSelectedMortgage] = useState(null);   // Currently selected mortgage for payment
+  const [paymentHistory, setPaymentHistory] = useState({});    // Payment history by mortgage ID
+  const [notification, setNotification] = useState({ isOpen: false, type: 'info', title: '', message: '' }); // Notification modal state
 
+  // ============================================================================
+  // LIFECYCLE HOOKS
+  // ============================================================================
+  
+  // Load mortgages when component mounts
   useEffect(() => {
     loadMyMortgages();
   }, []);
 
-  // Load payment history for all mortgages when they're loaded
+  // Load payment history for all mortgages when mortgage data is available
   useEffect(() => {
     if (mortgages.length > 0) {
+      // Fetch payment history for each mortgage to show payment counts and progress
       mortgages.forEach(mortgage => {
         loadPaymentHistory(mortgage.id);
       });
     }
   }, [mortgages]);
 
+  // ============================================================================
+  // DATA LOADING FUNCTIONS
+  // ============================================================================
+  
+  /**
+   * Load all mortgages for the current user
+   * Fetches mortgage data from backend and updates component state
+   * Includes debugging logs to track API responses and data structure
+   */
   const loadMyMortgages = async () => {
     try {
       const response = await api.getBuyerMortgages();
@@ -60,6 +113,16 @@ const MyMortgages = ({ user }) => {
     }
   };
 
+  // ============================================================================
+  // CALCULATION FUNCTIONS
+  // ============================================================================
+  
+  /**
+   * Calculate repayment progress percentage
+   * Uses either payment count or balance reduction to determine progress
+   * @param {Object} mortgage - Mortgage object with payment data
+   * @returns {number} Progress percentage (0-100)
+   */
   const calculateProgress = (mortgage) => {
     if (mortgage.paymentsMade && mortgage.totalTerm) {
       return Math.round((mortgage.paymentsMade / mortgage.totalTerm) * 100);
@@ -70,6 +133,14 @@ const MyMortgages = ({ user }) => {
     return 0;
   };
 
+  /**
+   * Calculate monthly payment using standard amortization formula
+   * Used as fallback when backend doesn't provide monthly payment amount
+   * @param {number} principal - Loan principal amount
+   * @param {number} rate - Annual interest rate (percentage)
+   * @param {number} years - Loan term in years
+   * @returns {number} Monthly payment amount
+   */
   const calculateMonthlyPayment = (principal, rate, years) => {
     const monthlyRate = rate / 100 / 12;
     const numPayments = years * 12;
@@ -78,6 +149,11 @@ const MyMortgages = ({ user }) => {
 
 
 
+  /**
+   * Get color code for mortgage status display
+   * @param {string} status - Mortgage status
+   * @returns {string} CSS color code
+   */
   const getStatusColor = (status) => {
     switch(status) {
       case 'active': return '#10b981';
@@ -87,12 +163,19 @@ const MyMortgages = ({ user }) => {
     }
   };
 
+  // ============================================================================
+  // PAYMENT HANDLING FUNCTIONS
+  // ============================================================================
+  
   /**
    * Handle payment initiation
    * 
-   * Determines payment type and prepares mortgage data:
-   * - Down payment: If mortgage is approved but down payment not made
+   * Determines the appropriate payment type based on mortgage state:
+   * - Down payment: Required first payment to activate mortgage
    * - Monthly payment: Regular scheduled payments for active mortgages
+   * 
+   * Uses backend-provided downPaymentMade field for accurate detection
+   * @param {Object} mortgage - Mortgage object to process payment for
    */
   const handleMakePayment = (mortgage) => {
     // Use backend-provided downPaymentMade field
@@ -107,6 +190,11 @@ const MyMortgages = ({ user }) => {
     setShowPaymentModal(true);
   };
 
+  /**
+   * Handle successful payment processing
+   * Refreshes mortgage data and payment history after successful payment
+   * @param {Object} paymentResult - Result object from payment processing
+   */
   const handlePaymentSuccess = async (paymentResult) => {
     console.log('Payment successful:', paymentResult);
     setShowPaymentModal(false);
@@ -118,6 +206,15 @@ const MyMortgages = ({ user }) => {
     }
   };
 
+  // ============================================================================
+  // UI INTERACTION FUNCTIONS
+  // ============================================================================
+  
+  /**
+   * Display mortgage statement in notification modal
+   * Shows key mortgage information and payment details
+   * @param {Object} mortgage - Mortgage object to display statement for
+   */
   const handleViewStatement = (mortgage) => {
     setNotification({
       isOpen: true,
@@ -127,6 +224,11 @@ const MyMortgages = ({ user }) => {
     });
   };
 
+  /**
+   * Display payment history for a specific mortgage
+   * Fetches and formats payment history data for user display
+   * @param {Object} mortgage - Mortgage object to show history for
+   */
   const handleViewPaymentHistory = async (mortgage) => {
     try {
       const history = await api.getPaymentHistory(mortgage.id);
@@ -160,6 +262,11 @@ const MyMortgages = ({ user }) => {
     }
   };
 
+  /**
+   * Load payment history for a specific mortgage
+   * Updates component state with payment history data
+   * @param {number} mortgageId - ID of mortgage to load history for
+   */
   const loadPaymentHistory = async (mortgageId) => {
     try {
       const history = await api.getPaymentHistory(mortgageId);

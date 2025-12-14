@@ -1,35 +1,80 @@
 /**
- * PaymentModal Component
+ * PaymentModal Component - Mortgage Payment Processing Interface
  * 
- * Handles mortgage payments including:
- * - Down payments (first payment when mortgage is approved)
- * - Monthly mortgage payments (scheduled payments)
- * - Payment method selection and processing
- * - Payment validation and scheduling
+ * This modal component handles all mortgage payment processing for NetLend.
+ * It provides a secure, user-friendly interface for making mortgage payments.
+ * 
+ * PAYMENT TYPES SUPPORTED:
+ * 1. Down Payments:
+ *    - Initial payment required to activate approved mortgages
+ *    - Typically 20% of the principal amount
+ *    - Must be completed before monthly payments can begin
+ *    - Changes mortgage status from 'approved' to 'active'
+ * 
+ * 2. Monthly Payments:
+ *    - Regular scheduled payments for active mortgages
+ *    - Due on the last day of each month
+ *    - Amount calculated using amortization formula
+ *    - Updates remaining balance and payment history
+ * 
+ * PAYMENT METHODS:
+ * - M-Pesa: Kenya's mobile money service (requires phone number)
+ * - Credit/Debit Cards: Standard card processing (requires card details)
+ * - Bank Transfer: Direct bank account transfer (requires account number)
+ * 
+ * SECURITY FEATURES:
+ * - Input validation for all payment fields
+ * - Secure transmission of payment data to backend
+ * - Error handling with user-friendly messages
+ * - Transaction confirmation and receipt generation
+ * 
+ * INTEGRATION:
+ * - Connects to backend payment processing API
+ * - Real-time validation and feedback
+ * - Toast notifications for success/error states
+ * - Automatic modal closure after successful payment
  */
 import { useState, useEffect } from 'react';
 import api from '../../services/api';
 import { useToast } from '../../contexts/ToastContext';
 
+/**
+ * PaymentModal Component
+ * @param {boolean} isOpen - Controls modal visibility
+ * @param {function} onClose - Callback to close the modal
+ * @param {Object} mortgage - Mortgage object containing payment details
+ * @param {function} onPaymentSuccess - Callback executed after successful payment
+ */
 const PaymentModal = ({ isOpen, onClose, mortgage, onPaymentSuccess }) => {
+  // ============================================================================
+  // STATE MANAGEMENT
+  // ============================================================================
   const [paymentData, setPaymentData] = useState({
-    amount: 0,
-    paymentType: 'monthly', // 'down' or 'monthly'
-    paymentMethod: 'mpesa',
-    phoneNumber: '',
-    cardNumber: '',
-    expiryDate: '',
-    cvv: '',
-    accountNumber: ''
+    amount: 0,                    // Payment amount in KSH
+    paymentType: 'monthly',       // 'down' or 'monthly' - determines payment type
+    paymentMethod: 'mpesa',       // 'mpesa', 'card', or 'bank' - payment method
+    phoneNumber: '',              // M-Pesa phone number
+    cardNumber: '',               // Credit/debit card number
+    expiryDate: '',              // Card expiry date (MM/YY)
+    cvv: '',                     // Card security code
+    accountNumber: ''            // Bank account number
   });
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
-  const { showToast } = useToast();
+  const [loading, setLoading] = useState(false);     // Payment processing state
+  const [error, setError] = useState('');            // Error message display
+  const [success, setSuccess] = useState('');        // Success message display
+  const { showToast } = useToast();                  // Toast notification hook
 
+  // ============================================================================
+  // LIFECYCLE HOOKS
+  // ============================================================================
+  
   /**
-   * Initialize payment data when mortgage changes
-   * Determines if this is a down payment or monthly payment
+   * Initialize payment data when mortgage prop changes
+   * 
+   * Automatically determines payment type and amount based on mortgage state:
+   * - Uses backend downPaymentMade field for accurate payment type detection
+   * - Sets appropriate payment amount (down payment vs monthly payment)
+   * - Ensures UI reflects the correct payment requirements
    */
   useEffect(() => {
     if (mortgage) {
@@ -46,14 +91,27 @@ const PaymentModal = ({ isOpen, onClose, mortgage, onPaymentSuccess }) => {
     }
   }, [mortgage]);
 
+  // ============================================================================
+  // PAYMENT PROCESSING
+  // ============================================================================
+  
   /**
-   * Process mortgage payment
+   * Process mortgage payment through backend API
    * 
-   * Workflow:
-   * 1. Validate payment amount and method
-   * 2. Process payment through selected method
-   * 3. Update mortgage status and payment schedule
-   * 4. Handle down payment vs monthly payment logic
+   * PAYMENT WORKFLOW:
+   * 1. Client-side validation of payment data
+   * 2. Send payment request to backend API
+   * 3. Backend processes payment through selected method
+   * 4. Backend updates mortgage balance and payment history
+   * 5. Return transaction confirmation to user
+   * 
+   * ERROR HANDLING:
+   * - Validates payment amounts against requirements
+   * - Handles backend validation errors
+   * - Provides user-friendly error messages
+   * - Auto-switches to down payment mode if required
+   * 
+   * @param {Event} e - Form submission event
    */
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -117,6 +175,11 @@ const PaymentModal = ({ isOpen, onClose, mortgage, onPaymentSuccess }) => {
     }
   };
 
+  /**
+   * Handle form input changes
+   * Updates payment data state when user modifies form fields
+   * @param {Event} e - Input change event
+   */
   const handleChange = (e) => {
     setPaymentData({
       ...paymentData,
@@ -124,6 +187,7 @@ const PaymentModal = ({ isOpen, onClose, mortgage, onPaymentSuccess }) => {
     });
   };
 
+  // Don't render modal if not open or no mortgage data
   if (!isOpen || !mortgage) return null;
 
   return (
@@ -135,7 +199,10 @@ const PaymentModal = ({ isOpen, onClose, mortgage, onPaymentSuccess }) => {
         </div>
         <div className="modal-body">
         
-        {/* Payment Summary Section */}
+        {/* ================================================================ */}
+        {/* PAYMENT SUMMARY SECTION */}
+        {/* Displays mortgage details and payment requirements */}
+        {/* ================================================================ */}
         <div className="application-summary">
           <h5>Payment Details</h5>
           <p><strong>Property:</strong> {mortgage.property || `Mortgage #${mortgage.id}`}</p>
@@ -171,7 +238,10 @@ const PaymentModal = ({ isOpen, onClose, mortgage, onPaymentSuccess }) => {
         )}
 
         <form onSubmit={handleSubmit}>
-          {/* Payment Amount Section */}
+          {/* ================================================================ */}
+        {/* PAYMENT FORM SECTION */}
+        {/* User input fields for payment processing */}
+        {/* ================================================================ */}
           <div className="form-group">
             <label>Payment Amount (KSH)</label>
             <input
@@ -277,7 +347,10 @@ const PaymentModal = ({ isOpen, onClose, mortgage, onPaymentSuccess }) => {
             </div>
           )}
 
-          {/* Payment Action Buttons */}
+          {/* ============================================================ */}
+          {/* PAYMENT ACTION BUTTONS */}
+          {/* Submit payment or cancel operation */}
+          {/* ============================================================ */}
           <div className="form-actions">
             <button type="submit" className="btn btn-primary" disabled={loading}>
               {loading ? 'Processing Payment...' : 
@@ -290,7 +363,10 @@ const PaymentModal = ({ isOpen, onClose, mortgage, onPaymentSuccess }) => {
             </button>
           </div>
           
-          {/* Payment Schedule Information */}
+          {/* ============================================================ */}
+          {/* PAYMENT SCHEDULE INFORMATION */}
+          {/* Shows what happens after down payment completion */}
+          {/* ============================================================ */}
           {paymentData.paymentType === 'down' && (
             <div style={{marginTop: '1rem', padding: '1rem', backgroundColor: '#f8f9fa', borderRadius: '4px'}}>
               <h6 style={{margin: '0 0 0.5rem 0', color: '#495057'}}>After Down Payment:</h6>
